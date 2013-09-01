@@ -10,10 +10,10 @@ public enum DataType
 {
 	WAV(WavData.class);
 	
-	Class<? extends AudioData> mAudioData;
+	Class<? extends EncodedAudio> mEncodingType;
 	
-	DataType(Class<? extends AudioData> audioData)
+	DataType(Class<? extends EncodedAudio> encodingType)
 	{
-		mAudioData = audioData;
+		mEncodingType = encodingType;
 	}
 }

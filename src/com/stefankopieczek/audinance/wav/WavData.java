@@ -2,7 +2,7 @@ package com.stefankopieczek.audinance.wav;
 import com.stefankopieczek.audinance.*;
 import java.io.*;
 
-public class WavData extends AudioData
+public class WavData extends EncodedAudio
 {
 	public WavData(File file)
 		throws FileNotFoundException, 
@@ -18,10 +18,10 @@ public class WavData extends AudioData
 		super(is);
 	}
 	
-	public WavData(AudioData audioData, AudioFormat format) 
+	public WavData(EncodedAudio encodedAudio, AudioFormat format) 
 		throws IOException, InvalidAudioFormatException
 	{
-		super(audioData, format);
+		super(encodedAudio, format);
 	}
 
 	public InputStream getInputStream()
@@ -43,8 +43,8 @@ public class WavData extends AudioData
 	}
 	
 	@Override
-	public void buildFromAudio(AudioData audioData,
-	                             AudioFormat format)
+	public void buildFromAudio(EncodedAudio encodedAudio,
+	                           AudioFormat format)
 	{
 		// todo
 	}

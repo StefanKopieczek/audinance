@@ -1,11 +1,11 @@
 package com.stefankopieczek.audinance;
 import java.io.*;
 
-public abstract class AudioData
+public abstract class EncodedAudio
 {
 	private AudioSource mData;
 	
-	public AudioData(File file) 
+	public EncodedAudio(File file) 
 		throws FileNotFoundException, 
 		       IOException, 
 			   InvalidAudioFormatException
@@ -13,19 +13,19 @@ public abstract class AudioData
 		this(new FileInputStream(file));
 	}
 	
-	public AudioData(InputStream is) 
+	public EncodedAudio(InputStream is) 
 		throws IOException, InvalidAudioFormatException
 	{
 		mData = new SimpleAudioSource(is);
 		parseData();
 	}
 	
-	public AudioData(AudioData audioData, AudioFormat format) 
+	public EncodedAudio(EncodedAudio audioData, AudioFormat format) 
 	{
 		buildFromAudio(audioData, format);
 	}
 	
-	public AudioData(DecodedAudio rawAudioData,
+	public EncodedAudio(DecodedAudio rawAudioData,
 	                 AudioFormat format)
 	{
 		buildFromAudio(rawAudioData, format);
@@ -37,7 +37,7 @@ public abstract class AudioData
 	
 	public abstract DataType getDataType();
 	
-	public abstract void buildFromAudio(AudioData audioData,
+	public abstract void buildFromAudio(EncodedAudio audioData,
 	                                    AudioFormat format);
 	
 	public abstract void buildFromAudio(DecodedAudio audioData,

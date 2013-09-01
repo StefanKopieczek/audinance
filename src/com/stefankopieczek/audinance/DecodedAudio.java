@@ -7,14 +7,14 @@ public class DecodedAudio
 	private final AudioFormat mFormat;
 	private final AudioSource[] mChannels;
 	
-	public DecodedAudio(AudioData audioData)
+	public DecodedAudio(EncodedAudio encodedAudio)
 	{
-		DecodedAudio temp = audioData.getDecodedAudio();
+		DecodedAudio temp = encodedAudio.getDecodedAudio();
 		mFormat = temp.getFormat();
 		mChannels = temp.getChannels();
 	}
 	
-	public DecodedAudio(AudioData audioData,
+	public DecodedAudio(EncodedAudio encodedAudio,
 	                    AudioFormat format) 
 		throws IOException, InvalidAudioFormatException
 	{
@@ -25,7 +25,7 @@ public class DecodedAudio
 		}
 	
 		mFormat = format;
-		DecodedAudio decodedAudio = audioData.getDecodedAudio();
+		DecodedAudio decodedAudio = encodedAudio.getDecodedAudio();
 		DecodedAudio convertedAudio = 
 			AudioConverter.convert(decodedAudio, format);
 		mChannels = convertedAudio.getChannels();
