@@ -3,7 +3,7 @@ import java.io.*;
 
 public abstract class AudioData
 {
-	private byte[] mData;
+	private AudioSource mData;
 	
 	public AudioData(File file) 
 		throws FileNotFoundException, 
@@ -16,39 +16,48 @@ public abstract class AudioData
 	public AudioData(InputStream is) 
 		throws IOException, InvalidAudioFormatException
 	{
-		mData = AudinanceUtils.getByteArrayFromStream(is);
-		validateData();
+		mData = new SimpleAudioSource(is);
+		parseData();
 	}
 	
-	public AudioData(AudioData audioData) 
-		throws IOException, InvalidAudioFormatException
+	public AudioData(AudioData audioData, AudioFormat format) 
 	{
-		this(audioData.getRawAudio().getInputStream());
+		buildFromAudio(audioData, format);
+	}
+	
+	public AudioData(DecodedAudio rawAudioData,
+	                 AudioFormat format)
+	{
+		buildFromAudio(rawAudioData, format);
 	}
 	
 	public abstract InputStream getInputStream();
 	
-	public abstract RawAudioData getRawAudio();
+	public abstract DecodedAudio getDecodedAudio();
 	
-	public abstract AudioFormat getFormat();
+	public abstract DataType getDataType();
+	
+	public abstract void buildFromAudio(AudioData audioData,
+	                                    AudioFormat format);
+	
+	public abstract void buildFromAudio(DecodedAudio audioData,
+	                                    AudioFormat format);
 	
 	protected class AudioDataStream extends InputStream
 	{
 		private int position;
 		
-		public AudioDataStream()
-		{
-		}
+		public AudioDataStream() {}
 		
 		@Override
 		public int read()
 		{
 			int result;
-			if (position < mData.length)
+			try
 			{
-				result = mData[position++];
+				result = mData.getByte(position++);
 			}
-			else
+			catch (ArrayIndexOutOfBoundsException e)
 			{
 				result = -1;
 			}
@@ -57,11 +66,11 @@ public abstract class AudioData
 		}
 	}
 	
-	private void validateData() throws InvalidAudioFormatException
+	private void parseData() throws InvalidAudioFormatException
 	{
 		if (!isDataValid())
 		{
-			throw new InvalidAudioFormatException(getFormat());
+			throw new InvalidAudioFormatException(getDataType());
 		}
 	}
 	

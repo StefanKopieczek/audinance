@@ -7,7 +7,12 @@ public class InvalidAudioFormatException extends Exception
 		super();
 	}
 	
-	public InvalidAudioFormatException(AudioFormat expected)
+	public InvalidAudioFormatException(String message)
+	{
+		super(message);
+	}
+	
+	public InvalidAudioFormatException(DataType expected)
 	{
 		super("Expected " + expected.name());
 	}

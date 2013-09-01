@@ -1,20 +1,38 @@
 package com.stefankopieczek.audinance;
-import com.stefankopieczek.audinance.wav.*;
 
-/**
- * The formats which we support processing with Audinance.
- * For each format we provide an <tt>AudioProcessor</tt> to handle
- * encoding and decoding.
- */
-public enum AudioFormat
+public class AudioFormat
 {
- 	RAW(RawAudioData.class),
-	WAV(WavData.class);
+	private final Integer mSampleRate;
+	private final Integer mBitDepth;
+	private final Integer mChannels;
 	
-	Class<? extends AudioData> mAudioData;
-	
-	AudioFormat(Class<? extends AudioData> audioData)
+	public AudioFormat(Integer sampleRate,
+	 				   Integer bitDepth,
+					   Integer channels)
 	{
-		mAudioData = audioData;
+		mSampleRate = sampleRate;
+		mBitDepth = bitDepth;
+		mChannels = channels;
+	}
+	
+	@Override
+	public String toString()
+	{
+		String sampleString = "sample rate: " + mSampleRate + "Hz";
+		String depthString = "bit depth: " + mBitDepth+ " bits";
+		String channelString = mChannels + " channels";
+		
+		return "(AudioFormat - " + sampleString + ", " +
+		       depthString + ", " +
+               channelString + ")";
+	}
+	
+	public boolean isEntirelyDefined()
+	{
+		boolean isDefined = (mSampleRate != null);
+		isDefined &= (mBitDepth != null);
+		isDefined &= (mChannels != null);
+		
+		return isDefined;
 	}
 }

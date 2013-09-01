@@ -18,10 +18,10 @@ public class WavData extends AudioData
 		super(is);
 	}
 	
-	public WavData(AudioData audioData) 
+	public WavData(AudioData audioData, AudioFormat format) 
 		throws IOException, InvalidAudioFormatException
 	{
-		super(audioData);
+		super(audioData, format);
 	}
 
 	public InputStream getInputStream()
@@ -30,15 +30,29 @@ public class WavData extends AudioData
 		return null;
 	}
 
-	public RawAudioData getRawAudio()
+	public DecodedAudio getDecodedAudio()
 	{
 		// TODO: Implement this method
 		return null;
 	}
 
-	public AudioFormat getFormat()
+	public DataType getDataType()
 	{
 		// TODO: Implement this method
 		return null;
+	}
+	
+	@Override
+	public void buildFromAudio(AudioData audioData,
+	                             AudioFormat format)
+	{
+		// todo
+	}
+	
+	@Override
+	public void buildFromAudio(DecodedAudio rawAudioData,
+	                           AudioFormat audioFormat)
+	{
+		// todo
 	}
 }
