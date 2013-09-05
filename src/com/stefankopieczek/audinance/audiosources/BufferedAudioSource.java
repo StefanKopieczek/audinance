@@ -1,4 +1,4 @@
-package com.stefankopieczek.audinance;
+package com.stefankopieczek.audinance.audiosources;
 import java.io.*;
 
 public class BufferedAudioSource extends AudioSource

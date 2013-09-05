@@ -1,4 +1,4 @@
-package com.stefankopieczek.audinance;
+package com.stefankopieczek.audinance.formats;
 
 /**
  * Stores datatype-independent audio format information.

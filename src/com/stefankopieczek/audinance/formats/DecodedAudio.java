@@ -1,6 +1,8 @@
-package com.stefankopieczek.audinance;
-import com.stefankopieczek.audinance.multiplexer.*;
-import com.stefankopieczek.audinance.resampler.*;
+package com.stefankopieczek.audinance.formats;
+import com.stefankopieczek.audinance.*;
+import com.stefankopieczek.audinance.audiosources.*;
+import com.stefankopieczek.audinance.conversion.multiplexers.*;
+import com.stefankopieczek.audinance.conversion.resamplers.*;
 import java.io.*;
 
 /**

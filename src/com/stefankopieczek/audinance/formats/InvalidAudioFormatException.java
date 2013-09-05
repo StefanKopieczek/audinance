@@ -1,4 +1,4 @@
-package com.stefankopieczek.audinance;
+package com.stefankopieczek.audinance.formats;
 
 /**
  * Exception indicating that audio provided was in either an invalid

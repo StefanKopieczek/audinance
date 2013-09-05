@@ -1,5 +1,5 @@
-package com.stefankopieczek.audinance.wav;
-import com.stefankopieczek.audinance.*;
+package com.stefankopieczek.audinance.formats.wav;
+import com.stefankopieczek.audinance.formats.*;
 import java.io.*;
 
 public class WavData extends EncodedAudio

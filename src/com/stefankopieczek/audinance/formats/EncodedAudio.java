@@ -1,4 +1,6 @@
-package com.stefankopieczek.audinance;
+package com.stefankopieczek.audinance.formats;
+import com.stefankopieczek.audinance.*;
+import com.stefankopieczek.audinance.audiosources.*;
 import java.io.*;
 
 /** 

@@ -1,4 +1,4 @@
-package com.stefankopieczek.audinance;
+package com.stefankopieczek.audinance.audiosources;
 
 /**
  * Abstraction over an audio data source. Allows the implementation
