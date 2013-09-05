@@ -1,5 +1,9 @@
 package com.stefankopieczek.audinance;
 
+/**
+ * Exception indicating that audio provided was in either an invalid
+ * or an unexpected format.
+ */
 public class InvalidAudioFormatException extends Exception
 {
 	public InvalidAudioFormatException()

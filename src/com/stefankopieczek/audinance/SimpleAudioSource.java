@@ -1,6 +1,10 @@
 package com.stefankopieczek.audinance;
 import java.io.*;
 
+/**
+ * Naïve implementation of AudioSource which simply reads all audio
+ * data into memory.
+ */
 public class SimpleAudioSource extends AudioSource
 {
 	private byte[] mData;

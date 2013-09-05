@@ -1,6 +1,9 @@
 package com.stefankopieczek.audinance;
 import java.io.*;
 
+/** 
+ * Generic representation of encoded audio data.
+ */
 public abstract class EncodedAudio
 {
 	private AudioSource mData;
