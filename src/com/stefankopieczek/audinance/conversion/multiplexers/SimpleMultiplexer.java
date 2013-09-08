@@ -17,7 +17,8 @@ public class SimpleMultiplexer implements Multiplexer
 	                                Integer targetNumChannels)
 	{
 		DecodedSource[] oldChannels = result.getChannels();
-		DecodedSource[] newChannels = new DecodedSource[targetNumChannels];
+		DecodedSource[] newChannels = 
+	  	              new DecodedSource[targetNumChannels.intValue()];
 		
 		if (targetNumChannels > oldChannels.length)
 		{
