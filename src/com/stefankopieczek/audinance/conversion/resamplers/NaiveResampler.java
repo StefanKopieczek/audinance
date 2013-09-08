@@ -22,8 +22,8 @@ public class NaiveResampler implements Resampler
 		for (int ii = 0; ii < newChannels.length; ii++)
 		{
 			newChannels[ii] = new ResamplingSource(originalChannels[ii],
-			                                       originalSampleRate,
-												   targetSampleRate);
+			                                       originalSampleRate.intValue(),
+												   targetSampleRate.intValue());
 		}
 		
 		DecodedAudio result = new DecodedAudio(newChannels,
