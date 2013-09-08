@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.stefankopieczek.audinance.audiosources.DecodedSource;
+import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
 import com.stefankopieczek.audinance.conversion.resamplers.NaiveResampler;
 import com.stefankopieczek.audinance.conversion.resamplers.Resampler;
 import com.stefankopieczek.audinance.formats.AudioFormat;
@@ -44,9 +45,7 @@ public abstract class TestAbstractResampler
 		DecodedAudio resampledAudio = resampler.resample(originalAudio, 
 				                                         sampleRate);
 		
-		Assert.assertEquals("Resampling to the same rate changed the audio!",
-				            originalAudio,
-				            resampledAudio);
+		assertDecodedAudiosEqual(originalAudio, resampledAudio);
 	}
 	
 	@Test
@@ -71,11 +70,70 @@ public abstract class TestAbstractResampler
 		Resampler resampler = getResampler();
 		
 		DecodedAudio resampledAudio = resampler.resample(originalAudio, 
-				                                         5000);
+				                                         sampleRate);
 		
-		Assert.assertEquals("Resampling to half speed didn't simply drop " +
-		                    " alternate values!",
-				            halvedAudio,
-				            resampledAudio);
+		assertDecodedAudiosEqual(halvedAudio, resampledAudio);
+	}
+	
+	protected void assertDecodedAudiosEqual(DecodedAudio a, DecodedAudio b)
+	{
+		Assert.assertEquals(a.getFormat(), b.getFormat());
+		
+		DecodedSource[] aChannels = a.getChannels();
+		DecodedSource[] bChannels = b.getChannels();
+		
+		Assert.assertEquals(aChannels.length, bChannels.length);
+		
+		for (int idx = 0; idx < a.getChannels().length; idx++)
+		{
+			assertDecodedSourcesEqual(aChannels[idx], bChannels[idx]);
+		}
+	}
+	
+	protected void assertDecodedSourcesEqual(DecodedSource a, DecodedSource b)
+	{
+		int idx = 0;
+		
+		while (true)
+		{
+			boolean aHasData = true;
+			double aData = 0.0f;
+			try
+			{
+				aData = a.getSample(idx);
+			}
+			catch (NoMoreDataException e)
+			{
+				aHasData = false;
+			}
+					
+			boolean bHasData = true;
+			double bData = 0.0f;
+			try
+			{
+				bData = b.getSample(idx);
+			}
+			catch (NoMoreDataException e)
+			{
+				bHasData = false;
+			}
+
+			Assert.assertEquals("The audio sources were of different lengths!",
+					            aHasData, 
+					            bHasData);			
+			
+			// Both sources have run out, and the data has been the same so
+			// far. Equal.
+			if (!aHasData)
+				break;
+						
+			// The two data differ at this index. Not equal.
+			Assert.assertEquals("The audio sources differed at position " + idx,
+					            aData, 
+					            bData, 
+					            0.00001f);
+			
+			idx += 1;
+		}
 	}
 }

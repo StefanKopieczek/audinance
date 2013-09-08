@@ -36,47 +36,30 @@ public class NaiveResampler implements Resampler
 	{
 		private final DecodedSource mOriginal;
 		private final float mScaleFactor;
+		private static final float IDX_TOLERANCE = 0.0001f;
 		
 		public ResamplingSource(DecodedSource original,
 		                        int originalSampleRate,
 								int targetSampleRate)
 		{
 			mOriginal = original;
-			mScaleFactor = originalSampleRate / targetSampleRate;
+			mScaleFactor = originalSampleRate * 1.0f / targetSampleRate;			
 		}
 		
 		public double getSample(int idx) throws NoMoreDataException
 		{
 			float floatIdx = idx * mScaleFactor;
 			
+			if (Math.abs(floatIdx - idx) < IDX_TOLERANCE)
+			{
+				return mOriginal.getSample(idx);
+			}
+			
 			double precursor = mOriginal.getSample((int)floatIdx);
+			double successor = mOriginal.getSample((int)Math.ceil(floatIdx));
 			
-			double result = 0;
-			
-			boolean hasSuccessor = true;
-			
-			double successor = 0;
-			
-			try
-			{
-				successor = mOriginal.getSample(
-                                            (int)Math.ceil(floatIdx));
-			}
-			catch (NoMoreDataException e)
-			{
-				hasSuccessor = false;
-			}
-			
-			if (hasSuccessor)
-			{
-				result = (precursor+successor)/2;
-			}
-			else
-			{
-				result = precursor;
-			}
-			
-			return result;
+			return (precursor+successor)/2;
+
 		}
 	}
 }

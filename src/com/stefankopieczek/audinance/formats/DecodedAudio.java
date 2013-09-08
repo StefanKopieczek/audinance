@@ -15,7 +15,7 @@ import java.io.*;
 public class DecodedAudio
 {
 	private final AudioFormat mFormat;
-	public final DecodedSource[] mChannels;
+	private final DecodedSource[] mChannels;
 	
 	public DecodedAudio(DecodedSource[] channels, AudioFormat format)
 	{
