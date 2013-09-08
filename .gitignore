@@ -1,9 +1,13 @@
 *.class
 
+# Build folders #
+bin
+
 # Package Files #
-*.jar
+*.jar !lib/*
 *.war
 *.ear
 
 # Logs and backups #
 *.log
+*.swp
