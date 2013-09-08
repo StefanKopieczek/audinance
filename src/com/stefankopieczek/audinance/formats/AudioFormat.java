@@ -1,5 +1,7 @@
 package com.stefankopieczek.audinance.formats;
 
+import com.stefankopieczek.audinance.AudinanceUtils;
+
 /**
  * Stores datatype-independent audio format information.
  * Values can be either specified or null; the latter is used when
@@ -28,6 +30,22 @@ public class AudioFormat
 		
 		return "(AudioFormat - " + sampleString + ", " +
                channelString + ")";
+	}
+	
+	@Override
+	public boolean equals(Object other)
+	{
+		if (!(other instanceof AudioFormat))
+			return false;
+		
+		AudioFormat otherFormat = (AudioFormat)other;
+		
+		boolean sampleRatesEqual = (AudinanceUtils.nullsafeEquals(
+				                    otherFormat.getSampleRate(), mSampleRate));
+		boolean numChannelsEqual = (AudinanceUtils.nullsafeEquals(
+                                    otherFormat.getNumChannels(), mChannels));
+		
+		return sampleRatesEqual && numChannelsEqual;
 	}
 	
 	/**

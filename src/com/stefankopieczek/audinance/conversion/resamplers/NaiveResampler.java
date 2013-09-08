@@ -45,7 +45,7 @@ public class NaiveResampler implements Resampler
 			mScaleFactor = originalSampleRate / targetSampleRate;
 		}
 		
-		public double getSample(int idx)
+		public double getSample(int idx) throws NoMoreDataException
 		{
 			float floatIdx = idx * mScaleFactor;
 			
@@ -62,7 +62,7 @@ public class NaiveResampler implements Resampler
 				successor = mOriginal.getSample(
                                             (int)Math.ceil(floatIdx));
 			}
-			catch (ArrayIndexOutOfBoundsException e)
+			catch (NoMoreDataException e)
 			{
 				hasSuccessor = false;
 			}

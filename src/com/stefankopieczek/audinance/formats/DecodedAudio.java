@@ -2,7 +2,10 @@ package com.stefankopieczek.audinance.formats;
 import com.stefankopieczek.audinance.*;
 import com.stefankopieczek.audinance.audiosources.*;
 import com.stefankopieczek.audinance.conversion.multiplexers.*;
-import com.stefankopieczek.audinance.conversion.resamplers.*;
+import com.stefankopieczek.audinance.conversion.resamplers.NaiveResampler;
+import com.stefankopieczek.audinance.conversion.resamplers.Resampler;
+import com.stefankopieczek.audinancetests.conversion.resamplers.*;
+
 import java.io.*;
 
 /**
@@ -15,6 +18,12 @@ public class DecodedAudio
 	public final DecodedSource[] mChannels;
 	
 	public DecodedAudio(DecodedSource[] channels, AudioFormat format)
+	{
+		mChannels = channels;
+		mFormat = format;
+	}
+	
+	public DecodedAudio(AudioFormat format, DecodedSource... channels)
 	{
 		mChannels = channels;
 		mFormat = format;
@@ -41,6 +50,32 @@ public class DecodedAudio
 		DecodedAudio decodedAudio = encodedAudio.getDecodedAudio();
 		DecodedAudio convertedAudio = decodedAudio.convertTo(format);
 		mChannels = convertedAudio.getChannels();
+	}
+	
+	@Override
+	public boolean equals(Object other)
+	{
+		if (!(other instanceof DecodedAudio))
+			return false;
+					
+		DecodedAudio otherAudio = (DecodedAudio)other;
+		
+		// Formats are unequal; so audio objects are not equal.
+		if (!(mFormat.equals(otherAudio.mFormat)))
+			return false;
+		
+		// Number of channels are different; so audio objects are unequal.
+		if (mChannels.length != otherAudio.getChannels().length)
+			return false;
+		
+		for (int idx = 0; idx < mChannels.length; idx++)
+		{
+			// If two channels are unequal, the audio objects are unequal.
+			if (!(mChannels[idx].equals(otherAudio.getChannels()[idx])))
+				return false;
+		}
+		
+		return true;
 	}
 
 	public AudioFormat getFormat()

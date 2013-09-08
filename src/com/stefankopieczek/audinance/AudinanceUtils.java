@@ -33,4 +33,15 @@ public class AudinanceUtils
 		
 		return baos.toByteArray();
 	}
+	
+	public static boolean nullsafeEquals(Object a, Object b)
+	{
+		if (a == null ^ b == null)
+			return false;
+		
+		if (a == null && b == null)
+			return true;
+		
+		return a.equals(b);
+	}
 }
