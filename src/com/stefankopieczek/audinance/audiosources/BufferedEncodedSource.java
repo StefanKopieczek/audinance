@@ -1,9 +1,9 @@
 package com.stefankopieczek.audinance.audiosources;
 import java.io.*;
 
-public class BufferedAudioSource extends AudioSource
+public class BufferedEncodedSource extends EncodedSource
 {
-	public BufferedAudioSource(InputStream is)
+	public BufferedEncodedSource(InputStream is)
 	{
 		// todo
 	}

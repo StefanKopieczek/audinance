@@ -12,7 +12,13 @@ import java.io.*;
 public class DecodedAudio
 {
 	private final AudioFormat mFormat;
-	private final AudioSource[] mChannels;
+	public final DecodedSource[] mChannels;
+	
+	public DecodedAudio(DecodedSource[] channels, AudioFormat format)
+	{
+		mChannels = channels;
+		mFormat = format;
+	}
 	
 	public DecodedAudio(EncodedAudio encodedAudio)
 	{
@@ -23,7 +29,7 @@ public class DecodedAudio
 	
 	public DecodedAudio(EncodedAudio encodedAudio,
 	                    AudioFormat format) 
-		throws IOException, InvalidAudioFormatException
+		throws InvalidAudioFormatException
 	{
 		if (!format.isEntirelyDetermined())
 		{
@@ -33,7 +39,7 @@ public class DecodedAudio
 	
 		mFormat = format;
 		DecodedAudio decodedAudio = encodedAudio.getDecodedAudio();
-		DecodedAudio convertedAudio = convertTo(format);
+		DecodedAudio convertedAudio = decodedAudio.convertTo(format);
 		mChannels = convertedAudio.getChannels();
 	}
 
@@ -42,7 +48,7 @@ public class DecodedAudio
 		return mFormat;
 	}
 	
-	public AudioSource[] getChannels()
+	public DecodedSource[] getChannels()
 	{
 		return mChannels;
 	}
@@ -64,17 +70,8 @@ public class DecodedAudio
 		if (targetSampleRate != null && 
 		    !targetSampleRate.equals(mFormat.getSampleRate()))
 		{
-			Resampler resampler = new SimpleResampler();
+			Resampler resampler = new NaiveResampler();
 			result = resampler.resample(result, targetSampleRate);
-		}
-		    
-		// Rewrite the audio at a new bitdepth if required.
-		// (<tt>null</tt> indicates no requirement)	
-		Integer targetBitDepth = targetFormat.getBitDepth();
-		if (targetBitDepth != null &&
-		    !targetBitDepth.equals(mFormat.getSampleRate()))
-		{
-			result = result.convertToNewBitDepth(targetBitDepth);
 		}
 		
 		// Multiplex or demultiplex  the audio if required.
@@ -89,11 +86,5 @@ public class DecodedAudio
 		}
 		
 		return result;
-	}
-
-	public DecodedAudio convertToNewBitDepth(Integer targetBitDepth)
-	{
-		// TODO: Implement this method
-		return null;
 	}
 }

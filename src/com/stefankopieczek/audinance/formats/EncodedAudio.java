@@ -8,7 +8,7 @@ import java.io.*;
  */
 public abstract class EncodedAudio
 {
-	private AudioSource mData;
+	private EncodedSource mData;
 	
 	public EncodedAudio(File file) 
 		throws FileNotFoundException, 
@@ -21,7 +21,7 @@ public abstract class EncodedAudio
 	public EncodedAudio(InputStream is) 
 		throws IOException, InvalidAudioFormatException
 	{
-		mData = new SimpleAudioSource(is);
+		mData = new SimpleEncodedSource(is);
 		parseData();
 	}
 	

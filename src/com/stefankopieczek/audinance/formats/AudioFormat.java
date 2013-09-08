@@ -11,15 +11,12 @@ package com.stefankopieczek.audinance.formats;
 public class AudioFormat
 {
 	private final Integer mSampleRate;
-	private final Integer mBitDepth;
 	private final Integer mChannels;
 	
 	public AudioFormat(Integer sampleRate,
-	 				   Integer bitDepth,
 					   Integer channels)
 	{
 		mSampleRate = sampleRate;
-		mBitDepth = bitDepth;
 		mChannels = channels;
 	}
 	
@@ -27,11 +24,9 @@ public class AudioFormat
 	public String toString()
 	{
 		String sampleString = "sample rate: " + mSampleRate + "Hz";
-		String depthString = "bit depth: " + mBitDepth+ " bits";
 		String channelString = mChannels + " channels";
 		
 		return "(AudioFormat - " + sampleString + ", " +
-		       depthString + ", " +
                channelString + ")";
 	}
 	
@@ -46,7 +41,6 @@ public class AudioFormat
 	public boolean isEntirelyDetermined()
 	{
 		boolean isDefined = (mSampleRate != null);
-		isDefined &= (mBitDepth != null);
 		isDefined &= (mChannels != null);
 		
 		return isDefined;
@@ -55,11 +49,6 @@ public class AudioFormat
 	public Integer getSampleRate()
 	{
 		return mSampleRate;
-	}
-	
-	public Integer getBitDepth()
-	{
-		return mBitDepth;
 	}
 	
 	public Integer getNumChannels()
@@ -73,15 +62,5 @@ public class AudioFormat
 			return null;
 			
 		return mSampleRate * mChannels;
-	}
-	
-	public Integer getBitRate()
-	{
-		Integer frameRate = getFrameRate();
-		
-		if (frameRate == null || mBitDepth == null)
-			return null;
-			
-		return frameRate * mBitDepth;
 	}
 }
