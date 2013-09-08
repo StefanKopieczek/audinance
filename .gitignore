@@ -1,8 +1,5 @@
 *.class
 
-# Build folders #
-bin
-
 # Package Files #
 *.jar !lib/*
 *.war
