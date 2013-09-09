@@ -1,0 +1,88 @@
+package com.stefankopieczek.audinancetests.testutils;
+
+import com.stefankopieczek.audinance.audiosources.*;
+import com.stefankopieczek.audinance.formats.*;
+import java.util.*;
+import org.junit.*;
+
+public class TestUtilities
+{
+	public static void assertDecodedAudioEqual(String message,
+	                                           DecodedAudio expected,
+	                                           DecodedAudio actual)
+	{
+		assertFormatsEqual(message + " audio formats are not equal",
+		                   expected.getFormat(),
+		                   actual.getFormat());
+						   
+		DecodedSource[] expectedChannels = expected.getChannels();
+		DecodedSource[] actualChannels = actual.getChannels();
+		
+		double[][] expectedData = 
+						        new double[expectedChannels.length][];
+		for (int ii = 0; ii < expectedChannels.length; ii++)
+		{
+			expectedData[ii] = getRawDataFromDecodedSource(
+			                                    expectedChannels[ii]);
+		}
+		
+		double[][] actualData = 
+		                          new double[actualChannels.length][];
+		for (int ii = 0; ii < actualChannels.length; ii++)
+		{
+			actualData[ii] = getRawDataFromDecodedSource(
+			                 	                  actualChannels[ii]);
+		}
+		
+		Assert.assertArrayEquals(message + "Audio data not equal.", 
+		                         expectedData, 
+								 actualData);
+	}
+	
+	private static double[] getRawDataFromDecodedSource(
+											     DecodedSource source)
+	{
+		List<Double> rawData = new ArrayList<Double>();
+		
+		int ii = 0;
+		while (true)
+		{
+			try
+			{
+				rawData.add(source.getSample(ii));
+			}
+			catch (NoMoreDataException e)
+			{
+				break;
+			}
+			
+			ii++;
+		}
+		
+		double[] result = new double[rawData.size()];
+		
+		for (int jj = 0; jj < rawData.size(); jj++)
+		{
+			result[ii] = rawData.get(ii).doubleValue();
+		}
+		
+		return result;
+	}
+	
+	private static void assertFormatsEqual(String message,
+	                                AudioFormat expected,
+									AudioFormat actual)
+	{
+		Assert.assertEquals(message + " Sample rates unequal.", 
+		                    expected.getSampleRate(),
+							actual.getSampleRate());
+							
+		Assert.assertEquals(message + " Number of channels differs.",
+		                    expected.getSampleRate(),
+							actual.getSampleRate());
+							
+		// Catch changes in underlying equals() method not
+		// updated here.
+		Assert.assertEquals(message, expected, actual);
+	}
+}
