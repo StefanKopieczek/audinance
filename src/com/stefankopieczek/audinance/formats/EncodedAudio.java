@@ -36,8 +36,6 @@ public abstract class EncodedAudio
 		buildFromAudio(rawAudioData, format);
 	}
 	
-	public abstract InputStream getInputStream();
-	
 	public abstract DecodedAudio getDecodedAudio();
 	
 	public abstract DataType getDataType();

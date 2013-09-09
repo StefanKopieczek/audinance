@@ -24,12 +24,6 @@ public class WavData extends EncodedAudio
 		super(encodedAudio, format);
 	}
 
-	public InputStream getInputStream()
-	{
-		// TODO: Implement this method
-		return null;
-	}
-
 	public DecodedAudio getDecodedAudio()
 	{
 		// TODO: Implement this method
