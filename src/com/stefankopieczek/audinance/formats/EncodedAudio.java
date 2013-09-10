@@ -22,7 +22,6 @@ public abstract class EncodedAudio
 		throws IOException, InvalidAudioFormatException
 	{
 		mData = new SimpleEncodedSource(is);
-		parseData();
 	}
 	
 	public EncodedAudio(EncodedAudio audioData, AudioFormat format) 
@@ -45,6 +44,11 @@ public abstract class EncodedAudio
 	
 	public abstract void buildFromAudio(DecodedAudio audioData,
 	                                    AudioFormat format);
+										
+	protected EncodedSource getSource()
+	{
+		return mData;
+	}
 	
 	protected class AudioDataStream extends InputStream
 	{
@@ -67,19 +71,5 @@ public abstract class EncodedAudio
 			
 			return result;
 		}
-	}
-	
-	private void parseData() throws InvalidAudioFormatException
-	{
-		if (!isDataValid())
-		{
-			throw new InvalidAudioFormatException(getDataType());
-		}
-	}
-	
-	protected boolean isDataValid()
-	{
-		// Override this!
-		throw new UnsupportedOperationException();
 	}
 }
