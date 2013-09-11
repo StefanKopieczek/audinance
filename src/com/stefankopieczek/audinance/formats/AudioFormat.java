@@ -64,6 +64,15 @@ public class AudioFormat
 		return isDefined;
 	}
 	
+	/**
+	 * Gets the sample rate of the audio data; that is, the number
+	 * of audio samples per channel per second.
+	 *
+	 * @return The sample rate in Hz, or <tt>null</tt> if no
+	 * sample rate is specified (this indicates that we do not
+	 * mandate a particular sample rate when this format is used to
+	 * specify the result of an audio conversion).
+	 */
 	public Integer getSampleRate()
 	{
 		return mSampleRate;
