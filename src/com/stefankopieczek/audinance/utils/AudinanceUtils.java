@@ -1,5 +1,7 @@
-package com.stefankopieczek.audinance;
+package com.stefankopieczek.audinance.utils;
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Utility class for Java bits and pieces that don't belong anywhere
@@ -25,8 +27,13 @@ public class AudinanceUtils
 		byte[] buffer = new byte[BYTE_BUFFER_SIZE];
 		int position = 0;
 		
-		while ((position = is.read(buffer, 0, buffer.length)) != 1)
+		while (true)
 		{
+			position = is.read(buffer, 0, buffer.length);
+			
+			if (position == -1)
+				break;
+			
 			baos.write(buffer, 0, position);
 		}
 		baos.flush();
@@ -44,4 +51,31 @@ public class AudinanceUtils
 		
 		return a.equals(b);
 	}
+	
+	public static int intFromBytes(byte[] bytes, ByteOrder endianism)
+	{
+		return ByteBuffer.wrap(bytes).order(endianism).getInt();
+	}
+	
+	public static short shortFromBytes(byte[] bytes, ByteOrder endianism)
+	{
+		return ByteBuffer.wrap(bytes).order(endianism).getShort();
+	}
+	
+	public static float floatFromBytes(byte[] bytes, ByteOrder endianism)
+	{
+		return ByteBuffer.wrap(bytes).order(endianism).getFloat();
+	}
+	
+	public static double doubleFromBytes(byte[] bytes, ByteOrder endianism)
+	{
+		return ByteBuffer.wrap(bytes).order(endianism).getDouble();
+	}
+	
+	public static String stringFromBytes(byte[] bytes)
+		throws UnsupportedEncodingException
+	{
+		return new String(bytes, 0, bytes.length, "ASCII");
+	}
+
 }

@@ -35,7 +35,8 @@ public abstract class EncodedAudio
 		buildFromAudio(rawAudioData, format);
 	}
 	
-	public abstract DecodedAudio getDecodedAudio();
+	public abstract DecodedAudio getDecodedAudio() 
+			throws InvalidAudioFormatException, UnsupportedFormatException;
 	
 	public abstract DataType getDataType();
 	

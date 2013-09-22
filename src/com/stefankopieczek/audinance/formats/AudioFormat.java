@@ -1,6 +1,6 @@
 package com.stefankopieczek.audinance.formats;
 
-import com.stefankopieczek.audinance.AudinanceUtils;
+import com.stefankopieczek.audinance.utils.AudinanceUtils;
 
 /**
  * Stores datatype-independent audio format information.

@@ -30,6 +30,7 @@ public class DecodedAudio
 	}
 	
 	public DecodedAudio(EncodedAudio encodedAudio)
+			throws InvalidAudioFormatException, UnsupportedFormatException
 	{
 		DecodedAudio temp = encodedAudio.getDecodedAudio();
 		mFormat = temp.getFormat();
@@ -38,7 +39,7 @@ public class DecodedAudio
 	
 	public DecodedAudio(EncodedAudio encodedAudio,
 	                    AudioFormat format) 
-		throws InvalidAudioFormatException
+		throws InvalidAudioFormatException, UnsupportedFormatException
 	{
 		if (!format.isEntirelyDetermined())
 		{
@@ -119,6 +120,18 @@ public class DecodedAudio
 			result = multiplexer.toNChannels(result, 
 			                                 targetNumChannels);
 		}
+		
+		return result;
+	}	
+	
+	public double[][] getRawData() throws InvalidAudioFormatException
+	{
+		double[][] result = new double[mChannels.length][];
+		
+		for (int channelIdx = 0; channelIdx < mChannels.length; channelIdx++)
+		{
+			result[channelIdx] = mChannels[channelIdx].getRawData();
+		}			
 		
 		return result;
 	}

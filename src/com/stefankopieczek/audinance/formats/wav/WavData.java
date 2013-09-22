@@ -24,10 +24,12 @@ public class WavData extends EncodedAudio
 		super(encodedAudio, format);
 	}
 
-	public DecodedAudio getDecodedAudio()
+	public DecodedAudio getDecodedAudio() 
+        throws InvalidWavDataException, UnsupportedWavEncodingException 
 	{
-		// TODO: Implement this method
-		return null;
+		WavDecoder wavDecoder = new WavDecoder(getSource());
+		return wavDecoder.getDecodedAudio();
+		
 	}
 
 	public DataType getDataType()
