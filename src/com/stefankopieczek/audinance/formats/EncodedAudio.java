@@ -8,7 +8,7 @@ import java.io.*;
  */
 public abstract class EncodedAudio
 {
-	private EncodedSource mData;
+	protected EncodedSource mData;
 	
 	public EncodedAudio(File file) 
 		throws FileNotFoundException, 
@@ -25,12 +25,14 @@ public abstract class EncodedAudio
 	}
 	
 	public EncodedAudio(EncodedAudio audioData, AudioFormat format) 
+		throws InvalidAudioFormatException, UnsupportedFormatException
 	{
 		buildFromAudio(audioData, format);
 	}
 	
 	public EncodedAudio(DecodedAudio rawAudioData,
-	                 AudioFormat format)
+	                    AudioFormat format) 
+	    throws InvalidAudioFormatException, UnsupportedFormatException
 	{
 		buildFromAudio(rawAudioData, format);
 	}
@@ -41,10 +43,15 @@ public abstract class EncodedAudio
 	public abstract DataType getDataType();
 	
 	public abstract void buildFromAudio(EncodedAudio audioData,
-	                                    AudioFormat format);
+	                                    AudioFormat format)
+		throws InvalidAudioFormatException, UnsupportedFormatException;
 	
 	public abstract void buildFromAudio(DecodedAudio audioData,
-	                                    AudioFormat format);
+	                                    AudioFormat format)
+		throws InvalidAudioFormatException, UnsupportedFormatException;
+	
+	public abstract AudioFormat getFormat() 
+        throws InvalidAudioFormatException, UnsupportedFormatException;
 										
 	protected EncodedSource getSource()
 	{

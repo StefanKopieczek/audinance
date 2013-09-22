@@ -4,10 +4,10 @@ import java.util.HashMap;
 
 public enum WavEncodingType 
 {	
-	PCM(1),
-	MULAW(257),
-	ALAW(258),
-	ADPCM(259);
+	PCM(1, "Linear PCM"),
+	MULAW(257, "µ-law"),
+	ALAW(258, "a-law"),
+	ADPCM(259, "Adaptive Differential PCM");
 
 	private static final HashMap<Integer, WavEncodingType> mFormatCodes = 
             new HashMap<Integer, WavEncodingType>();	
@@ -34,9 +34,17 @@ public enum WavEncodingType
 	}
 	
 	public final int mCode;
+	private final String mDisplayName;
 	
-	private WavEncodingType(int code)
+	private WavEncodingType(int code, String displayName)
 	{
 		mCode = code;
-	}	
+		mDisplayName = displayName;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return mDisplayName;
+	}
 }

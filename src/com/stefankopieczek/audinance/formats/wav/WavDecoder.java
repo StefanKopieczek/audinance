@@ -60,9 +60,21 @@ public class WavDecoder
 		}
 		
 		AudioFormat format = new AudioFormat(fmtChunk.getSampleRate(),
-				                             fmtChunk.getNumChannels());
+				                             (int)fmtChunk.getNumChannels());
 		
 		return new DecodedAudio(channels, format);		
+	}
+	
+	public WavFormat getFormat()
+		throws InvalidWavDataException, UnsupportedWavEncodingException
+	{
+		RiffChunk riffChunk = new RiffChunk(0);
+		final FmtSubchunk fmtChunk = new FmtSubchunk(RiffChunk.DATA_IDX_OFFSET, 
+				                                     riffChunk);
+		return new WavFormat(fmtChunk.getSampleRate(),
+				             (int)fmtChunk.getNumChannels(),
+				             fmtChunk.getEncodingType(),
+				             fmtChunk.getBitsPerSample());
 	}
 	
 	private abstract class Chunk
@@ -107,7 +119,7 @@ public class WavDecoder
 			return mLength.intValue();
 		}
 		
-		protected int getShort(int idx) throws InvalidWavDataException
+		protected short getShort(int idx) throws InvalidWavDataException
 		{
 			byte[] bytes = getRange(getStartIndex() + idx, 2);
 			return AudinanceUtils.shortFromBytes(bytes, getEndianism());
@@ -186,12 +198,12 @@ public class WavDecoder
 		private static final int EXTRA_PARAMS_IDX_OFFSET = 26;
 		
 		private RiffChunk mParent;
-		private Integer mFormatCode;
-		private Integer mNumChannels;
+		private Short mFormatCode;
+		private Short mNumChannels;
 		private Integer mSampleRate;
 		private Integer mByteRate;
-		private Integer mBlockAlign;
-		private Integer mBitsPerSample;
+		private Short mBlockAlign;
+		private Short mBitsPerSample;
 		private Integer mExtraParamsSize;
 
 		public FmtSubchunk(int startIdx, RiffChunk parent)
@@ -211,30 +223,30 @@ public class WavDecoder
 			return CHUNK_SIZE_IDX_OFFSET;
 		}				
 		
-		public int getFormatCode() throws InvalidWavDataException
+		public short getFormatCode() throws InvalidWavDataException
 		{
 			if (mFormatCode == null)
 			{
 				mFormatCode = getShort(FORMAT_CODE_IDX_OFFSET);
 			}
 			
-			return mFormatCode.intValue();
+			return mFormatCode.shortValue();
 		}
 		
-		public WavEncodingType getFormat()
+		public WavEncodingType getEncodingType()
 			throws UnsupportedWavEncodingException, InvalidWavDataException
 		{
 			return WavEncodingType.getEncodingTypeFromCode(getFormatCode());
 		}
 		
-		public int getNumChannels() throws InvalidWavDataException
+		public short getNumChannels() throws InvalidWavDataException
 		{
 			if (mNumChannels == null)
 			{
 				mNumChannels = getShort(NUM_CHANNELS_IDX_OFFSET);
 			}
 			
-			return mNumChannels.intValue();
+			return mNumChannels.shortValue();
 		}
 				
 		public int getSampleRate() throws InvalidWavDataException
@@ -257,24 +269,24 @@ public class WavDecoder
 			return mByteRate.intValue();
 		}
 		
-		public int getBlockAlign() throws InvalidWavDataException
+		public short getBlockAlign() throws InvalidWavDataException
 		{
 			if (mBlockAlign == null)
 			{
 				mBlockAlign = getShort(BLOCK_ALIGN_IDX_OFFSET);
 			}
 			
-			return mBlockAlign.intValue();
+			return mBlockAlign.shortValue();
 		}
 		
-		public int getBitsPerSample() throws InvalidWavDataException
+		public short getBitsPerSample() throws InvalidWavDataException
 		{
 			if (mBitsPerSample == null)
 			{
 				mBitsPerSample = getShort(BITS_PER_SAMPLE_IDX_OFFSET);
 			}
 			
-			return mBitsPerSample.intValue();
+			return mBitsPerSample.shortValue();
 		}
 	}
 	
@@ -310,8 +322,8 @@ public class WavDecoder
 				throws InvalidWavDataException, NoMoreDataException
 		{
 			double result;						
-			int limit = (int)(byteIdx + Math.ceil(mBitsPerSample / 4.0)); 
-			if (limit >= getLength())
+			int endOfSample = (int)(byteIdx + Math.ceil(mBitsPerSample / 4.0)); 
+			if (endOfSample >= getLength())
 			{
 				throw new NoMoreDataException();
 			}
