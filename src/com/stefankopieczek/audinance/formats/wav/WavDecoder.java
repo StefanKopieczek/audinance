@@ -324,12 +324,12 @@ public class WavDecoder
 			else if (mBitsPerSample == 16)
 			{
 				byte[] bytes = getRange(getStartIndex() + byteIdx, 4);
-				result = AudinanceUtils.shortFromBytes(bytes, getEndianism());
+				result = AudinanceUtils.intFromBytes(bytes, getEndianism());
 			}
 			else if (mBitsPerSample == 32)
 			{
 				byte[] bytes = getRange(getStartIndex() + byteIdx, 8);
-				result = AudinanceUtils.shortFromBytes(bytes, getEndianism());
+				result = AudinanceUtils.floatFromBytes(bytes, getEndianism());
 			}
 			else
 			{
