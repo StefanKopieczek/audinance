@@ -77,5 +77,19 @@ public class AudinanceUtils
 	{
 		return new String(bytes, 0, bytes.length, "ASCII");
 	}
+	
+	public static byte[] bytesFromShort(short value, ByteOrder endianism)
+	{
+		return ByteBuffer.allocate(2).order(endianism).putShort(value).array();
+	}
 
+	public static byte[] bytesFromInt(int value, ByteOrder endianism)
+	{
+		return ByteBuffer.allocate(4).order(endianism).putInt(value).array();
+	}
+	
+	public static byte[] bytesFromFloat(float value, ByteOrder endianism)
+	{
+		return ByteBuffer.allocate(4).order(endianism).putFloat(value).array();
+	}	
 }
