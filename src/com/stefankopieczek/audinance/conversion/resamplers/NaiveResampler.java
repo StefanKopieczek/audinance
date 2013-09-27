@@ -46,7 +46,8 @@ public class NaiveResampler implements Resampler
 			mScaleFactor = originalSampleRate * 1.0f / targetSampleRate;			
 		}
 		
-		public double getSample(int idx) throws NoMoreDataException
+		public double getSample(int idx) 
+				throws NoMoreDataException, InvalidAudioFormatException
 		{
 			float floatIdx = idx * mScaleFactor;
 			

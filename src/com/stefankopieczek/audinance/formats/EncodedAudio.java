@@ -8,7 +8,7 @@ import java.io.*;
  */
 public abstract class EncodedAudio
 {
-	private EncodedSource mData;
+	protected EncodedSource mData;
 	
 	public EncodedAudio(File file) 
 		throws FileNotFoundException, 
@@ -22,29 +22,41 @@ public abstract class EncodedAudio
 		throws IOException, InvalidAudioFormatException
 	{
 		mData = new SimpleEncodedSource(is);
-		parseData();
 	}
 	
 	public EncodedAudio(EncodedAudio audioData, AudioFormat format) 
+		throws InvalidAudioFormatException, UnsupportedFormatException
 	{
 		buildFromAudio(audioData, format);
 	}
 	
 	public EncodedAudio(DecodedAudio rawAudioData,
-	                 AudioFormat format)
+	                    AudioFormat format) 
+	    throws InvalidAudioFormatException, UnsupportedFormatException
 	{
 		buildFromAudio(rawAudioData, format);
 	}
 	
-	public abstract DecodedAudio getDecodedAudio();
+	public abstract DecodedAudio getDecodedAudio() 
+			throws InvalidAudioFormatException, UnsupportedFormatException;
 	
 	public abstract DataType getDataType();
 	
 	public abstract void buildFromAudio(EncodedAudio audioData,
-	                                    AudioFormat format);
+	                                    AudioFormat format)
+		throws InvalidAudioFormatException, UnsupportedFormatException;
 	
 	public abstract void buildFromAudio(DecodedAudio audioData,
-	                                    AudioFormat format);
+	                                    AudioFormat format)
+		throws InvalidAudioFormatException, UnsupportedFormatException;
+	
+	public abstract AudioFormat getFormat() 
+        throws InvalidAudioFormatException, UnsupportedFormatException;
+										
+	protected EncodedSource getSource()
+	{
+		return mData;
+	}
 	
 	protected class AudioDataStream extends InputStream
 	{
@@ -67,19 +79,5 @@ public abstract class EncodedAudio
 			
 			return result;
 		}
-	}
-	
-	private void parseData() throws InvalidAudioFormatException
-	{
-		if (!isDataValid())
-		{
-			throw new InvalidAudioFormatException(getDataType());
-		}
-	}
-	
-	protected boolean isDataValid()
-	{
-		// Override this!
-		throw new UnsupportedOperationException();
 	}
 }

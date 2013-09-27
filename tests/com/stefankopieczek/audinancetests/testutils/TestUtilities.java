@@ -10,7 +10,7 @@ public class TestUtilities
 	public static void assertDecodedAudioEqual(String message,
 	                                           DecodedAudio expected,
 	                                           DecodedAudio actual)
-	{
+	{		
 		assertFormatsEqual(message + " audio formats are not equal",
 		                   expected.getFormat(),
 		                   actual.getFormat());
@@ -22,16 +22,30 @@ public class TestUtilities
 						        new double[expectedChannels.length][];
 		for (int ii = 0; ii < expectedChannels.length; ii++)
 		{
-			expectedData[ii] = getRawDataFromDecodedSource(
-			                                    expectedChannels[ii]);
+			try
+			{
+				expectedData[ii] = getRawDataFromDecodedSource(
+			                                    	expectedChannels[ii]);
+			}
+			catch (InvalidAudioFormatException e)
+			{
+				Assert.fail("Expected data invalid in channel  " + ii);
+			}
 		}
 		
 		double[][] actualData = 
 		                          new double[actualChannels.length][];
 		for (int ii = 0; ii < actualChannels.length; ii++)
 		{
-			actualData[ii] = getRawDataFromDecodedSource(
-			                 	                  actualChannels[ii]);
+			try
+			{
+				actualData[ii] = getRawDataFromDecodedSource(
+			                 	                  	actualChannels[ii]);
+			}
+			catch (InvalidAudioFormatException e)
+			{
+				Assert.fail("Actual data invalid in channel  " + ii);
+			}
 		}
 		
 		Assert.assertArrayEquals(message + "Audio data not equal.", 
@@ -41,6 +55,7 @@ public class TestUtilities
 	
 	private static double[] getRawDataFromDecodedSource(
 											     DecodedSource source)
+		throws InvalidAudioFormatException
 	{
 		List<Double> rawData = new ArrayList<Double>();
 		

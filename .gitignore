@@ -1,10 +1,9 @@
+# Compiled source #
+###################
 *.class
 
-# Package Files #
-*.jar !lib/*
-*.war
-*.ear
-
-# Logs and backups #
+# Logs and swaps #
+########
 *.log
 *.swp
+*.bak

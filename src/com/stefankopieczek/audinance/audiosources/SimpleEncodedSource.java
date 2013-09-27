@@ -1,9 +1,11 @@
 package com.stefankopieczek.audinance.audiosources;
 import com.stefankopieczek.audinance.*;
+import com.stefankopieczek.audinance.utils.AudinanceUtils;
+
 import java.io.*;
 
 /**
- * Naïve implementation of EncodedAudioSource which simply reads all
+ * Naive implementation of EncodedAudioSource which simply reads all
  * audio data into memory.
  */
 public class SimpleEncodedSource extends EncodedSource

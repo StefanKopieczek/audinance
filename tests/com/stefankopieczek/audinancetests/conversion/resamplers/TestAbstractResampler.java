@@ -9,6 +9,7 @@ import com.stefankopieczek.audinance.conversion.resamplers.NaiveResampler;
 import com.stefankopieczek.audinance.conversion.resamplers.Resampler;
 import com.stefankopieczek.audinance.formats.AudioFormat;
 import com.stefankopieczek.audinance.formats.DecodedAudio;
+import com.stefankopieczek.audinance.formats.InvalidAudioFormatException;
 import com.stefankopieczek.audinancetests.testutils.MockDecodedSource;
 
 public abstract class TestAbstractResampler 
@@ -92,48 +93,55 @@ public abstract class TestAbstractResampler
 	
 	protected void assertDecodedSourcesEqual(DecodedSource a, DecodedSource b)
 	{
-		int idx = 0;
-		
-		while (true)
+		try
 		{
-			boolean aHasData = true;
-			double aData = 0.0f;
-			try
-			{
-				aData = a.getSample(idx);
-			}
-			catch (NoMoreDataException e)
-			{
-				aHasData = false;
-			}
-					
-			boolean bHasData = true;
-			double bData = 0.0f;
-			try
-			{
-				bData = b.getSample(idx);
-			}
-			catch (NoMoreDataException e)
-			{
-				bHasData = false;
-			}
-
-			Assert.assertEquals("The audio sources were of different lengths!",
-					            aHasData, 
-					            bHasData);			
+			int idx = 0;
 			
-			// Both sources have run out, and the data has been the same so
-			// far. Equal.
-			if (!aHasData)
-				break;
+			while (true)
+			{
+				boolean aHasData = true;
+				double aData = 0.0f;
+				try
+				{
+					aData = a.getSample(idx);
+				}
+				catch (NoMoreDataException e)
+				{
+					aHasData = false;
+				}
 						
-			// The two data differ at this index. Not equal.
-			Assert.assertEquals("The audio sources differed at position " + idx,
-					            aData, 
-					            bData, 
-					            0.00001f);
-			
-			idx += 1;
+				boolean bHasData = true;
+				double bData = 0.0f;
+				try
+				{
+					bData = b.getSample(idx);
+				}
+				catch (NoMoreDataException e)
+				{
+					bHasData = false;
+				}
+	
+				Assert.assertEquals("The audio sources were of different lengths!",
+						            aHasData, 
+						            bHasData);			
+				
+				// Both sources have run out, and the data has been the same so
+				// far. Equal.
+				if (!aHasData)
+					break;
+							
+				// The two data differ at this index. Not equal.
+				Assert.assertEquals("The audio sources differed at position " + idx,
+						            aData, 
+						            bData, 
+						            0.00001f);
+				
+				idx += 1;
+			}
+		}
+		catch (InvalidAudioFormatException e)
+		{
+			Assert.fail("Two audio sources should be equal, but were corrupt!");
 		}
 	}
 }

@@ -1,6 +1,6 @@
 package com.stefankopieczek.audinance.formats;
 
-import com.stefankopieczek.audinance.AudinanceUtils;
+import com.stefankopieczek.audinance.utils.AudinanceUtils;
 
 /**
  * Stores datatype-independent audio format information.
@@ -89,5 +89,15 @@ public class AudioFormat
 			return null;
 			
 		return mSampleRate * mChannels;
+	}
+	
+	public javax.sound.sampled.AudioFormat getJmfAudioFormat()
+	{
+		// Need to make this a bit more general. TODO.
+		return new javax.sound.sampled.AudioFormat((float)getSampleRate() / 4,
+		                                           16,
+		                                           getNumChannels().intValue(),
+		                                           true,
+		                                           false);		
 	}
 }

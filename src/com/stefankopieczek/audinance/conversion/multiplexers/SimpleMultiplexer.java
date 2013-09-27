@@ -70,7 +70,7 @@ public class SimpleMultiplexer implements Multiplexer
 			mSources = sources;
 		}
 		
-		public double getSample(int idx)
+		public double getSample(int idx) throws InvalidAudioFormatException
 		{
 			double sampleValue = 0;
 			
