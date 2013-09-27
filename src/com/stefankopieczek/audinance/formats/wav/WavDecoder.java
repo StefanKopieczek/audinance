@@ -1,6 +1,5 @@
 package com.stefankopieczek.audinance.formats.wav;
 
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteOrder;
 
@@ -322,25 +321,24 @@ public class WavDecoder
 				throws InvalidWavDataException, NoMoreDataException
 		{
 			double result;						
-			int endOfSample = (int)(byteIdx + Math.ceil(mBitsPerSample / 4.0)); 
+			int endOfSample = (int)(byteIdx + Math.ceil(mBitsPerSample / 8.0)); 
 			if (endOfSample >= getLength())
 			{
 				throw new NoMoreDataException();
 			}
 			
 			if (mBitsPerSample == 8)
-			{				
-				byte[] bytes = getRange(getStartIndex() + byteIdx, 2);							
-				result = AudinanceUtils.shortFromBytes(bytes, getEndianism());
+			{			
+				result = mWavSource.getByte(getStartIndex() + byteIdx);				
 			}
 			else if (mBitsPerSample == 16)
 			{
-				byte[] bytes = getRange(getStartIndex() + byteIdx, 4);
-				result = AudinanceUtils.intFromBytes(bytes, getEndianism());
+				byte[] bytes = getRange(getStartIndex() + byteIdx, 2);
+				result = AudinanceUtils.shortFromBytes(bytes, getEndianism());
 			}
 			else if (mBitsPerSample == 32)
 			{
-				byte[] bytes = getRange(getStartIndex() + byteIdx, 8);
+				byte[] bytes = getRange(getStartIndex() + byteIdx, 4);
 				result = AudinanceUtils.floatFromBytes(bytes, getEndianism());
 			}
 			else

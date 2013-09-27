@@ -1,7 +1,6 @@
 package com.stefankopieczek.audinance.renderer;
 
 import java.nio.ByteOrder;
-import java.util.Arrays;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
@@ -108,7 +107,5 @@ public class JavaRenderer extends Renderer
 				ptr++;		
 			}
 		}
-		
-		
 	}
 }
