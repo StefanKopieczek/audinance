@@ -1,6 +1,6 @@
 # Compiled source #
 ###################
-*.bin
+*.class
 
 # Logs and swaps #
 ########
