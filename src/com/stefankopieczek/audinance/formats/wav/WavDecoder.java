@@ -344,7 +344,9 @@ public class WavDecoder
 			else if (mBitsPerSample == 32)
 			{
 				byte[] bytes = getRange(getStartIndex() + byteIdx, 4);
-				result = AudinanceUtils.intFromBytes(bytes, getEndianism());				
+				// Currently assuming 32-bit int; float to come later.
+				// Divide by 65536 = 2^16 to normalise to same energy as 16 bit.
+				result = AudinanceUtils.intFromBytes(bytes, getEndianism()) / 65536.0;				
 			}
 			else
 			{
