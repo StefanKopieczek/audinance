@@ -85,7 +85,7 @@ public class AudioFormat
 	public javax.sound.sampled.AudioFormat getJmfAudioFormat()
 	{
 		// Need to make this a bit more general. TODO.
-		return new javax.sound.sampled.AudioFormat((float)getSampleRate() / 4,
+		return new javax.sound.sampled.AudioFormat((float)getSampleRate(),
 		                                           16,
 		                                           getNumChannels().intValue(),
 		                                           true,

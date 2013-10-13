@@ -50,10 +50,12 @@ public class WavDecoder
 				public double getSample(int idx) 
 					throws InvalidWavDataException, NoMoreDataException
 				{
-					int frameStartIdx = fmtChunk.getBitsPerSample() * idx;
+					int frameStartIdx = fmtChunk.getBitsPerSample() * 
+							            idx * 
+							            fmtChunk.getNumChannels();
 					int offsetToSample = finalChannel * 
 							                          fmtChunk.getBitsPerSample();
-					return dataChunk.getSample(frameStartIdx + offsetToSample);
+					return dataChunk.getSample((frameStartIdx + offsetToSample) / 8);
 				}
 			};
 		}
