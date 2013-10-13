@@ -331,7 +331,10 @@ public class WavDecoder
 			
 			if (mBitsPerSample == 8)
 			{			
-				result = mWavSource.getByte(getStartIndex() + byteIdx);				
+				int tempResult = mWavSource.getByte(getStartIndex() + byteIdx);				
+				tempResult &= 0xFF; // Don't treat the byte as signed.
+				result = tempResult * 2; // Normalise energy of sample to match 16bitPCM.
+				
 			}
 			else if (mBitsPerSample == 16)
 			{
@@ -341,7 +344,7 @@ public class WavDecoder
 			else if (mBitsPerSample == 32)
 			{
 				byte[] bytes = getRange(getStartIndex() + byteIdx, 4);
-				result = AudinanceUtils.floatFromBytes(bytes, getEndianism());
+				result = AudinanceUtils.intFromBytes(bytes, getEndianism());				
 			}
 			else
 			{

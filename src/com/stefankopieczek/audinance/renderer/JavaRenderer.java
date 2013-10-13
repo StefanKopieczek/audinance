@@ -77,7 +77,7 @@ public class JavaRenderer extends Renderer
 		private void writeAudio() throws InvalidAudioFormatException
 		{
 			boolean hasData = true;
-			int ptr = 0;
+			int ptr = 0;			
 			int frameSize = mAudio.getFormat().getNumChannels() * 2;
 			while (hasData)
 			{
@@ -88,8 +88,8 @@ public class JavaRenderer extends Renderer
 					DecodedSource channel = mAudio.getChannels()[idx];	
 					byte[] sampleBytes;
 					try
-					{
-						short sample = (short)(channel.getSample(ptr));
+					{						
+						short sample = (short)channel.getSample(ptr);
 						sampleBytes = AudinanceUtils.bytesFromShort(
 								              sample, ByteOrder.LITTLE_ENDIAN);
 						hasData = true;
