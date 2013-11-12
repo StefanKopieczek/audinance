@@ -18,9 +18,16 @@ public class SimpleEncodedSource extends EncodedSource
 		mData = AudinanceUtils.getByteArrayFromStream(is);
 	}
 	
-	public byte getByte(int index)
-	{
-		return mData[index];
-	}
-	
+	public byte getByte(int index) throws NoMoreDataException
+	{		
+		if (index < mData.length)
+		{	
+			return mData[index];
+		}
+		else
+		{
+			System.out.println("Done!!!");
+			throw new NoMoreDataException();
+		}
+	}	
 }

@@ -161,14 +161,13 @@ public class WavDecoder
 						                          	  e);
 				}
 				
-				ByteOrder endianism = null;
 				if (chunkId.equals("RIFF"))
 				{
-					endianism = ByteOrder.LITTLE_ENDIAN;
+					mEndianism = ByteOrder.LITTLE_ENDIAN;
 				}
 				else if (chunkId.equals("RIFX"))
 				{
-					endianism = ByteOrder.BIG_ENDIAN;
+					mEndianism = ByteOrder.BIG_ENDIAN;
 				}
 				else
 				{

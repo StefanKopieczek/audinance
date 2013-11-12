@@ -10,6 +10,12 @@ public abstract class EncodedAudio
 {
 	protected EncodedSource mData;
 	
+	public EncodedAudio()
+	{
+		// Do-nothing constructor to allow subclasses to set themselves up if
+		// desired.
+	}
+	
 	public EncodedAudio(File file) 
 		throws FileNotFoundException, 
 		       IOException, 
@@ -22,7 +28,7 @@ public abstract class EncodedAudio
 		throws IOException, InvalidAudioFormatException
 	{
 		mData = new SimpleEncodedSource(is);
-	}
+	}	
 	
 	public EncodedAudio(EncodedAudio audioData, AudioFormat format) 
 		throws InvalidAudioFormatException, UnsupportedFormatException
@@ -52,32 +58,29 @@ public abstract class EncodedAudio
 	
 	public abstract AudioFormat getFormat() 
         throws InvalidAudioFormatException, UnsupportedFormatException;
+	
+	public void writeToFile(File file) throws IOException	
+	{
+		FileOutputStream fos = new FileOutputStream(file);
+		InputStream is = mData.getInputStream();
+		byte[] buffer = new byte[65536];
+		
+		int len;
+		try
+		{
+			while ((len = is.read(buffer)) != -1)
+			{
+				fos.write(buffer, 0, len);
+			}
+		}			
+		finally
+		{
+			fos.close();
+		}
+	}
 										
 	protected EncodedSource getSource()
 	{
 		return mData;
-	}
-	
-	protected class AudioDataStream extends InputStream
-	{
-		private int position;
-		
-		public AudioDataStream() {}
-		
-		@Override
-		public int read()
-		{
-			int result;
-			try
-			{
-				result = mData.getByte(position++);
-			}
-			catch (ArrayIndexOutOfBoundsException e)
-			{
-				result = -1;
-			}
-			
-			return result;
-		}
 	}
 }

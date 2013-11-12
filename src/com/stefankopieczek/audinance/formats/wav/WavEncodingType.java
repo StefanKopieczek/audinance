@@ -4,13 +4,13 @@ import java.util.HashMap;
 
 public enum WavEncodingType 
 {	
-	PCM(1, "Linear PCM"),
-	MULAW(257, "µ-law"),
-	ALAW(258, "a-law"),
-	ADPCM(259, "Adaptive Differential PCM");
+	PCM  ((short)1,   "Linear PCM"),
+	MULAW((short)257, "µ-law"),
+	ALAW ((short)258, "a-law"),
+	ADPCM((short)259, "Adaptive Differential PCM");
 
-	private static final HashMap<Integer, WavEncodingType> mFormatCodes = 
-            new HashMap<Integer, WavEncodingType>();	
+	private static final HashMap<Short, WavEncodingType> mFormatCodes = 
+            new HashMap<Short, WavEncodingType>();	
 					
 	static
 	{
@@ -20,7 +20,7 @@ public enum WavEncodingType
 		}
 	}
 	
-	public static WavEncodingType getEncodingTypeFromCode(int code)
+	public static WavEncodingType getEncodingTypeFromCode(short code)
 		throws UnsupportedWavEncodingException
 	{
 		WavEncodingType encodingType = mFormatCodes.get(code);
@@ -33,10 +33,10 @@ public enum WavEncodingType
 		return encodingType;
 	}
 	
-	public final int mCode;
+	public final short mCode;
 	private final String mDisplayName;
 	
-	private WavEncodingType(int code, String displayName)
+	private WavEncodingType(short code, String displayName)
 	{
 		mCode = code;
 		mDisplayName = displayName;

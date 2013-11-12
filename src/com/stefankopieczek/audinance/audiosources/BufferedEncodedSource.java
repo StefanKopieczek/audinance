@@ -8,9 +8,9 @@ public class BufferedEncodedSource extends EncodedSource
 		// todo
 	}
 	
-	public byte getByte(int index)
+	public byte getByte(int index) throws NoMoreDataException
 	{
 		// todo
-		throw new ArrayIndexOutOfBoundsException();
+		throw new NoMoreDataException();
 	}
 }
