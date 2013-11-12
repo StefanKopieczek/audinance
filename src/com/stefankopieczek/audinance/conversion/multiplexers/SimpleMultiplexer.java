@@ -5,6 +5,16 @@ import com.stefankopieczek.audinance.audiosources.DecodedSource;
 import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
 import com.stefankopieczek.audinance.formats.*;
 
+/**
+ * Basic implementation of multiplexer which:
+ * <ul>
+ * <li>Creates new channels by combining all existing streams.</li>
+ * <li>When removing channels, flattens all surplus channels into a single 
+ *     channel.</li>
+ * </ul>
+ * @author Stefan Kopieczek
+ *
+ */
 public class SimpleMultiplexer implements Multiplexer
 {
 	/**
