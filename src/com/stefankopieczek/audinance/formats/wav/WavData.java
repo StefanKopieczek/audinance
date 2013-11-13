@@ -82,7 +82,7 @@ public class WavData extends EncodedAudio
 	
 	public void buildFromAudio(DecodedAudio rawAudioData,
 	                           WavFormat format)
-		throws InvalidAudioFormatException, UnsupportedFormatException
+		throws InvalidAudioFormatException
 	{
 		AudioFormat encodedFormat = rawAudioData.getFormat();
 		

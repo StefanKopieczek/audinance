@@ -1,12 +1,9 @@
 package com.stefankopieczek.audinance.formats;
-import com.stefankopieczek.audinance.*;
 import com.stefankopieczek.audinance.audiosources.*;
 import com.stefankopieczek.audinance.conversion.multiplexers.*;
 import com.stefankopieczek.audinance.conversion.resamplers.NaiveResampler;
 import com.stefankopieczek.audinance.conversion.resamplers.Resampler;
-import com.stefankopieczek.audinancetests.conversion.resamplers.*;
 
-import java.io.*;
 
 /**
  * Raw audio data decoded into memory, not stored as any particular
@@ -14,7 +11,14 @@ import java.io.*;
  */
 public class DecodedAudio
 {
+	/**
+	 * The format of the audio.
+	 */
 	private final AudioFormat mFormat;
+	
+	/**
+	 * The raw audio data, each channel with its own source.
+	 */
 	private final DecodedSource[] mChannels;
 	
 	public DecodedAudio(DecodedSource[] channels, AudioFormat format)
@@ -124,6 +128,14 @@ public class DecodedAudio
 		return result;
 	}	
 	
+	/**
+	 * Gets an array of arrays, each containing the raw sample data of a single
+	 * channel.
+	 * 
+	 * @return The array of sample data arrays.
+	 * @throws InvalidAudioFormatException If the audio's format data is 
+	 * invalid.
+	 */
 	public double[][] getRawData() throws InvalidAudioFormatException
 	{
 		double[][] result = new double[mChannels.length][];
