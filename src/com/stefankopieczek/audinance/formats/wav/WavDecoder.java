@@ -50,10 +50,12 @@ public class WavDecoder
 				public double getSample(int idx) 
 					throws InvalidWavDataException, NoMoreDataException
 				{
-					int frameStartIdx = fmtChunk.getBitsPerSample() * idx;
+					int frameStartIdx = fmtChunk.getBitsPerSample() * 
+							            idx * 
+							            fmtChunk.getNumChannels();
 					int offsetToSample = finalChannel * 
 							                          fmtChunk.getBitsPerSample();
-					return dataChunk.getSample(frameStartIdx + offsetToSample);
+					return dataChunk.getSample((frameStartIdx + offsetToSample) / 8);
 				}
 			};
 		}
@@ -159,14 +161,13 @@ public class WavDecoder
 						                          	  e);
 				}
 				
-				ByteOrder endianism = null;
 				if (chunkId.equals("RIFF"))
 				{
-					endianism = ByteOrder.LITTLE_ENDIAN;
+					mEndianism = ByteOrder.LITTLE_ENDIAN;
 				}
 				else if (chunkId.equals("RIFX"))
 				{
-					endianism = ByteOrder.BIG_ENDIAN;
+					mEndianism = ByteOrder.BIG_ENDIAN;
 				}
 				else
 				{
@@ -329,7 +330,10 @@ public class WavDecoder
 			
 			if (mBitsPerSample == 8)
 			{			
-				result = mWavSource.getByte(getStartIndex() + byteIdx);				
+				int tempResult = mWavSource.getByte(getStartIndex() + byteIdx);				
+				tempResult &= 0xFF; // Don't treat the byte as signed.
+				result = tempResult * 2; // Normalise energy of sample to match 16bitPCM.
+				
 			}
 			else if (mBitsPerSample == 16)
 			{
@@ -339,7 +343,9 @@ public class WavDecoder
 			else if (mBitsPerSample == 32)
 			{
 				byte[] bytes = getRange(getStartIndex() + byteIdx, 4);
-				result = AudinanceUtils.floatFromBytes(bytes, getEndianism());
+				// Currently assuming 32-bit int; float to come later.
+				// Divide by 65536 = 2^16 to normalise to same energy as 16 bit.
+				result = AudinanceUtils.intFromBytes(bytes, getEndianism()) / 65536.0;				
 			}
 			else
 			{

@@ -5,6 +5,16 @@ import com.stefankopieczek.audinance.audiosources.DecodedSource;
 import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
 import com.stefankopieczek.audinance.formats.*;
 
+/**
+ * Basic implementation of multiplexer which:
+ * <ul>
+ * <li>Creates new channels by combining all existing streams.</li>
+ * <li>When removing channels, flattens all surplus channels into a single 
+ *     channel.</li>
+ * </ul>
+ * @author Stefan Kopieczek
+ *
+ */
 public class SimpleMultiplexer implements Multiplexer
 {
 	/**
@@ -73,6 +83,7 @@ public class SimpleMultiplexer implements Multiplexer
 		public double getSample(int idx) throws InvalidAudioFormatException
 		{
 			double sampleValue = 0;
+			boolean hasData = false;
 			
 			// Mixing audio is as simple as adding the values of each channel
 			// in the frame together.
@@ -83,6 +94,7 @@ public class SimpleMultiplexer implements Multiplexer
 				{
 					// TODO: Test for numeric overflow.
 					sampleValue += source.getSample(idx);
+					hasData = true;
 				}
 				catch (NoMoreDataException e)
 				{
@@ -91,7 +103,14 @@ public class SimpleMultiplexer implements Multiplexer
 				}							
 			}
 			
-			return sampleValue;
+			if (hasData)
+			{
+				return sampleValue;
+			}
+			else
+			{
+				throw new NoMoreDataException();
+			}
 		}
 	}
 	

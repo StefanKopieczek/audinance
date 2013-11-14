@@ -4,7 +4,7 @@ package com.stefankopieczek.audinance.formats;
  * Exception indicating that audio provided was in either an invalid
  * or an unexpected format.
  */
-public class InvalidAudioFormatException extends Exception
+public class InvalidAudioFormatException extends RuntimeException
 {
 	public InvalidAudioFormatException()
 	{
@@ -16,18 +16,18 @@ public class InvalidAudioFormatException extends Exception
 		super(message);
 	}
 	
-	public InvalidAudioFormatException(Throwable t)
+	public InvalidAudioFormatException(AudioFormat f)
 	{
+		super("Invalid audio format: " + f);
+	}
+	
+	public InvalidAudioFormatException(Throwable t)
+	{		
 		super(t);
 	}
 	
 	public InvalidAudioFormatException(String message, Throwable t)
 	{
 		super(message, t);
-	}
-	
-	public InvalidAudioFormatException(DataType expected)
-	{
-		super("Expected " + expected.name());
-	}
+	}		
 }

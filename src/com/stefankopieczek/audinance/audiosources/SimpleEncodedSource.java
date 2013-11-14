@@ -10,17 +10,28 @@ import java.io.*;
  */
 public class SimpleEncodedSource extends EncodedSource
 {
+	/**
+	 * The array containing the data read from the underlying source.
+	 */
 	private byte[] mData;
 	
 	public SimpleEncodedSource(InputStream is)
 		throws IOException
 	{
+		// Immediately pull all data from the stream into memory.
 		mData = AudinanceUtils.getByteArrayFromStream(is);
 	}
 	
-	public byte getByte(int index)
-	{
-		return mData[index];
-	}
-	
+	@Override
+	public byte getByte(int index) throws NoMoreDataException
+	{		
+		if (index < mData.length)
+		{	
+			return mData[index];
+		}
+		else
+		{			
+			throw new NoMoreDataException();
+		}
+	}	
 }

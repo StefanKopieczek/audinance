@@ -2,13 +2,23 @@ package com.stefankopieczek.audinance.conversion.resamplers;
 import com.stefankopieczek.audinance.formats.*;
 import com.stefankopieczek.audinance.audiosources.*;
 
+/**
+ * A <tt>Resampler</tt> that approximates points between known samples by
+ * taking an (unweighted) average of its immediate neighbours.
+ * This provides fast, "good enough" resampling, but is not as accurate as
+ * polynomial interpolation.
+ * It would be dramatically improved at little expense by using a weighted
+ * average, but I'm tired and I need to write a ton more comments first.
+ * 
+ * @author Stefan Kopieczek
+ *
+ */
 public class NaiveResampler implements Resampler
 {
 	public DecodedAudio resample(DecodedAudio original, 
 	                             Integer targetSampleRate)
 	{
-		DecodedSource[] originalChannels = 
-		                                       original.getChannels();
+		DecodedSource[] originalChannels = original.getChannels();
 		AudioFormat originalFormat = original.getFormat();
 		Integer originalSampleRate = originalFormat.getSampleRate();
 
@@ -18,7 +28,9 @@ public class NaiveResampler implements Resampler
 		
 		DecodedSource[] newChannels = 
 	                	   new DecodedSource[originalChannels.length];
-		
+	
+		// Build a new DecodedAudio object composed of resampled sources at the
+		// new frequency.
 		for (int ii = 0; ii < newChannels.length; ii++)
 		{
 			newChannels[ii] = new ResamplingSource(originalChannels[ii],
@@ -32,10 +44,35 @@ public class NaiveResampler implements Resampler
 		return result;
 	}
 	
-	class ResamplingSource extends DecodedSource
+	/**
+	 * A <tt>DecodedSource</tt> that wraps another <tt>DecodedSource</tt> in
+	 * order to provide samples at the desired rate; that is, it is a 
+	 * resampling source for a single channel of audio.
+	 * It approximates samples that do not line up with the original data by
+	 * taking an unweighted average of the two immediate neighbour points.
+	 * 
+	 * @author Stefan Kopieczek
+	 *
+	 */
+	private class ResamplingSource extends DecodedSource
 	{
+		/**
+		 * The original audio data.
+		 */
 		private final DecodedSource mOriginal;
+		
+		/**
+		 * The factor by which the sample rate is to be divided to get from the
+		 * original to the target.
+		 */
 		private final float mScaleFactor;
+		
+		/**
+		 * The tolerance we use for assessing equality of doubles.
+		 * This is used to judge if two instants in time are equal, so that we
+		 * can re-use points in the original data that are close to the desired
+		 * sample points.
+		 */
 		private static final float IDX_TOLERANCE = 0.0001f;
 		
 		public ResamplingSource(DecodedSource original,
@@ -46,6 +83,7 @@ public class NaiveResampler implements Resampler
 			mScaleFactor = originalSampleRate * 1.0f / targetSampleRate;			
 		}
 		
+		@Override
 		public double getSample(int idx) 
 				throws NoMoreDataException, InvalidAudioFormatException
 		{
@@ -60,7 +98,6 @@ public class NaiveResampler implements Resampler
 			double successor = mOriginal.getSample((int)Math.ceil(floatIdx));
 			
 			return (precursor+successor)/2;
-
 		}
 	}
 }

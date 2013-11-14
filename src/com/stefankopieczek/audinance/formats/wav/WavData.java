@@ -1,13 +1,10 @@
 package com.stefankopieczek.audinance.formats.wav;
+import com.stefankopieczek.audinance.audiosources.EncodedSource;
 import com.stefankopieczek.audinance.formats.*;
 import java.io.*;
 
 public class WavData extends EncodedAudio
-{	
-	private static final WavEncodingType DEFAULT_ENCODING = 
-			                                               WavEncodingType.PCM;
-	private static final short DEFAULT_BIT_DEPTH = 16;
-	
+{			
 	private WavFormat mFormat;
 	
 	public WavData(File file)
@@ -24,12 +21,17 @@ public class WavData extends EncodedAudio
 		super(is);
 	}
 	
-	public WavData(EncodedAudio encodedAudio, WavFormat format) 
-		throws IOException, 
-		       InvalidAudioFormatException, 
+	public WavData(EncodedAudio encodedAudio, AudioFormat format) 
+		throws InvalidAudioFormatException, 
 		       UnsupportedFormatException
 	{
 		super(encodedAudio, format);		
+	}
+	
+	public WavData(EncodedSource wavSource, WavFormat format)
+	{		
+		mData = wavSource;
+		mFormat = format;
 	}
 
 	public DecodedAudio getDecodedAudio() 
@@ -59,10 +61,30 @@ public class WavData extends EncodedAudio
 	}
 	
 	public void buildFromAudio(EncodedAudio encodedAudio,
-	                           WavFormat format) 
-	    throws InvalidAudioFormatException, UnsupportedFormatException
-	{		
-		AudioFormat encodedFormat = encodedAudio.getFormat();
+			                   AudioFormat format) 
+        throws InvalidAudioFormatException, UnsupportedFormatException
+	{
+		if (format instanceof WavFormat)
+		{
+			// Use the WAV format instructions if provided.
+			// We can't do this with inheritance as I'm rubbish. TODO.
+			buildFromAudio(encodedAudio.getDecodedAudio(), (WavFormat)format);
+		}
+		else
+		{
+			buildFromAudio(encodedAudio,
+					       new WavFormat(format.getSampleRate(),
+					                     format.getNumChannels(),
+					                     WavEncoder.DEFAULT_ENCODING,
+					                     WavEncoder.DEFAULT_BIT_DEPTH));
+		}
+	}
+	
+	public void buildFromAudio(DecodedAudio rawAudioData,
+	                           WavFormat format)
+		throws InvalidAudioFormatException
+	{
+		AudioFormat encodedFormat = rawAudioData.getFormat();
 		
 		Integer sampleRate = format.getSampleRate();
 		if (sampleRate == null)
@@ -74,11 +96,11 @@ public class WavData extends EncodedAudio
 		
 		WavEncodingType encoding = format.getWavEncoding();
 		if (encoding == null)
-			encoding = DEFAULT_ENCODING;
+			encoding = WavEncoder.DEFAULT_ENCODING;
 		
 		Short bitsPerSample = format.getBitsPerSample();
 		if (bitsPerSample == null)
-			bitsPerSample = DEFAULT_BIT_DEPTH;
+			bitsPerSample = WavEncoder.DEFAULT_BIT_DEPTH;
 		
 		format = new WavFormat(sampleRate, numChannels, encoding, 
 				                                                bitsPerSample);
@@ -90,23 +112,20 @@ public class WavData extends EncodedAudio
 					                              "missing complete format " +
 		                                          "descriptor.");			
 		}
-	}
-	
-	public void buildFromAudio(EncodedAudio encodedAudio,
-			                   AudioFormat format) 
-        throws InvalidAudioFormatException, UnsupportedFormatException
-	{
-		buildFromAudio(encodedAudio,
-				       new WavFormat(format.getSampleRate(),
-				                     format.getNumChannels(),
-				                     DEFAULT_ENCODING,
-				                     DEFAULT_BIT_DEPTH));
+		
+		WavEncoder encoder = new WavEncoder(rawAudioData, format);
+		mData = encoder.encodeToSource();
 	}
 	
 	@Override
 	public void buildFromAudio(DecodedAudio rawAudioData,
-	                           AudioFormat audioFormat)
+			                   AudioFormat format)
+	    throws InvalidAudioFormatException, UnsupportedFormatException
 	{
-		// todo
+		buildFromAudio(rawAudioData,
+					new WavFormat(format.getSampleRate(),
+			                    format.getNumChannels(),
+			                    WavEncoder.DEFAULT_ENCODING,
+			                    WavEncoder.DEFAULT_BIT_DEPTH));
 	}
 }

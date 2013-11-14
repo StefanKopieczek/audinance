@@ -5,8 +5,28 @@ import java.util.List;
 
 import com.stefankopieczek.audinance.formats.InvalidAudioFormatException;
 
+/**
+ * A generic implementation of a decoded audio source.
+ * Unlike <tt>EncodedSource</tt>, the <tt>DecodedSource</tt> corresponds to
+ * a single channel of decoded audio, which contains only the audio data,
+ * without any format information.
+ * 
+ * @author Stefan Kopieczek
+ */
 public abstract class DecodedSource
 {
+	/**
+	 * Get a single sample of audio, at the given index.
+	 * Decoded data is stored at double precision, but some of this accuracy
+	 * may be lost when playing or storing to a file.
+	 * @param idx The number of the sample desired.
+	 * @return The sample at the given index.
+	 * 
+	 * @throws NoMoreDataException If the index points beyond the last sample.
+	 * @throws InvalidAudioFormatException If the decoded source is backed by a
+	 * decoder on top of an encoded stream, and the decoder fails because the
+	 * audio is corrupt.
+	 */
 	public abstract double getSample(int idx) 
 			throws NoMoreDataException, InvalidAudioFormatException;
 	
@@ -69,6 +89,13 @@ public abstract class DecodedSource
 		}
 	}
 	
+	/**
+	 * Gets the entire content of the source as an array of samples.
+	 * 
+	 * @throws InvalidAudioFormatException If the source is backed by a decoder
+	 * on top of an encoded stream, and the decoder fails because the audio is
+	 * corrupt.
+	 */
 	public double[] getRawData() throws InvalidAudioFormatException
 	{
 		List<Double> data = new ArrayList<Double>();

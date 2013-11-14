@@ -1,6 +1,6 @@
 package com.stefankopieczek.audinance.formats;
 
-public class UnsupportedFormatException extends Exception 
+public class UnsupportedFormatException extends RuntimeException 
 {
 	public UnsupportedFormatException()
 	{
