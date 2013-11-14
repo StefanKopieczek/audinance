@@ -3,6 +3,10 @@ package com.stefankopieczek.audinance.formats.wav;
 import com.stefankopieczek.audinance.formats.AudioFormat;
 import com.stefankopieczek.audinance.formats.UnsupportedFormatException;
 
+/**
+ * Indicates that the wav data is compressed using an unsupported codec; or 
+ * is in some other way valid, but unable to be decoded by this library.
+ */
 public class UnsupportedWavEncodingException extends UnsupportedFormatException 
 {
 	public UnsupportedWavEncodingException()

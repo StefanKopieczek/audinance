@@ -3,10 +3,27 @@ import com.stefankopieczek.audinance.audiosources.EncodedSource;
 import com.stefankopieczek.audinance.formats.*;
 import java.io.*;
 
+/**
+ * Represents a WAV audio clip, undecoded, backed by data drawn from some
+ * abstract source.
+ */
 public class WavData extends EncodedAudio
-{			
+{	
+ 	/**
+	 * The format of the WAV data. This includes recording information,
+	 * as the sample rate, but also datatype-specific parameters such as
+	 * the encoding type (PCM, ALAW, ...)
+	 */
 	private WavFormat mFormat;
 	
+	/**
+	 * Constructs a WAV clip backed by the given .wav file.
+	 * 
+	 * @param file The wav file to build this clip from.
+	 * @throws FileNotFoundException if the specified wav file does not exist.
+	 * @throws IOException if we fail to read from the file.
+	 * @throws InvalidAudioFormatException TODO SMK
+	 */
 	public WavData(File file)
 		throws FileNotFoundException, 
 		       IOException,
@@ -15,12 +32,31 @@ public class WavData extends EncodedAudio
 		super(file);		
 	}
 	
+	/**
+	 * Constructs a WAV clip backed by the given input stream.
+	 *
+	 * @param file The wav file to build this clip from.
+	 * @throws IOException if we fail to read from the stream.
+	 * @throws InvalidAudioFormatException TODO SMK
+	 */
 	public WavData(InputStream is) 
 		throws IOException, InvalidAudioFormatException
 	{
 		super(is);
 	}
 	
+	/**
+	 * Constructs a WAV clip from a clip of encoded audio.
+	 * This will usually involve first decoding the clip, and then
+	 * re-encoding it in WAV format.
+	 * Recoding may happen up-front or 'just in time'.
+	 *
+	 * @param encodedAudio The audio on which to base this WAV clip.
+	 * @param format The recording format in which to store the resultant
+	 *               wav data.
+	 * @throws InvalidAudioFormat If the specified audio format is underdetermined.
+	 * @throws UnsupportedFormatException SMK todo
+	 */
 	public WavData(EncodedAudio encodedAudio, AudioFormat format) 
 		throws InvalidAudioFormatException, 
 		       UnsupportedFormatException
@@ -28,20 +64,29 @@ public class WavData extends EncodedAudio
 		super(encodedAudio, format);		
 	}
 	
+	/**
+	 * Takes the given <tt>EncodedSource</tt> containing valid WAV data
+	 * and a format object describing how the data is to be interpreted,
+	 * and builds a new <tt>WavData</tt> object.
+	 *
+	 * @param wavSource A source of valid WAV data.
+	 * @param format The recording format of the data provided.
+	 */
 	public WavData(EncodedSource wavSource, WavFormat format)
 	{		
 		mData = wavSource;
 		mFormat = format;
 	}
 
+	@Override
 	public DecodedAudio getDecodedAudio() 
         throws InvalidWavDataException, UnsupportedWavEncodingException 
 	{
 		WavDecoder wavDecoder = new WavDecoder(getSource());
 		return wavDecoder.getDecodedAudio();
-		
 	}
 
+	@Override
 	public DataType getDataType()
 	{
 		return DataType.WAV;
@@ -60,6 +105,7 @@ public class WavData extends EncodedAudio
 		return mFormat;
 	}
 	
+	@Override
 	public void buildFromAudio(EncodedAudio encodedAudio,
 			                   AudioFormat format) 
         throws InvalidAudioFormatException, UnsupportedFormatException
@@ -80,11 +126,15 @@ public class WavData extends EncodedAudio
 		}
 	}
 	
-	public void buildFromAudio(DecodedAudio rawAudioData,
-	                           WavFormat format)
+	private void buildFromAudio(DecodedAudio rawAudioData,
+	                            WavFormat format)
 		throws InvalidAudioFormatException
 	{
 		AudioFormat encodedFormat = rawAudioData.getFormat();
+		
+		// For each format parameter, if the given format does not explicitly
+		// state the desired value, use the same value as the raw audio provided.
+		// For WAV-specific params, just apply the default if no value is given.
 		
 		Integer sampleRate = format.getSampleRate();
 		if (sampleRate == null)

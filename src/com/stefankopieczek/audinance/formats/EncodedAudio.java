@@ -82,22 +82,75 @@ public abstract class EncodedAudio
 		buildFromAudio(rawAudioData, format);
 	}
 	
+	/**
+	 * Decodes the <tt>EncodedAudio</tt> object into a <tt>DecodedAudio</tt>
+	 * object. Decoding may occur up front, or 'just in time' as data is
+	 * requested.
+	 * @return The raw audio represented by this encoded data.
+	 * @throws InvalidAudioFormatException if the format object associated
+	 *         with this <tt>EncodedAudio</tt> is underdetermined.
+	 * @throws UnsupportedFormatException TODO SMK
+	 */
 	public abstract DecodedAudio getDecodedAudio() 
 			throws InvalidAudioFormatException, UnsupportedFormatException;
 	
+	/**
+	 * Gets the data type of this encoded audio; e.g. WAV or MP3.
+	 */
 	public abstract DataType getDataType();
 	
-	public abstract void buildFromAudio(EncodedAudio audioData,
-	                                    AudioFormat format)
+	/**
+	 * Populates this <tt>EncodedAudio</tt> object by decoding the specified
+	 * encoded audio and recoding it in the format associated with this class.
+	 *
+	 * This method should only be called from within its class's constructor.
+	 *
+	 * @param audioData The audio to re-encode. This need not be of the same
+	 *                  datatype as the class from which this method is invoked.
+	 * @param format The recording format (sample rate, etc) with which the new
+	 *               audio should be saved.
+	 * @throws InvalidAudioFormatException TODO SMK
+	 * @throws UnsupportedFormatException TODO SMK
+	 *
+	 */
+	protected abstract void buildFromAudio(EncodedAudio audioData,
+	                                       AudioFormat format)
 		throws InvalidAudioFormatException, UnsupportedFormatException;
-	
-	public abstract void buildFromAudio(DecodedAudio audioData,
-	                                    AudioFormat format)
+		
+	/**
+	 * Populates this <tt>EncodedAudio</tt> object by encoding the given
+	 * <tt>DecodedAudio</tt> in the format associated with this class.
+	 *
+	 * This method should only be called from within its class's constructor.
+	 *
+	 * @param audioData The audio to encode.
+	 * @param format The recording format (sample rate, etc) with which the new
+	 *               audio should be saved.
+	 * @throws InvalidAudioFormatException TODO SMK
+	 *
+	 */
+	protected abstract void buildFromAudio(DecodedAudio audioData,
+	                                       AudioFormat format)
 		throws InvalidAudioFormatException;
 	
+	/**
+	 * Gets the recording format of this encoded audio.
+	 *
+	 * @return The audio format.
+	 * @throws InvalidAudioFormatException TODO SMK
+	 * @throws UnsupportedFormatException TODO SMK
+	 */
 	public abstract AudioFormat getFormat() 
         throws InvalidAudioFormatException, UnsupportedFormatException;
 	
+	/**
+	 * Stores this encoded audio in the given file, overwriting any previous
+	 * contents. This creates a valid media file of the type associated with
+	 * this subclass of <tt>EncodedAudio</tt>.
+	 *
+	 * @param file The file to write to.
+	 * @throws IOException If the file cannot be written to.
+	 */
 	public void writeToFile(File file) throws IOException	
 	{
 		FileOutputStream fos = new FileOutputStream(file);
@@ -117,7 +170,13 @@ public abstract class EncodedAudio
 			fos.close();
 		}
 	}
-										
+		
+    /**
+	 * Returns the encoded data associated with this audio, complete with
+	 * format headers and any other metadata.
+	 *
+	 * @return The data source.
+	 */
 	protected EncodedSource getSource()
 	{
 		return mData;
