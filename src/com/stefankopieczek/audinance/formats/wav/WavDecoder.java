@@ -8,8 +8,14 @@ import com.stefankopieczek.audinance.formats.AudioFormat;
 import com.stefankopieczek.audinance.formats.DecodedAudio;
 import com.stefankopieczek.audinance.utils.AudinanceUtils;
 
+/**
+ * Class that handles decoding of WAV data into raw <tt>DecodedAudio</tt>.
+ */
 public class WavDecoder
 {
+    /**
+	 * The source from which we draw the WAV data.
+	 */
 	private EncodedSource mWavSource;
 	
 	public WavDecoder(EncodedSource wavSource)
@@ -17,6 +23,15 @@ public class WavDecoder
 		mWavSource = wavSource;
 	}
 	
+	/**
+	 * Gets an array of bytes of the given length from the data sourcr, starting
+	 * at the given index.
+	 * TODO: Why isn't this a method of EncodedSource?
+	 *
+	 * @param start The byte index tonstart reading from in the encoded source.
+	 * @param length The number of bytes to read.
+	 * @return 'length' bytes from mWavSource, starting at index 'start'.
+	 */
 	protected byte[] getRange(int start, int length)
 	{				
 		byte[] result = new byte[length];
@@ -29,19 +44,37 @@ public class WavDecoder
 		return result;
 	}
 	
+	/**
+	 * Decodes the WAV data from mWavSource and returns a DecodedAudio object with
+	 * the same sample rate and number of channels.
+	 * Note that decoding occurs 'just-in-time' rather than up-front, so if the WAV
+	 * data is corrupt, this may not be detected until the relevant audio is requested.
+	 *
+	 * @throws ImvalidWavDataException if the wav data is invalid or corrupt.
+	 * @throws UnsupportedWavEncodingException if the wav data is encoded with a codec that
+	 *         we do not support.
+	 */
 	public DecodedAudio getDecodedAudio()
 		throws InvalidWavDataException, UnsupportedWavEncodingException
 	{
-		
+		// The entire wav file is comprised of a single RIFF chunk.
 		RiffChunk riffChunk = new RiffChunk(0);
+		
+		// The RIFF chunk header specifies where the RIFF payload starts.
+		// We assume the payload starts with a fmt subchunk.
+		// TODO: Add support for other chunks and more complex structure.
 		final FmtSubchunk fmtChunk = new FmtSubchunk(RiffChunk.DATA_IDX_OFFSET, 
 				                                     riffChunk);
+													 
+		// We assume the next subchunk in the RIFF payload is the wav data chunk.
 		final DataSubchunk dataChunk = new DataSubchunk(fmtChunk.getEndIndex(), 
 				                                        riffChunk,
 				                                        fmtChunk.getBitsPerSample());
 		
 		DecodedSource[] channels = new DecodedSource[fmtChunk.getNumChannels()];		
 		
+		// Build a <tt>DecodedSource</tt> object for each channel that grabs and decodes
+		// the WAV data for samples as and when they are requested.
 		for (int channel = 0; channel < fmtChunk.getNumChannels(); channel++)
 		{
 			final int finalChannel = channel;
@@ -50,11 +83,17 @@ public class WavDecoder
 				public double getSample(int idx) 
 					throws InvalidWavDataException, NoMoreDataException
 				{
+					// The index of the individual bit in the wav data that begins the frame
+					// containing the desired sample.
 					int frameStartIdx = fmtChunk.getBitsPerSample() * 
 							            idx * 
 							            fmtChunk.getNumChannels();
+										
+					// The number of bits at the start of the frame before the desired sample.
 					int offsetToSample = finalChannel * 
 							                          fmtChunk.getBitsPerSample();
+													  
+					// Get the sample by specifying the index as a byte.
 					return dataChunk.getSample((frameStartIdx + offsetToSample) / 8);
 				}
 			};
