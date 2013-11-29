@@ -45,4 +45,59 @@ public abstract class EncodedSource
 			
 		};
 	}
+	
+	public EncodedSource getTail(final int start)
+	{
+		final EncodedSource parent = this;
+		
+		return new EncodedSource()
+		{
+			@Override
+			public byte getByte(int index)
+			{
+				return parent.getByte(start + index);
+			}
+		}
+	}
+	
+	public byte getBit(int idx)
+	{
+		byte octet = idx / 8;
+		int offset = idx % 8;
+		
+		return (octet & (2 ^ offset));
+	}
+	
+	public int intFromBits(int start, int length, ByteOrder order)
+	{
+		int result = 0;
+		
+		int byteIdx = start / 8;
+		int current = getByte(startByteIdx) & 0xff;
+		int bitmask = 2 ^ (start % 8);
+		
+		int bitWeight = (order == ByteOrder.LITTLE_ENDIAN) ?
+			1 :
+			2 ^ length;
+		
+		for (int bitsRead = 0; bitsRead < length; bitsRead++)
+		{
+			result += current & bitmask;
+			bitmask *= 2;
+			
+			if (bitmask == 64 && bitsRead < length)
+			{
+				bitmask = 1;
+				byteIdx += 1;
+				current = getByte(startByteIdx) & 0xff;
+			}
+		}
+		
+		return result;
+	}
+	
+	public byte[] toArray()
+	{
+		return null; //todo
+	}
 }
