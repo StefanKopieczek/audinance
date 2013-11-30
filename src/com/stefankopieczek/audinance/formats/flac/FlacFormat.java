@@ -9,7 +9,7 @@ public class FlacFormat extends AudioFormat
 	private Integer mMaxBlockSize;
 	
 	public FlacFormat(Integer sampleRate, 
-	                  Integer numChannels
+	                  Integer numChannels,
 					  Integer minBlockSize,
 					  Integer maxBlockSize)
 	{

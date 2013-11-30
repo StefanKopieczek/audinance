@@ -1,5 +1,4 @@
 package com.stefankopieczek.audinance.audiosources;
-import com.stefankopieczek.audinance.*;
 import com.stefankopieczek.audinance.utils.AudinanceUtils;
 
 import java.io.*;
@@ -33,6 +32,12 @@ public class SimpleEncodedSource extends EncodedSource
 		{			
 			throw new NoMoreDataException();
 		}
+	}
+
+	@Override
+	public int getLength()
+	{
+		return mData.length;
 	}
 
 	@Override

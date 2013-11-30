@@ -122,12 +122,12 @@ public class FlacData extends EncodedAudio
 					       new FlacFormat(format.getSampleRate(),
 					                     format.getNumChannels(),
 										 null,
-										 null);
+										 null));
 		}
 	}
 
-	private void buildFromAudio(DecodedAudio rawAudioData,
-	                            FlacFormat format)
+	private static FlacData buildFromAudio(DecodedAudio rawAudioData,
+	                                       FlacFormat format)
 	throws InvalidAudioFormatException
 	{
 		AudioFormat encodedFormat = rawAudioData.getFormat();
@@ -149,8 +149,8 @@ public class FlacData extends EncodedAudio
 		// not provided.
 		format = new FlacFormat(sampleRate, 
 		                        numChannels,
-								format.getMinimumBlockSize(),
-								format.getMaximumBlockSize());
+								format.getMinBlockSize(),
+								format.getMaxBlockSize());
 
 		if (!format.isEntirelyDetermined())
 		{
@@ -161,7 +161,7 @@ public class FlacData extends EncodedAudio
 		}
 
 		FlacEncoder encoder = new FlacEncoder(rawAudioData, format);
-		mData = encoder.encodeToSource();
+		return encoder.encodeToSource();
 	}
 
 	@Override
@@ -174,6 +174,6 @@ public class FlacData extends EncodedAudio
 					   new FlacFormat(format.getSampleRate(),
 									  format.getNumChannels(),
 									  null,
-									  null);
+									  null));
 	}
 }

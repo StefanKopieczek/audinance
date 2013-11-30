@@ -103,6 +103,11 @@ public class WavDecoder
 					// Get the sample by specifying the index as a byte.
 					return dataChunk.getSample((frameStartIdx + offsetToSample) / 8);
 				}
+				
+				public int getNumSamples()
+				{
+					return (int)(dataChunk.getLength() * 8.0 / (dataChunk.mBitsPerSample * fmtChunk.getNumChannels()));
+				}
 			};
 		}
 		

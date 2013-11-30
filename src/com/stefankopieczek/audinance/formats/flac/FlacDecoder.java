@@ -6,6 +6,7 @@ import java.nio.ByteOrder;
 import com.stefankopieczek.audinance.audiosources.*;
 import com.stefankopieczek.audinance.formats.AudioFormat;
 import com.stefankopieczek.audinance.formats.DecodedAudio;
+import com.stefankopieczek.audinance.formats.flac.structure.FlacStream;
 import com.stefankopieczek.audinance.utils.AudinanceUtils;
 
 /**
@@ -20,7 +21,7 @@ public class FlacDecoder
 
 	public FlacDecoder(EncodedSource flacSource)
 	{
-		mWavSource = wavSource;
+		mFlacSource = flacSource;
 	}
 
 	/**
@@ -38,7 +39,7 @@ public class FlacDecoder
 
 		for (int idx = 0; idx < length; idx++)
 		{
-			result[idx] = mWavSource.getByte(start + idx);
+			result[idx] = mFlacSource.getByte(start + idx);
 		}
 
 		return result;
@@ -52,18 +53,25 @@ public class FlacDecoder
 	 */
 	public DecodedAudio getDecodedAudio()
 	{
-		DecodedSource[] channels = new DecodedSource[fmtChunk.getNumChannels()];		
+		FlacStream flacStream = new FlacStream(mFlacSource);
+		DecodedSource[] channels = new DecodedSource[flacStream.getNumChannels()];		
 
 		// Build a <tt>DecodedSource</tt> object for each channel that grabs and decodes
 		// the FLAC data for samples as and when they are requested.
-		for (int channel = 0; channel < fmtChunk.getNumChannels(); channel++)
+		for (int channel = 0; channel < flacStream.getNumChannels(); channel++)
 		{
 			final int finalChannel = channel;
 			channels[channel] = new DecodedSource()
 			{
 				public double getSample(int idx) 
 				{
-					// todo
+					// TODO
+					return 0;
+				}
+				
+				public int getNumSamples()
+				{
+					// TODO
 					return 0;
 				}
 			};

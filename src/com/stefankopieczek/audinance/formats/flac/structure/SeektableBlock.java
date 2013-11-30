@@ -1,5 +1,7 @@
 package com.stefankopieczek.audinance.formats.flac.structure;
 
+import java.nio.ByteOrder;
+
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
 
 public class SeektableBlock extends MetadataBlock
@@ -18,7 +20,7 @@ public class SeektableBlock extends MetadataBlock
 	public SeekPoint getPoint(int row)
 	{
 		return new SeekPoint(
-			src.bitSlice(row * SeekPoint.SIZE, SeekPoint.SIZE));
+				   mDataSource.bitSlice(row * SeekPoint.SIZE, SeekPoint.SIZE));
 	}
 	
 	public SeekPoint findPoint(long sampleIdx)
@@ -26,7 +28,7 @@ public class SeektableBlock extends MetadataBlock
 		int bestRowPtr = 0;
 		long bestIndex = mDataSource.longFromBits(0, 64, ByteOrder.BIG_ENDIAN);
 		
-		if (bestIndex > sampleIndex)
+		if (bestIndex > sampleIdx)
 			return null;
 		
 		for (int rowPtr = SeekPoint.SIZE; 
@@ -42,25 +44,25 @@ public class SeektableBlock extends MetadataBlock
 			bestRowPtr = rowPtr;
 		}
 		
-		return new SeekPoint(src.bitSlice(bestRowPtr, SeekPoint.SIZE));
+		return new SeekPoint(mDataSource.bitSlice(bestRowPtr, SeekPoint.SIZE));
 	}
 	
 	public static class SeekPoint
 	{
 		public static final int SIZE = 144;
-		public static final long PLACEHOLDER = 0xffffffffffffffff;
+		public static final long PLACEHOLDER = 0xffffffffffffffffl;
 		public final long mSampleIdx;
 		public final long mOffset;
 		public final int mNumSamples;
 	
 		public SeekPoint(EncodedSource src)
 		{
-			mSampleIdx = src.longFromBits(0, 64);
-			mOffset = src.longFromBits(64, 64);
-			mNumSamples = src.intFromBits(128, 16);
+			mSampleIdx = src.longFromBits(0, 64, ByteOrder.BIG_ENDIAN);
+			mOffset = src.longFromBits(64, 64, ByteOrder.BIG_ENDIAN);
+			mNumSamples = src.intFromBits(128, 16, ByteOrder.BIG_ENDIAN);
 		}
 	
-		public SeekPoint(sampleIdx, offset, numSamples)
+		public SeekPoint(long sampleIdx, long offset, int numSamples)
 		{
 			mSampleIdx = sampleIdx;
 			mOffset = offset;

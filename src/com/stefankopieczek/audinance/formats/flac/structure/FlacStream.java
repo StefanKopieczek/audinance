@@ -1,6 +1,10 @@
 package com.stefankopieczek.audinance.formats.flac.structure;
 
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
+import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
 
 public class FlacStream
 {
@@ -16,7 +20,7 @@ public class FlacStream
 	
 	private Boolean mHasSeektable = null;
 	
-	private SeekTable mSeektableBlock;
+	private SeektableBlock mSeektableBlock;
 	
 	public FlacStream(EncodedSource source)
 	{
@@ -42,7 +46,7 @@ public class FlacStream
             // the start-of-frame sync code.
             try
             {
-                int syncCode = source.intFromBits(ptr, 14);
+                int syncCode = source.intFromBits(ptr, 14, ByteOrder.BIG_ENDIAN);
                 ptr += 14;
             }
             catch (NoMoreDataException e)
@@ -50,9 +54,14 @@ public class FlacStream
                 break;
             }
             
-            Frame next = new Frame(source.bitSlice(14));
+            Frame next = new Frame(source.bitSlice(14), mStreamInfo);
             mFrames.add(next); // this is silly and wasteful
-            ptr += next.mLength;
+            ptr += next.getLength();
         }
+	}
+	
+	public int getNumChannels()
+	{
+		return mStreamInfo.getNumChannels();
 	}
 }

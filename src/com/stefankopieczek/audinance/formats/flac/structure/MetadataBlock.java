@@ -1,12 +1,16 @@
-package com.stefankopieczek.audinance.formats.flac.structure;`
+package com.stefankopieczek.audinance.formats.flac.structure;
+
+import java.nio.ByteOrder;
 
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
+import com.stefankopieczek.audinance.formats.flac.InvalidFlacDataException;
+import com.stefankopieczek.audinance.formats.flac.UnknownBlocktypeException;
 
 public abstract class MetadataBlock
 {
 	public boolean mIsLastBlock;
 	
-	public final boolean mLength;
+	public final int mLength;
 	
 	public MetadataBlock(int length)
 	{
@@ -25,16 +29,13 @@ public abstract class MetadataBlock
 		mIsLastBlock = isLastBlock;
 	}
 	
-	public static buildFromSource(EncodedSource src, int startBit)
+	public static MetadataBlock buildFromSource(EncodedSource src, int startBit)
 	{
         // TODO: add selective behaviour to respect nonseekable sources
         // but otherwise not waste memory.
-		boolean isLastBlock = (boolean)(src.getBit(startBit));
-		
-		int blockId = src.getIntFromBits(startBit + 1, 7);
-		
-		int length = src.getIntFromBits(startBit + 8, 24);
-		
+		boolean isLastBlock = src.getBit(startBit) == 1;		
+		int blockId = src.intFromBits(startBit + 1, 7, ByteOrder.BIG_ENDIAN);		
+		int length = src.intFromBits(startBit + 8, 24, ByteOrder.BIG_ENDIAN);		
 		EncodedSource blockSrc = src.bitSlice(startBit + 32, length * 8);
 		
 		MetadataBlock metadataBlock;
@@ -56,12 +57,13 @@ public abstract class MetadataBlock
 			        break;
 			case 127: 
 			        throw new InvalidFlacDataException(
-						"Metadata block has invalid block type code 127.");
-					break;
+						"Metadata block has invalid block type code 127.");					
 			default: 
 					throw new UnknownBlocktypeException("Metadata block type " + blockId);
 		}
 		
 		metadataBlock.setLastBlockBit(isLastBlock);
+		
+		return metadataBlock;
 	}
 }

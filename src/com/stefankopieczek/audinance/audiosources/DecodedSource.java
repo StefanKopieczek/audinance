@@ -124,4 +124,6 @@ public abstract class DecodedSource
 		
 		return result;
 	}
+	
+	public abstract int getNumSamples();
 }

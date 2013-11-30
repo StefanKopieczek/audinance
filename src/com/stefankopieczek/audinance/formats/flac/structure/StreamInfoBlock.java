@@ -1,8 +1,10 @@
 package com.stefankopieczek.audinance.formats.flac.structure;
 
+import java.nio.ByteOrder;
+
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
 
-public StreamInfoBlock extends MetadataBlock
+public class StreamInfoBlock extends MetadataBlock
 {
 	public static final int STREAM_INFO_LENGTH_BITS = 274;
 	
@@ -38,7 +40,7 @@ public StreamInfoBlock extends MetadataBlock
 						   int numChannels,
 						   int bitsPerSample)
 	{
-		super();
+		super(STREAM_INFO_LENGTH_BITS);
 		mMinimumBlockSize = minimumBlockSize;
 		mMaximumBlockSize = maximumBlockSize;
 		mMinimumFrameSize = minimumFrameSize;

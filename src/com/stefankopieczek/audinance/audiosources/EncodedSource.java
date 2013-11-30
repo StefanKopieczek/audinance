@@ -2,6 +2,7 @@ package com.stefankopieczek.audinance.audiosources;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteOrder;
 
 /**
  * Abstraction over an audio data source. Allows the implementation
@@ -57,26 +58,32 @@ public abstract class EncodedSource
 			{
 				return parent.getByte(start + index);
 			}
-		}
+			
+			@Override
+			public int getLength()
+			{
+				return parent.getLength() - start;
+			}
+		};
 	}
 	
 	public byte getBit(int idx)
 	{
-		byte octet = idx / 8;
+		byte octet = getByte(idx / 8);
 		int offset = idx % 8;
 		
-		return (octet & (2 ^ offset));
+		return (byte)(octet & (2 ^ offset));
 	}
 	
-	public int intFromBits(int start, int length, ByteOrder order)
+	public int intFromBits(int start, int length, ByteOrder endianism)
 	{
 		int result = 0;
 		
 		int byteIdx = start / 8;
-		int current = getByte(startByteIdx) & 0xff;
+		int current = getByte(start) & 0xff;
 		int bitmask = 2 ^ (start % 8);
 		
-		int bitWeight = (order == ByteOrder.LITTLE_ENDIAN) ?
+		int bitWeight = (endianism == ByteOrder.LITTLE_ENDIAN) ?
 			1 :
 			2 ^ length;
 		
@@ -89,7 +96,7 @@ public abstract class EncodedSource
 			{
 				bitmask = 1;
 				byteIdx += 1;
-				current = getByte(startByteIdx) & 0xff;
+				current = getByte(start) & 0xff;
 			}
 		}
 		
@@ -100,4 +107,45 @@ public abstract class EncodedSource
 	{
 		return null; //todo
 	}
+
+	// TODO: Deduplicate this code somehow!
+	public long longFromBits(int start, int length, ByteOrder endianism) 
+	{		
+		long result = 0;
+		
+		int byteIdx = start / 8;
+		int current = getByte(start) & 0xff;
+		int bitmask = 2 ^ (start % 8);
+		
+		int bitWeight = (endianism == ByteOrder.LITTLE_ENDIAN) ?
+			1 :
+			2 ^ length;
+		
+		for (int bitsRead = 0; bitsRead < length; bitsRead++)
+		{
+			result += current & bitmask;
+			bitmask *= 2;
+			
+			if (bitmask == 64 && bitsRead < length)
+			{
+				bitmask = 1;
+				byteIdx += 1;
+				current = getByte(start) & 0xff;
+			}
+		}
+		
+		return result;		
+	}
+	
+	public EncodedSource bitSlice(int start, int length)
+	{
+		return null; // TODO
+	}
+	
+	public EncodedSource bitSlice(int start)
+	{
+		return null; // TODO
+	}
+	
+	public abstract int getLength();
 }

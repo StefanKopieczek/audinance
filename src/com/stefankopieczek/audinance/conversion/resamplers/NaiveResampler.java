@@ -105,6 +105,12 @@ public class NaiveResampler implements Resampler
 			
 			return (precursor+successor)/2;
 		}
+		
+		@Override
+		public int getNumSamples()
+		{
+			return (int)(mOriginal.getNumSamples() / mScaleFactor);
+		}
 	}
 }
 			

@@ -2,6 +2,7 @@ package com.stefankopieczek.audinance.formats.wav;
 
 import java.nio.ByteOrder;
 
+import com.stefankopieczek.audinance.audiosources.DecodedSource;
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
 import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
 import com.stefankopieczek.audinance.formats.AudioFormat;
@@ -98,6 +99,20 @@ public class WavEncoder
 					return sampleData[byteOffset];
 				}
 			}		
+			
+			public int getLength()
+			{
+				int result = formatHeader.length;
+				DecodedSource[] channels = mRawAudio.getChannels();
+				int byteDepth = mTargetFormat.getBitsPerSample() / 8;
+				
+				for (DecodedSource channel : channels)
+				{
+					result += channel.getNumSamples() * byteDepth;
+				}
+				
+				return result;
+			}
 		};		
 	}	
 	

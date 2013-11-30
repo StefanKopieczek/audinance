@@ -9,12 +9,17 @@ public class BufferedEncodedSource extends EncodedSource
 {
 	public BufferedEncodedSource(InputStream is)
 	{
-		// todo
+		// TODO
 	}
 	
 	public byte getByte(int index) throws NoMoreDataException
 	{
-		// todo
+		// TODO
 		throw new NoMoreDataException();
+	}
+	
+	public int getLength()
+	{
+		return 0; // TODO
 	}
 }

@@ -1,5 +1,11 @@
 package com.stefankopieczek.audinance.formats.flac.structure;
 
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.stefankopieczek.audinance.audiosources.EncodedSource;
+
 public class Frame
 {
 	private EncodedSource mSrc;
@@ -36,34 +42,39 @@ public class Frame
 	public Frame(EncodedSource source, 
 				 StreamInfoBlock streamInfo)
 	{
-		mSrc = src;
+		mSrc = source;
 		mStreamInfo = streamInfo;
 		
 		int ptr = getFirstSubframeIdx();
 		
 		for (int subframeNum = 0; subframeNum < getNumChannels(); subframeNum++)
 		{
-			// todo: enforce caching for streams
-			mSubframes.add(Subframe.buildFromSource(mSrc.bitSlice(ptr));
+			// TODO: enforce caching for streams
+			mSubframes.add(Subframe.buildFromSource(mSrc.bitSlice(ptr), this));
 		}
 	}
 	
-	private boolean isVariableBlocksize()
+	public boolean isVariableBlocksize()
 	{
 		if (mIsVariableBlocksize == null)
 		{
-			boolean blockingStrategyBit = mSrc.getBit(2);
-			mIsVariableBlocksize = blockingStrategyBit;
+			int blockingStrategyBit = mSrc.getBit(2);
+			mIsVariableBlocksize = (blockingStrategyBit == 1);
 		}
 		
 		return mIsVariableBlocksize.booleanValue();
 	}
 	
-	private int getBlockSize()
+	public int getLength()
+	{
+		return 0; // TODO
+	}
+	
+	public int getBlockSize()
 	{
 		if (mBlockSize == null)
 		{
-			int sizeCode = src.intFromBits(2, 4);
+			int sizeCode = mSrc.intFromBits(2, 4, ByteOrder.BIG_ENDIAN);
 			
 			switch (sizeCode)
 			{
@@ -73,9 +84,9 @@ public class Frame
 				case 4:  mBlockSize = 2304; break;
 				case 5:  mBlockSize = 4608; break;
 				case 6:
-					// todo
+					// TODO
 				case 7:
-					//todo
+					//TODO
 				case 8:  mBlockSize = 256; break;
 				case 9:  mBlockSize = 512; break;
 				case 10: mBlockSize = 1024; break;
@@ -84,7 +95,7 @@ public class Frame
 				case 13: mBlockSize = 8192; break;
 				case 14: mBlockSize = 16384; break;
 				case 15: mBlockSize = 32768; break;
-				default: //error todo
+				default: //error TODO
 			}
 		}
 		
@@ -93,7 +104,17 @@ public class Frame
 	
 	private int getFirstSubframeIdx()
 	{
-		return 0; // todo
+		return 0; // TODO
+	}
+	
+	public int getNumChannels()
+	{
+		if (mNumChannels == null)
+		{
+			//TODO
+		}
+		
+		return mNumChannels.intValue();
 	}
 	
 	public enum ChannelStrategy
