@@ -22,7 +22,7 @@ public class Frame
 	
 	private ChannelStrategy mChannelStrategy;
 	
-	private Integer mSampleSize;
+	private Integer mBitsPerSample;
 	
 	private Integer mSampleIdx;
 	
@@ -102,20 +102,126 @@ public class Frame
 		return mBlockSize.intValue();
 	}
 	
-	private int getFirstSubframeIdx()
+	public int getSampleRate()
 	{
-		return 0; // TODO
+		if (mSampleRate == null)
+		{
+			int rateCode = mSrc.intFromBits(5, 4, ByteOrder.BIG_ENDIAN);
+			switch (rateCode)
+			{
+				case 0:  mSampleRate = mStreamInfo.getSampleRate(); break;
+				case 1:  mSampleRate = 882000; break;
+				case 2:  mSampleRate = 176400; break;
+				case 3:  mSampleRate = 192000; break;
+				case 4:  mSampleRate = 8000; break;
+				case 5:  mSampleRate = 16000; break;
+				case 6:  mSampleRate = 220500; break;
+				case 7:  mSampleRate = 24000; break;
+				case 8:  mSampleRate = 32000; break;
+				case 9:  mSampleRate = 44100; break;
+				case 10: mSampleRate = 48000; break;
+				case 11: mSampleRate = 96000; break;
+				case 12:
+					// TODO
+					break;
+				case 13:
+					// TODO
+					break;
+				case 14:
+					// TODO
+					break;
+				case 15:
+					// error TODO
+					break;
+			}					
+		}	
+		
+		return mSampleRate.intValue();
 	}
 	
-	public int getNumChannels()
+	private int getNumChannels()	
 	{
 		if (mNumChannels == null)
 		{
-			//TODO
+			// Slightly unpleasant; we get the number of channels as a side
+			// effect of determining the channel strategy. 
+			// This prevents code repetition, although side effects are 
+			// obviously evil.			
+			getChannelStrategy();
 		}
 		
 		return mNumChannels.intValue();
 	}
+	
+	private ChannelStrategy getChannelStrategy()
+	{
+		if (mChannelStrategy == null)
+		{
+			int channelCode = mSrc.intFromBits(9, 4, ByteOrder.BIG_ENDIAN);
+			if (channelCode < 8)
+			{
+				mChannelStrategy = ChannelStrategy.SEPARATE;
+				mNumChannels = channelCode - 1;
+			}
+			else if (channelCode == 9)
+			{
+				mChannelStrategy = ChannelStrategy.LEFT_SIDE_STEREO;
+				mNumChannels = 2;
+			}
+			else if (channelCode == 10)
+			{
+				mChannelStrategy = ChannelStrategy.RIGHT_SIDE_STEREO;
+				mNumChannels = 2;
+			}
+			else if (channelCode == 11)
+			{
+				mChannelStrategy = ChannelStrategy.MID_SIDE_STEREO;
+				mNumChannels = 2;
+			}
+			else
+			{
+				// error TODO
+			}
+		}
+		
+		return mChannelStrategy;
+	}
+	
+	private int getBitsPerSample()
+	{
+		if (mBitsPerSample == null)
+		{
+			int sizeBits = mSrc.intFromBits(13, 3, ByteOrder.BIG_ENDIAN);
+			switch (sizeBits)
+			{
+				case 0: mBitsPerSample = mStreamInfo.getBitsPerSample(); break;
+				case 1: mBitsPerSample = 8; break;
+				case 2: mBitsPerSample = 12; break;
+				case 3: // error TODO
+				case 4: mBitsPerSample = 16; break;
+				case 5: mBitsPerSample = 20; break;
+				case 6: mBitsPerSample = 24; break;
+				default: // error TODO
+			}			
+		}
+				
+		return mBitsPerSample.intValue();
+	}
+	
+	private int getSampleNumber()
+	{
+		return 0; // todo
+	}
+	
+	private int getFrameNumber()
+	{
+		return 0;
+	}
+	
+	private int getFirstSubframeIdx()
+	{
+		return 0; // TODO
+	}	
 	
 	public enum ChannelStrategy
 	{

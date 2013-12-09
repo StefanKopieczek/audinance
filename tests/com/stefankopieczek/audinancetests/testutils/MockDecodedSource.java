@@ -25,4 +25,9 @@ public class MockDecodedSource extends DecodedSource
 		else
 			throw new NoMoreDataException();
 	}
+	
+	public int getNumSamples()
+	{
+		return mBaseData.length;
+	}
 }
