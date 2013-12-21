@@ -16,7 +16,11 @@ public class Frame
 	
 	private Integer mBlockSize;
 	
+	private Integer mBlockSizeExtraBits;
+	
 	private Integer mSampleRate;
+	
+	private Integer mSampleRateExtraBits;
 	
 	private Integer mNumChannels;
 	
@@ -28,9 +32,11 @@ public class Frame
 	
 	private Integer mFrameIdx;
 	
+	private Integer mIndexFieldLength;
+	
 	private Integer mHeaderChecksum;
 	
-	private Integer mFooterChecksum;
+	private Integer mFooterChecksum;	
 	
 	private List<Subframe> mSubframes = new ArrayList<Subframe>();
 	
@@ -50,7 +56,9 @@ public class Frame
 		for (int subframeNum = 0; subframeNum < getNumChannels(); subframeNum++)
 		{
 			// TODO: enforce caching for streams
-			mSubframes.add(Subframe.buildFromSource(mSrc.bitSlice(ptr), this));
+			Subframe next = Subframe.buildFromSource(mSrc.bitSlice(ptr), this); 
+			mSubframes.add(next);
+			ptr += next.getSize();
 		}
 	}
 	
@@ -75,6 +83,7 @@ public class Frame
 		if (mBlockSize == null)
 		{
 			int sizeCode = mSrc.intFromBits(2, 4, ByteOrder.BIG_ENDIAN);
+			mBlockSizeExtraBits = 0;
 			
 			switch (sizeCode)
 			{
@@ -84,9 +93,13 @@ public class Frame
 				case 4:  mBlockSize = 2304; break;
 				case 5:  mBlockSize = 4608; break;
 				case 6:
-					// TODO
+					mBlockSizeExtraBits = 8;					
+					mBlockSize = getBlockSizeFromEnd(mBlockSizeExtraBits);					
+					break;
 				case 7:
-					//TODO
+					mBlockSizeExtraBits = 16;
+					mBlockSize = getBlockSizeFromEnd(mBlockSizeExtraBits);
+					break;
 				case 8:  mBlockSize = 256; break;
 				case 9:  mBlockSize = 512; break;
 				case 10: mBlockSize = 1024; break;
@@ -102,11 +115,28 @@ public class Frame
 		return mBlockSize.intValue();
 	}
 	
+	private int getBlockSizeFromEnd(int bitsUsed)
+	{		
+		int startIdx = 18 + getIndexFieldLength();
+		
+		return mSrc.intFromBits(startIdx, bitsUsed, ByteOrder.BIG_ENDIAN);		
+	}
+	
+	private int getBlockSizeExtraBits()
+	{
+		if (mBlockSizeExtraBits == null)
+			getBlockSize();
+		
+		return mBlockSizeExtraBits;
+	}
+	
 	public int getSampleRate()
 	{
 		if (mSampleRate == null)
 		{
 			int rateCode = mSrc.intFromBits(5, 4, ByteOrder.BIG_ENDIAN);
+			mSampleRateExtraBits = 0;
+			
 			switch (rateCode)
 			{
 				case 0:  mSampleRate = mStreamInfo.getSampleRate(); break;
@@ -122,13 +152,16 @@ public class Frame
 				case 10: mSampleRate = 48000; break;
 				case 11: mSampleRate = 96000; break;
 				case 12:
-					// TODO
+					mSampleRateExtraBits = 8;
+					mSampleRate = getSampleRateFromEnd(mSampleRateExtraBits, 1000);
 					break;
 				case 13:
-					// TODO
-					break;
+					mSampleRateExtraBits = 16;
+					mSampleRate = getSampleRateFromEnd(mSampleRateExtraBits, 1);
+					break;					
 				case 14:
-					// TODO
+					mSampleRateExtraBits = 16;
+					mSampleRate = getSampleRateFromEnd(mSampleRateExtraBits, 10);
 					break;
 				case 15:
 					// error TODO
@@ -137,6 +170,21 @@ public class Frame
 		}	
 		
 		return mSampleRate.intValue();
+	}
+	
+	private int getSampleRateFromEnd(int bitsUsed, int scale)
+	{
+		int startIdx = 18 + getIndexFieldLength() + getBlockSizeExtraBits();
+		
+		return mSrc.intFromBits(startIdx, bitsUsed, ByteOrder.BIG_ENDIAN) * scale;
+	}
+	
+	private int getSampleRateExtraBits()
+	{
+		if (mSampleRateExtraBits == null)
+			getSampleRate();
+		
+		return mSampleRateExtraBits;
 	}
 	
 	private int getNumChannels()	
@@ -187,7 +235,7 @@ public class Frame
 		return mChannelStrategy;
 	}
 	
-	private int getBitsPerSample()
+	public int getBitsPerSample()
 	{
 		if (mBitsPerSample == null)
 		{
@@ -205,23 +253,75 @@ public class Frame
 			}			
 		}
 				
-		return mBitsPerSample.intValue();
+		return mBitsPerSample.intValue();	
 	}
 	
-	private int getSampleNumber()
+	private int getSampleIdx()
 	{
-		return 0; // todo
+		if (mSampleIdx == null)
+		{
+			calculateIndexValues();		
+		}
+		
+		return mSampleIdx;
 	}
 	
-	private int getFrameNumber()
+	private int getFrameIdx()
 	{
-		return 0;
+		if (mFrameIdx == null)
+		{
+			calculateIndexValues();			
+		}
+		
+		return mFrameIdx;
+	}
+	
+	private void calculateIndexValues()
+	{
+		// TODO: Get frame and sample index, and length of bitfield.
+	}
+	
+	private int getIndexFieldLength()
+	{
+		if (mIndexFieldLength == null)
+		{
+			calculateIndexValues();
+		}
+		
+		return mIndexFieldLength;
 	}
 	
 	private int getFirstSubframeIdx()
 	{
-		return 0; // TODO
+		if (mBlockSizeExtraBits == null)
+		{
+			// Force calculation of the block size in order to see if extra
+			// bits at the end of the header have been used to store it.
+			// We don't need the result here; just for mBlockSizeExtraBits to
+			// be set; so we throw the answer away.
+			getBlockSize();
+		}
+		
+		if (mSampleRateExtraBits == null)
+		{
+			// As above, but for the sample rate.
+			getSampleRate();
+		}
+		
+		// The header is 21+x bits long, where 'x' is the number of extra bits
+		// used to store the block size and sample rate.
+		// (The first few fields always use 17 bits, then the optional extra 
+		// bits follow, and then an 8-bit checksum.
+		return 26 + getIndexFieldLength() + getBlockSizeExtraBits() + 
+				                                      getSampleRateExtraBits();
 	}	
+	
+	public int getHeaderChecksum()
+	{
+		int startIdx = getFirstSubframeIdx() - 8;
+		
+		return mSrc.intFromBits(startIdx, 8, ByteOrder.BIG_ENDIAN);
+	}
 	
 	public enum ChannelStrategy
 	{

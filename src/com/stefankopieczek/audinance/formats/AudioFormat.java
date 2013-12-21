@@ -1,6 +1,6 @@
 package com.stefankopieczek.audinance.formats;
 
-import com.stefankopieczek.audinance.utils.AudinanceUtils;
+import com.stefankopieczek.audinance.utils.BitUtils;
 
 /**
  * Stores datatype-independent audio format information.
@@ -40,9 +40,9 @@ public class AudioFormat
 		
 		AudioFormat otherFormat = (AudioFormat)other;
 		
-		boolean sampleRatesEqual = (AudinanceUtils.nullsafeEquals(
+		boolean sampleRatesEqual = (BitUtils.nullsafeEquals(
 				                    otherFormat.getSampleRate(), mSampleRate));
-		boolean numChannelsEqual = (AudinanceUtils.nullsafeEquals(
+		boolean numChannelsEqual = (BitUtils.nullsafeEquals(
                                     otherFormat.getNumChannels(), mChannels));
 		
 		return sampleRatesEqual && numChannelsEqual;

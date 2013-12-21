@@ -9,7 +9,7 @@ import com.stefankopieczek.audinance.formats.AudioFormat;
 import com.stefankopieczek.audinance.formats.DecodedAudio;
 import com.stefankopieczek.audinance.formats.InvalidAudioFormatException;
 import com.stefankopieczek.audinance.formats.UnsupportedFormatException;
-import com.stefankopieczek.audinance.utils.AudinanceUtils;
+import com.stefankopieczek.audinance.utils.BitUtils;
 
 public class WavEncoder 
 {	
@@ -82,11 +82,11 @@ public class WavEncoder
 					{
 						case 8:  sampleData = new byte[]{(byte)(rawSample/2)};
 						         break;
-						case 16: sampleData = AudinanceUtils.bytesFromShort(
+						case 16: sampleData = BitUtils.bytesFromShort(
 								              	(short)rawSample, 
 								              	ByteOrder.LITTLE_ENDIAN);
 								 break;
-						case 32: sampleData = AudinanceUtils.bytesFromInt(
+						case 32: sampleData = BitUtils.bytesFromInt(
 								                (int)rawSample * 2, 
 								                ByteOrder.LITTLE_ENDIAN);
 								 break;
@@ -161,7 +161,7 @@ public class WavEncoder
 		
 		// The size of the fmt subchunk. This is always 16 for PCM data.
 		System.arraycopy(
-		    AudinanceUtils.bytesFromInt(16, ByteOrder.LITTLE_ENDIAN), 
+		    BitUtils.bytesFromInt(16, ByteOrder.LITTLE_ENDIAN), 
 			0, 
 			header, 
 			16, 
@@ -170,7 +170,7 @@ public class WavEncoder
 		// The format of the audio data, specified as a numerical code.
 		short formatCode = mTargetFormat.getWavEncoding().mCode;
 		System.arraycopy(
-		    AudinanceUtils.bytesFromShort(formatCode, ByteOrder.LITTLE_ENDIAN),
+		    BitUtils.bytesFromShort(formatCode, ByteOrder.LITTLE_ENDIAN),
 			0, 
 			header, 
 			20, 
@@ -188,7 +188,7 @@ public class WavEncoder
 		}
 		short numChannels = mTargetFormat.getNumChannels().shortValue();
 		System.arraycopy(
-		    AudinanceUtils.bytesFromShort(numChannels, ByteOrder.LITTLE_ENDIAN),
+		    BitUtils.bytesFromShort(numChannels, ByteOrder.LITTLE_ENDIAN),
 		    0,
 		    header,
 		    22,
@@ -197,7 +197,7 @@ public class WavEncoder
 		// The number of samples per second in each channel of the audio.
 		int sampleRate = mTargetFormat.getSampleRate().intValue();
 		System.arraycopy(
-	        AudinanceUtils.bytesFromInt(sampleRate, ByteOrder.LITTLE_ENDIAN),
+	        BitUtils.bytesFromInt(sampleRate, ByteOrder.LITTLE_ENDIAN),
 			0,
 			header,
 			24,
@@ -207,7 +207,7 @@ public class WavEncoder
 		int byteDepth = mTargetFormat.getBitsPerSample() / 8;		
 		int byteRate = sampleRate * byteDepth * numChannels;
 		System.arraycopy(
-		    AudinanceUtils.bytesFromInt(byteRate, ByteOrder.LITTLE_ENDIAN),
+		    BitUtils.bytesFromInt(byteRate, ByteOrder.LITTLE_ENDIAN),
 			0,
 			header,
 			28,
@@ -217,7 +217,7 @@ public class WavEncoder
 		// TODO: What happens if this is bigger than SHORT_MAX?
 		short blockAlign = (short) (byteDepth * numChannels);
 		System.arraycopy(
-			    AudinanceUtils.bytesFromShort(blockAlign, ByteOrder.LITTLE_ENDIAN),
+			    BitUtils.bytesFromShort(blockAlign, ByteOrder.LITTLE_ENDIAN),
 				0,
 				header,
 				32,
@@ -226,7 +226,7 @@ public class WavEncoder
 		// The number of bits per sample of audio in a single channel.
 		short bitDepth = (short)(byteDepth * 8);
 		System.arraycopy(
-			    AudinanceUtils.bytesFromShort(bitDepth, ByteOrder.LITTLE_ENDIAN),
+			    BitUtils.bytesFromShort(bitDepth, ByteOrder.LITTLE_ENDIAN),
 				0,
 				header,
 				34,

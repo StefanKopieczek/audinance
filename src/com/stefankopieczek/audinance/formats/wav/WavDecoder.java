@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import com.stefankopieczek.audinance.audiosources.*;
 import com.stefankopieczek.audinance.formats.AudioFormat;
 import com.stefankopieczek.audinance.formats.DecodedAudio;
-import com.stefankopieczek.audinance.utils.AudinanceUtils;
+import com.stefankopieczek.audinance.utils.BitUtils;
 
 /**
  * Class that handles decoding of WAV data into raw <tt>DecodedAudio</tt>.
@@ -163,7 +163,7 @@ public class WavDecoder
 			
 			if (mLength == null)
 			{
-				int lengthValue = AudinanceUtils.intFromBytes(
+				int lengthValue = BitUtils.intFromBytes(
 						                   getRange(chunkSizeIdx, 4), getEndianism());
 				 mLength = getChunkSizeIdxOffset() + 4 + lengthValue;			                     
 			}
@@ -174,13 +174,13 @@ public class WavDecoder
 		protected short getShort(int idx) throws InvalidWavDataException
 		{
 			byte[] bytes = getRange(getStartIndex() + idx, 2);
-			return AudinanceUtils.shortFromBytes(bytes, getEndianism());
+			return BitUtils.shortFromBytes(bytes, getEndianism());
 		}
 		
 		protected int getInt(int idx) throws InvalidWavDataException
 		{
 			byte[] bytes = getRange(getStartIndex() + idx, 4);
-			return AudinanceUtils.intFromBytes(bytes, getEndianism());
+			return BitUtils.intFromBytes(bytes, getEndianism());
 		}
 	}
 	
@@ -204,7 +204,7 @@ public class WavDecoder
 				String chunkId = null;
 				try
 				{
-					chunkId = AudinanceUtils.stringFromBytes(getRange(ID_IDX_OFFSET, 4));
+					chunkId = BitUtils.stringFromBytes(getRange(ID_IDX_OFFSET, 4));
 				}
 				catch (UnsupportedEncodingException e)
 				{
@@ -389,14 +389,14 @@ public class WavDecoder
 			else if (mBitsPerSample == 16)
 			{
 				byte[] bytes = getRange(getStartIndex() + byteIdx, 2);
-				result = AudinanceUtils.shortFromBytes(bytes, getEndianism());
+				result = BitUtils.shortFromBytes(bytes, getEndianism());
 			}
 			else if (mBitsPerSample == 32)
 			{
 				byte[] bytes = getRange(getStartIndex() + byteIdx, 4);
 				// Currently assuming 32-bit int; float to come later.
 				// Divide by 65536 = 2^16 to normalise to same energy as 16 bit.
-				result = AudinanceUtils.intFromBytes(bytes, getEndianism()) / 65536.0;				
+				result = BitUtils.intFromBytes(bytes, getEndianism()) / 65536.0;				
 			}
 			else
 			{

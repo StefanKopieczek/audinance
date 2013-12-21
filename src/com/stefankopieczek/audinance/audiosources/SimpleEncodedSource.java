@@ -1,5 +1,5 @@
 package com.stefankopieczek.audinance.audiosources;
-import com.stefankopieczek.audinance.utils.AudinanceUtils;
+import com.stefankopieczek.audinance.utils.BitUtils;
 
 import java.io.*;
 
@@ -18,7 +18,7 @@ public class SimpleEncodedSource extends EncodedSource
 		throws IOException
 	{
 		// Immediately pull all data from the stream into memory.
-		mData = AudinanceUtils.getByteArrayFromStream(is);
+		mData = BitUtils.getByteArrayFromStream(is);
 	}
 	
 	@Override

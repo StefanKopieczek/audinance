@@ -7,7 +7,7 @@ import com.stefankopieczek.audinance.audiosources.*;
 import com.stefankopieczek.audinance.formats.AudioFormat;
 import com.stefankopieczek.audinance.formats.DecodedAudio;
 import com.stefankopieczek.audinance.formats.flac.structure.FlacStream;
-import com.stefankopieczek.audinance.utils.AudinanceUtils;
+import com.stefankopieczek.audinance.utils.BitUtils;
 
 /**
  * Class that handles decoding of FLAC data into raw <tt>DecodedAudio</tt>.

@@ -13,7 +13,7 @@ import com.stefankopieczek.audinance.audiosources.DecodedSource;
 import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
 import com.stefankopieczek.audinance.formats.DecodedAudio;
 import com.stefankopieczek.audinance.formats.InvalidAudioFormatException;
-import com.stefankopieczek.audinance.utils.AudinanceUtils;
+import com.stefankopieczek.audinance.utils.BitUtils;
 
 public class BasicRenderer extends Renderer
 {
@@ -98,7 +98,7 @@ public class BasicRenderer extends Renderer
 					try
 					{						
 						short sample = (short)channel.getSample(ptr);
-						sampleBytes = AudinanceUtils.bytesFromShort(
+						sampleBytes = BitUtils.bytesFromShort(
 								              sample, ByteOrder.LITTLE_ENDIAN);
 						hasData = true;
 					}
