@@ -20,7 +20,7 @@ public abstract class MetadataBlock
 	
 	public MetadataBlock(int length, boolean isLastBlock)
 	{
-		mLength = length;
+		mLength = length + 32; // 4 bytes for Metadata header.
 		mIsLastBlock = isLastBlock;
 	}
 	
@@ -32,16 +32,16 @@ public abstract class MetadataBlock
 	public static MetadataBlock buildFromSource(EncodedSource src, int startBit)
 	{
         // TODO: add selective behaviour to respect nonseekable sources
-        // but otherwise not waste memory.
+        // but otherwise not waste memory.	
 		boolean isLastBlock = src.getBit(startBit) == 1;		
 		int blockId = src.intFromBits(startBit + 1, 7, ByteOrder.BIG_ENDIAN);		
 		int length = src.intFromBits(startBit + 8, 24, ByteOrder.BIG_ENDIAN);		
-		EncodedSource blockSrc = src.bitSlice(startBit + 32, length * 8);
+		EncodedSource blockSrc = src.bitSlice(startBit + 32, length * 8);		
 		
 		MetadataBlock metadataBlock;
 		switch (blockId)
 		{
-			case 0: metadataBlock = new StreamInfoBlock(length, blockSrc);
+			case 0: metadataBlock = new StreamInfoBlock(blockSrc);
 			        break;
 			case 1: metadataBlock = new PaddingBlock(length);
 			        break;

@@ -6,7 +6,7 @@ import com.stefankopieczek.audinance.audiosources.EncodedSource;
 
 public class StreamInfoBlock extends MetadataBlock
 {
-	public static final int STREAM_INFO_LENGTH_BITS = 274;
+	public static final int STREAM_INFO_LENGTH_BITS = 272;
 	
 	private EncodedSource mDataSource;
 	
@@ -28,7 +28,7 @@ public class StreamInfoBlock extends MetadataBlock
 	
 	private byte[] mChecksum = null;
 	
-	public StreamInfoBlock(int length, EncodedSource src)
+	public StreamInfoBlock(EncodedSource src)
 	{
 		super(STREAM_INFO_LENGTH_BITS);
 		mDataSource = src;

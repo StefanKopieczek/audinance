@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
+import com.stefankopieczek.audinance.formats.flac.InvalidFlacDataException;
 
 public class Frame
 {
@@ -75,7 +76,7 @@ public class Frame
 	
 	public int getLength()
 	{
-		return 0; // TODO
+		throw new RuntimeException("TODO Frame length not implemented yet."); // TODO
 	}
 	
 	public int getBlockSize()
@@ -108,7 +109,8 @@ public class Frame
 				case 13: mBlockSize = 8192; break;
 				case 14: mBlockSize = 16384; break;
 				case 15: mBlockSize = 32768; break;
-				default: //error TODO
+				default: 
+					throw new InvalidFlacDataException("Unknown blocksize indication " + sizeCode);
 			}
 		}
 		

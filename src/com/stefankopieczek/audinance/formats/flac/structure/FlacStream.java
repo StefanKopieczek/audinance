@@ -27,12 +27,14 @@ public class FlacStream
 		// Get the metadata
 		int ptr = METADATA_START_IDX;
 		boolean moreBlocks = true;
+		mMetadata = new ArrayList<MetadataBlock>();
+		
 		while (moreBlocks)
 		{
 			MetadataBlock next = MetadataBlock.buildFromSource(source, ptr);
 			mMetadata.add(next);
 			ptr += next.mLength;
-			moreBlocks = next.mIsLastBlock;
+			moreBlocks = !next.mIsLastBlock;
 		}
 		
 		// The first metadatum is always a StreamInfoBlock.

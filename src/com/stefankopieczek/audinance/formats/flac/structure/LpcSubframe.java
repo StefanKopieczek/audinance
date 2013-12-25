@@ -96,7 +96,10 @@ public class LpcSubframe extends PredictiveSubframe
 				int startIdx = bitOffset + precision * ii;
 				mCoefficients[ii] = mSrc.intFromBits(startIdx,
 						                             precision,
-						                             ByteOrder.BIG_ENDIAN);								
+						                             ByteOrder.BIG_ENDIAN);
+				mCoefficients[ii] = 
+						BitUtils.uintTo2sComplement(mCoefficients[ii], 
+								                    precision - 1);
 			}
 		}		
 				

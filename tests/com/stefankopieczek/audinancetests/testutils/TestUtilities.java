@@ -1,7 +1,10 @@
 package com.stefankopieczek.audinancetests.testutils;
 
-import com.stefankopieczek.audinance.audiosources.*;
+import com.stefankopieczek.audinance.audiosources.DecodedSource;
+import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
 import com.stefankopieczek.audinance.formats.*;
+import com.stefankopieczek.audinancetests.audiosources.*;
+
 import java.util.*;
 import org.junit.*;
 

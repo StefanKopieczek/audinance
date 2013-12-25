@@ -3,12 +3,15 @@ package com.stefankopieczek.audinance.formats.flac.structure;
 import java.nio.ByteOrder;
 
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
+import com.stefankopieczek.audinance.utils.BitUtils;
 
 public class RiceResidualPartition extends Residual
 {
 	private EncodedSource mSrc;
 	
 	private Frame mParentFrame;
+	
+	private int mSize;
 	
 	private int mParamBits;
 	
@@ -27,6 +30,8 @@ public class RiceResidualPartition extends Residual
 	private Integer mEscapedBitDepth;
 	
 	private Integer mNumSamples;
+	
+	private int[] mCorrections;
 	
 	public RiceResidualPartition(EncodedSource src,
 								 Frame parentFrame,
@@ -93,8 +98,16 @@ public class RiceResidualPartition extends Residual
 	@Override
 	public int getSize() 
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		if (mSize == 0)
+		{
+			// Since the corrections have variable encoding size, we have to
+			// work them all out in order to determine the size of the block.
+			// (This isn't true for escaped partitions, but that's a small edge
+			// case and we don't lose much in ignoring it.)
+			calculateCorrections();
+		}
+		
+		return mSize;
 	}
 	
 	public int getNumSamples()
@@ -122,8 +135,75 @@ public class RiceResidualPartition extends Residual
 	@Override
 	public int getCorrection(int idx) 
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		if (mCorrections == null)
+		{
+			calculateCorrections();
+		}
+		
+		return mCorrections[idx];
 	}
 	
+	private void calculateCorrections()
+	{
+		mCorrections = new int[getNumSamples()];		
+				
+		if (isEscaped())
+		{
+			// If the block is escaped (i.e. the residual is fixed-width 
+			// encoded), then the samples are preceded by a 5-bit escape code
+			// and a 5-bit precision indicator.
+			int ptr = 10;
+			int precision = getEscapedBitDepth();
+			
+			for (int sampleNum = 0; sampleNum < getNumSamples(); sampleNum++)
+			{			
+				mCorrections[sampleNum] = 
+						mSrc.intFromBits(ptr, precision, ByteOrder.BIG_ENDIAN);
+				ptr += precision;
+			}
+			
+			mSize = 10 + precision * getNumSamples();
+		}
+		else
+		{
+			// The corrections are Rice encoded, so let's work them out.
+			int ptr = 5;
+			int sampleNum = 0;
+			
+			while (sampleNum < getNumSamples())
+			{
+				// The most-significant bits of the residual are unary-encoded.
+				int residual = -1;
+				int currentVal = 0;
+				
+				while (currentVal != 1)
+				{
+					residual += 1;
+					currentVal = mSrc.getBit(ptr);
+					ptr += 1;
+				}							
+				
+				residual <<= getRiceParameter();
+				
+				// The least-significant bits follow, taking up exactly
+				// rice-parameter-minus-one-many bits.
+				residual += mSrc.intFromBits(ptr, 
+						                     getRiceParameter() - 1, 
+						                     ByteOrder.BIG_ENDIAN);				
+				
+				// Finally, there is a sign-bit.
+				if (mSrc.getBit(ptr + getRiceParameter() - 1) == 1)
+				{
+					residual = residual * -1 - 1;
+				}
+				
+				ptr += getRiceParameter();				
+						
+				mCorrections[sampleNum] = residual;
+				sampleNum ++;
+			}
+			
+			mSize = 5 + ptr;
+		}
+	}
 }
