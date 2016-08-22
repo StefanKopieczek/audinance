@@ -18,9 +18,9 @@ public abstract class MetadataBlock
 		this(length, false);
 	}
 	
-	public MetadataBlock(int length, boolean isLastBlock)
+	public MetadataBlock(int lengthBits, boolean isLastBlock)
 	{
-		mLength = length + 32; // 4 bytes for Metadata header.
+		mLength = lengthBits + 32; // 4 bytes for Metadata header.
 		mIsLastBlock = isLastBlock;
 	}
 	
@@ -35,25 +35,25 @@ public abstract class MetadataBlock
         // but otherwise not waste memory.	
 		boolean isLastBlock = src.getBit(startBit) == 1;		
 		int blockId = src.intFromBits(startBit + 1, 7, ByteOrder.BIG_ENDIAN);		
-		int length = src.intFromBits(startBit + 8, 24, ByteOrder.BIG_ENDIAN);		
-		EncodedSource blockSrc = src.bitSlice(startBit + 32, length * 8);		
+		int lengthBits = src.intFromBits(startBit + 8, 24, ByteOrder.BIG_ENDIAN) * 8;
+		EncodedSource blockSrc = src.bitSlice(startBit + 32, lengthBits * 8);
 		
 		MetadataBlock metadataBlock;
 		switch (blockId)
 		{
 			case 0: metadataBlock = new StreamInfoBlock(blockSrc);
 			        break;
-			case 1: metadataBlock = new PaddingBlock(length);
+			case 1: metadataBlock = new PaddingBlock(lengthBits);
 			        break;
-			case 2: metadataBlock = new ApplicationBlock(length, blockSrc);
+			case 2: metadataBlock = new ApplicationBlock(lengthBits, blockSrc);
 			        break;
-			case 3: metadataBlock = new SeektableBlock(length, blockSrc);
+			case 3: metadataBlock = new SeektableBlock(lengthBits, blockSrc);
 			        break;
-			case 4: metadataBlock = new VorbisCommentBlock(length, blockSrc);
+			case 4: metadataBlock = new VorbisCommentBlock(lengthBits, blockSrc);
 			        break;
-			case 5: metadataBlock = new CuesheetBlock(length, blockSrc);
+			case 5: metadataBlock = new CuesheetBlock(lengthBits, blockSrc);
 			        break;
-			case 6: metadataBlock = new PictureBlock(length, blockSrc);
+			case 6: metadataBlock = new PictureBlock(lengthBits, blockSrc);
 			        break;
 			case 127: 
 			        throw new InvalidFlacDataException(
