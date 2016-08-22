@@ -3,7 +3,12 @@
 *.class
 
 # Logs and swaps #
-########
+##################
 *.log
 *.swp
 *.bak
+
+# Build directories #
+#####################
+classes
+build
