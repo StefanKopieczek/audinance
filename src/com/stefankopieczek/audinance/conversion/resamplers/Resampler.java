@@ -1,5 +1,6 @@
 package com.stefankopieczek.audinance.conversion.resamplers;
-import com.stefankopieczek.audinance.formats.*;
+
+import com.stefankopieczek.audinance.formats.DecodedAudio;
 
 /**
  * Class which takes decoded audio data and outputs new decoded audio at a

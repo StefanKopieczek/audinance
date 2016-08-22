@@ -1,12 +1,6 @@
 package com.stefankopieczek.audinance.formats.flac.structure;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Queue;
-
-import com.stefankopieczek.audinance.audiosources.EncodedSource;
+import java.util.*;
 
 public abstract class PredictiveSubframe extends Subframe 
 {			

@@ -1,9 +1,10 @@
 package com.stefankopieczek.audinance.formats;
+
 import com.stefankopieczek.audinance.audiosources.DecodedSource;
-import com.stefankopieczek.audinance.conversion.multiplexers.*;
+import com.stefankopieczek.audinance.conversion.multiplexers.Multiplexer;
+import com.stefankopieczek.audinance.conversion.multiplexers.SimpleMultiplexer;
 import com.stefankopieczek.audinance.conversion.resamplers.NaiveResampler;
 import com.stefankopieczek.audinance.conversion.resamplers.Resampler;
-import com.stefankopieczek.audinancetests.audiosources.*;
 
 import java.util.logging.Logger;
 

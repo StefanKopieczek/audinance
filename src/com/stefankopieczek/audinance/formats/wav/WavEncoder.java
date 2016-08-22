@@ -1,15 +1,14 @@
 package com.stefankopieczek.audinance.formats.wav;
 
-import java.nio.ByteOrder;
-
 import com.stefankopieczek.audinance.audiosources.DecodedSource;
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
 import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
-import com.stefankopieczek.audinance.formats.AudioFormat;
 import com.stefankopieczek.audinance.formats.DecodedAudio;
 import com.stefankopieczek.audinance.formats.InvalidAudioFormatException;
 import com.stefankopieczek.audinance.formats.UnsupportedFormatException;
 import com.stefankopieczek.audinance.utils.BitUtils;
+
+import java.nio.ByteOrder;
 
 public class WavEncoder 
 {	

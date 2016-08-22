@@ -1,9 +1,8 @@
 package com.stefankopieczek.audinance.formats.flac.structure;
 
-import java.nio.ByteOrder;
-
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
-import com.stefankopieczek.audinance.utils.BitUtils;
+
+import java.nio.ByteOrder;
 
 public class RiceResidualPartition extends Residual
 {

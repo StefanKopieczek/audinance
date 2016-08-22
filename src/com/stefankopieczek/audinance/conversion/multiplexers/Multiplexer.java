@@ -1,5 +1,6 @@
 package com.stefankopieczek.audinance.conversion.multiplexers;
-import com.stefankopieczek.audinance.formats.*;
+
+import com.stefankopieczek.audinance.formats.DecodedAudio;
 
 /**
  * Takes decoded audio with a given number of channels and returns audio with

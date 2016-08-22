@@ -1,5 +1,6 @@
 package com.stefankopieczek.audinance.audiosources;
-import java.io.*;
+
+import java.io.InputStream;
 
 // SMK: The plan is to provide a half-way house between SimpleEncodedSource,
 // which simply buffers everything into an array; and just streaming the

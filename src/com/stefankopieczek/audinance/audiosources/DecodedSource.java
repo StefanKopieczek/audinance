@@ -1,9 +1,9 @@
 package com.stefankopieczek.audinance.audiosources;
 
+import com.stefankopieczek.audinance.formats.InvalidAudioFormatException;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.stefankopieczek.audinance.formats.InvalidAudioFormatException;
 
 /**
  * A generic implementation of a decoded audio source.

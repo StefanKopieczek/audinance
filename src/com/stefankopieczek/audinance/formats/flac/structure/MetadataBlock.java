@@ -1,10 +1,10 @@
 package com.stefankopieczek.audinance.formats.flac.structure;
 
-import java.nio.ByteOrder;
-
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
 import com.stefankopieczek.audinance.formats.flac.InvalidFlacDataException;
 import com.stefankopieczek.audinance.formats.flac.UnknownBlocktypeException;
+
+import java.nio.ByteOrder;
 
 public abstract class MetadataBlock
 {

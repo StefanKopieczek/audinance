@@ -1,7 +1,9 @@
 package com.stefankopieczek.audinance.audiosources;
+
 import com.stefankopieczek.audinance.utils.BitUtils;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Naive implementation of EncodedAudioSource which simply reads all

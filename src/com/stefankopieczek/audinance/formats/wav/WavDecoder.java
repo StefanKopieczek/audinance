@@ -2,7 +2,6 @@ package com.stefankopieczek.audinance.formats.wav;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteOrder;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import com.stefankopieczek.audinance.audiosources.DecodedSource;
@@ -75,7 +74,7 @@ public class WavDecoder
 				                                     riffChunk);
         sLogger.fine("Loaded FMT subchunk at index " + RiffChunk.DATA_IDX_OFFSET + ": " + fmtChunk);
 
-													 
+
 		// We assume the next subchunk in the RIFF payload is the wav data chunk.
 		final DataSubchunk dataChunk = new DataSubchunk(fmtChunk.getEndIndex(), 
 				                                        riffChunk,

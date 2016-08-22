@@ -1,7 +1,7 @@
 package com.stefankopieczek.audinance.formats;
 
-import com.stefankopieczek.audinance.formats.wav.WavData;
 import com.stefankopieczek.audinance.formats.flac.FlacData;
+import com.stefankopieczek.audinance.formats.wav.WavData;
 
 /**
  * The formats which we support processing with Audinance.

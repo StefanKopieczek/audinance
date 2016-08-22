@@ -2,7 +2,11 @@ package com.stefankopieczek.audinance.formats.flac;
 
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
 import com.stefankopieczek.audinance.formats.*;
-import java.io.*;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Represents a FLAC audio clip, undecoded, backed by data drawn from some
@@ -55,7 +59,7 @@ public class FlacData extends EncodedAudio
 	 * @param encodedAudio The audio on which to base this FLAC clip.
 	 * @param format The recording format in which to store the resultant
 	 *               flac data.
-	 * @throws InvalidAudioFormat If the specified audio format is underdetermined.
+	 * @throws InvalidAudioFormatException If the specified audio format is underdetermined.
 	 * @throws UnsupportedFormatException SMK todo
 	 */
 	public FlacData(EncodedAudio encodedAudio, AudioFormat format) 

@@ -1,8 +1,10 @@
 package com.stefankopieczek.audinance.conversion.resamplers;
-import com.stefankopieczek.audinance.formats.*;
+
 import com.stefankopieczek.audinance.audiosources.DecodedSource;
 import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
-import com.stefankopieczek.audinancetests.audiosources.*;
+import com.stefankopieczek.audinance.formats.AudioFormat;
+import com.stefankopieczek.audinance.formats.DecodedAudio;
+import com.stefankopieczek.audinance.formats.InvalidAudioFormatException;
 
 import java.util.logging.Logger;
 

@@ -1,11 +1,11 @@
 package com.stefankopieczek.audinance.formats.flac.structure;
 
+import com.stefankopieczek.audinance.audiosources.EncodedSource;
+import com.stefankopieczek.audinance.formats.flac.InvalidFlacDataException;
+
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.stefankopieczek.audinance.audiosources.EncodedSource;
-import com.stefankopieczek.audinance.formats.flac.InvalidFlacDataException;
 
 public class Frame
 {

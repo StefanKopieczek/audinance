@@ -1,7 +1,5 @@
 package com.stefankopieczek.audinance.formats.flac.structure;
 
-import java.nio.ByteOrder;
-
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
 
 /**

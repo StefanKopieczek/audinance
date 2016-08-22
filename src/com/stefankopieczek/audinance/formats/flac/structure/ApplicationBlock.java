@@ -1,8 +1,8 @@
 package com.stefankopieczek.audinance.formats.flac.structure;
 
-import java.nio.ByteOrder;
-
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
+
+import java.nio.ByteOrder;
 
 public class ApplicationBlock extends MetadataBlock
 {

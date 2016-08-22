@@ -1,10 +1,10 @@
 package com.stefankopieczek.audinance.formats.flac.structure;
 
-import java.nio.ByteOrder;
-import java.util.ArrayList;
-
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
 import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
+
+import java.nio.ByteOrder;
+import java.util.ArrayList;
 
 public class FlacStream
 {

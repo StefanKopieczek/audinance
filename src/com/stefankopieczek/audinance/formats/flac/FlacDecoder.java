@@ -1,15 +1,10 @@
 package com.stefankopieczek.audinance.formats.flac;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteOrder;
-
 import com.stefankopieczek.audinance.audiosources.DecodedSource;
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
 import com.stefankopieczek.audinance.formats.AudioFormat;
 import com.stefankopieczek.audinance.formats.DecodedAudio;
 import com.stefankopieczek.audinance.formats.flac.structure.FlacStream;
-import com.stefankopieczek.audinance.utils.BitUtils;
-import com.stefankopieczek.audinancetests.audiosources.*;
 
 /**
  * Class that handles decoding of FLAC data into raw <tt>DecodedAudio</tt>.
