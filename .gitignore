@@ -12,3 +12,14 @@
 #####################
 classes
 build
+
+# IntelliJ IDEA files #
+#######################
+*.ipr
+*.iws
+*.iml
+.idea
+
+# Gradle #
+##########
+.gradle

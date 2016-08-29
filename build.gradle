@@ -1,0 +1,10 @@
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'java'
+
+idea {
+    module {
+        sourceDirs += file('src')
+        name = 'audinance'
+    }
+}
