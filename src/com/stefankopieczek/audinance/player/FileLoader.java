@@ -24,7 +24,9 @@ public final class FileLoader
             // Speculatively try all the file types we know about.
             try
             {
-                return new WavData(f);
+                WavData wav = new WavData(f);
+                wav.getDecodedAudio();
+                return wav;
             }
             catch (InvalidWavDataException e)
             {

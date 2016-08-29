@@ -1,10 +1,17 @@
 package com.stefankopieczek.audinance.player;
 
+import com.stefankopieczek.audinance.formats.EncodedAudio;
+import com.stefankopieczek.audinance.formats.UnsupportedFormatException;
+import com.stefankopieczek.audinance.renderer.JavaRenderer;
+import com.stefankopieczek.audinance.renderer.MediaPlayer;
+
 import javax.imageio.plugins.jpeg.JPEGHuffmanTable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
 public class Player extends JFrame
 {
@@ -14,6 +21,8 @@ public class Player extends JFrame
     private JTextArea outputConsole;
     private JButton loadButton;
     private JButton playButton;
+
+    private EncodedAudio loadedAudio = null;
 
     public Player()
     {
@@ -40,12 +49,53 @@ public class Player extends JFrame
 
     private void showLoadFileDialog()
     {
-        // TODO
+        JFileChooser dialog = new JFileChooser();
+        int rc = dialog.showOpenDialog(this);
+        if (rc == JFileChooser.APPROVE_OPTION)
+        {
+            File chosen = dialog.getSelectedFile();
+
+            try
+            {
+                loadedAudio = FileLoader.loadAudio(chosen);
+            }
+            catch (IOException e)
+            {
+                showError("IO error loading " + chosen + ": " + e);
+            }
+            catch (UnsupportedFormatException e)
+            {
+                showError(chosen + " was not a recognised audio file.");
+            }
+            catch (Exception e)
+            {
+                showError("Error loading " + chosen + ": " + e);
+            }
+        }
     }
 
     private void play()
     {
-        // TODO
+        if (loadedAudio != null)
+        {
+            try
+            {
+                MediaPlayer.play(loadedAudio);
+            }
+            catch (Exception e)
+            {
+                showError("Error playing audio: " + e);
+            }
+        }
+        else
+        {
+            showError("You must first select an audio file to play.");
+        }
+    }
+
+    private void showError(String s)
+    {
+        outputConsole.append("ERROR: " + s + "\n");
     }
 
     private static JTextArea buildOutputConsole()
