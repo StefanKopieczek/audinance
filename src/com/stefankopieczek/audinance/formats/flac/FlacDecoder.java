@@ -15,6 +15,7 @@ public class FlacDecoder
 	 * The source from which we draw the FLAC data.
 	 */
 	private EncodedSource mFlacSource;
+	private FlacStream mFlacStream;
 
 	public FlacDecoder(EncodedSource flacSource)
 	{
@@ -42,6 +43,14 @@ public class FlacDecoder
 		return result;
 	}
 
+	private FlacStream getFlacStream()
+	{
+		if (mFlacStream == null)
+			mFlacStream = new FlacStream(mFlacSource);
+
+		return mFlacStream;
+	}
+
 	/**
 	 * Decodes the FLAC data from mFlacSource and returns a DecodedAudio object with
 	 * the same sample rate and number of channels.
@@ -50,8 +59,8 @@ public class FlacDecoder
 	 */
 	public DecodedAudio getDecodedAudio()
 	{
-		FlacStream flacStream = new FlacStream(mFlacSource);
-		DecodedSource[] channels = new DecodedSource[flacStream.getNumChannels()];		
+		FlacStream flacStream = getFlacStream();
+		DecodedSource[] channels = new DecodedSource[flacStream.getNumChannels()];
 
 		// Build a <tt>DecodedSource</tt> object for each channel that grabs and decodes
 		// the FLAC data for samples as and when they are requested.
@@ -74,13 +83,17 @@ public class FlacDecoder
 			};
 		}
 
-		AudioFormat format = null;
-
-		return new DecodedAudio(channels, format);		
+		return new DecodedAudio(channels, getFormat());
 	}
 
 	public FlacFormat getFormat()
 	{
-		return null; // todo
+	    FlacStream stream = getFlacStream();
+
+        // No support for variable bit rates. We should fix this!
+		return new FlacFormat(stream.mFirstFrame.getSampleRate(),
+                              stream.getNumChannels(),
+                              stream.mFirstFrame.getBlockSize(),
+                              stream.mFirstFrame.getBlockSize());
 	}
 }

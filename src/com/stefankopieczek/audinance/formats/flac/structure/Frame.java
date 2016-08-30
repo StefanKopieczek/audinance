@@ -75,9 +75,12 @@ public class Frame
 	}
 	
 	public int getLength()
-	{
-		throw new RuntimeException("TODO Frame length not implemented yet."); // TODO
-	}
+    {
+        int length =  18 + mIndexFieldLength + mBlockSizeExtraBits + mSampleRateExtraBits + 24;
+        for(Subframe subframe : mSubframes)
+            length += subframe.getSize();
+        return length;
+    }
 	
 	public int getBlockSize()
 	{
@@ -280,7 +283,16 @@ public class Frame
 	
 	private void calculateIndexValues()
 	{
-		// TODO: Get frame and sample index, and length of bitfield.
+		int onesCount = 0;
+
+        for (int ptr = 18; mSrc.getBit(ptr) == 1; ptr++)
+        {
+            onesCount++;
+        }
+
+        mIndexFieldLength =  8 * (onesCount + 1);
+        mSampleIdx = 0; // TODO
+        mFrameIdx = 0;  // TODO
 	}
 	
 	private int getIndexFieldLength()

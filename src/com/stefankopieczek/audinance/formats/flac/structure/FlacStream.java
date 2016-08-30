@@ -1,10 +1,10 @@
 package com.stefankopieczek.audinance.formats.flac.structure;
 
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
-import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
 
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.List;
 
 public class FlacStream
 {
@@ -12,54 +12,65 @@ public class FlacStream
 	
 	private int mFramesStartIdx;
 	
-	private ArrayList<MetadataBlock> mMetadata;
-	
-	private ArrayList<Frame> mFrames;
+	private List<MetadataBlock> mMetadata;
+
+    private EncodedSource mSource;
+
+    // This is a horrible hack and you should feel bad.
+    // We do this to prevent having to deal with variable bitrates
+    // upstream. Ech.
+    public Frame mFirstFrame;
+    private boolean mIsFirstFrame = true;
 	
 	private StreamInfoBlock mStreamInfo;
 	
 	private Boolean mHasSeektable = null;
 	
 	private SeektableBlock mSeektableBlock;
-	
-	public FlacStream(EncodedSource source)
-	{
-		// Get the metadata
-		int ptr = METADATA_START_IDX;
-		boolean moreBlocks = true;
-		mMetadata = new ArrayList<MetadataBlock>();
-		
-		while (moreBlocks)
-		{
-			MetadataBlock next = MetadataBlock.buildFromSource(source, ptr);
-			mMetadata.add(next);
-			ptr += next.mLength;
-			moreBlocks = !next.mIsLastBlock;
-		}
-		
-		// The first metadatum is always a StreamInfoBlock.
-		// Todo: handle failure better here.
-		mStreamInfo = (StreamInfoBlock)mMetadata.get(0);
-		
-		// Get the audio data from the frames.
-        while (true)
-        {
-            // Check to see if there are more frames left, by trying to read
-            // the start-of-frame sync code.
-            try
-            {
-                int syncCode = source.intFromBits(ptr, 14, ByteOrder.BIG_ENDIAN);
-                ptr += 14;
-            }
-            catch (NoMoreDataException e)
-            {
-                break;
-            }
-            
-            Frame next = new Frame(source.bitSlice(14), mStreamInfo);
-            mFrames.add(next); // this is silly and wasteful
-            ptr += next.getLength();
+    private int mPtr;
+
+    public FlacStream(EncodedSource source) {
+        // Get the metadata
+        this.mSource = source;
+        mPtr = METADATA_START_IDX;
+        boolean moreBlocks = true;
+        mMetadata = new ArrayList<MetadataBlock>();
+
+        while (moreBlocks) {
+            MetadataBlock next = MetadataBlock.buildFromSource(mSource, mPtr);
+            mMetadata.add(next);
+            mPtr += next.mLength;
+            moreBlocks = !next.mIsLastBlock;
         }
+
+        // The first metadatum is always a StreamInfoBlock.
+        // Todo: handle failure better here.
+        mStreamInfo = (StreamInfoBlock) mMetadata.get(0);
+
+        // Disgusting hack: read the first frame for audio data.
+        int syncCode = mSource.intFromBits(mPtr, 14, ByteOrder.BIG_ENDIAN);
+        mPtr += 14;
+        mFirstFrame = new Frame(mSource.bitSlice(14), mStreamInfo);
+        mPtr += mFirstFrame.getLength();
+
+    }
+
+    public Frame nextFrame()
+    {
+        if (mIsFirstFrame)
+        {
+            mIsFirstFrame = false;
+            return mFirstFrame;
+        }
+
+        // Check to see if there are more frames left, by trying to read
+        // the start-of-frame sync code.
+        int syncCode = mSource.intFromBits(mPtr, 14, ByteOrder.BIG_ENDIAN);
+        mPtr += 14;
+
+        Frame frame = new Frame(mSource.bitSlice(14), mStreamInfo);
+        mPtr += frame.getLength();
+        return frame;
 	}
 	
 	public int getNumChannels()
