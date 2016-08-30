@@ -78,6 +78,7 @@ public class WavDecoder
 		final DataSubchunk dataChunk = new DataSubchunk(fmtChunk.getEndIndex(), 
 				                                        riffChunk,
 				                                        fmtChunk.getBitsPerSample());
+		sLogger.fine("Loaded data subchunk at index " + fmtChunk.getEndIndex() + ": " + dataChunk);
 		
 		DecodedSource[] channels = new DecodedSource[fmtChunk.getNumChannels()];		
 		

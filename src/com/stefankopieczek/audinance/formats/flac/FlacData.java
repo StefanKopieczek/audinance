@@ -7,13 +7,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Logger;
 
 /**
  * Represents a FLAC audio clip, undecoded, backed by data drawn from some
  * abstract source.
  */
 public class FlacData extends EncodedAudio
-{	
+{
+	private static final Logger sLogger = Logger.getLogger(FlacData.class.getName());
+
  	/**
 	 * The format of the FLAC data. This includes recording information,
 	 * as the sample rate, but also datatype-specific parameters such as
@@ -34,7 +37,8 @@ public class FlacData extends EncodedAudio
 	IOException,
 	InvalidAudioFormatException
 	{
-		super(file);		
+		super(file);
+        sLogger.info("Constructed FlacData object for file " + file);
 	}
 
 	/**
@@ -48,6 +52,7 @@ public class FlacData extends EncodedAudio
 	throws IOException, InvalidAudioFormatException
 	{
 		super(is);
+        sLogger.info("Constructed FlacData object for input stream " + is);
 	}
 
 	/**
@@ -66,7 +71,8 @@ public class FlacData extends EncodedAudio
 	throws InvalidAudioFormatException, 
 	UnsupportedFormatException
 	{
-		super(encodedAudio, format);		
+		super(encodedAudio, format);
+        sLogger.info("Constructed FlacData object for encoded audio " + encodedAudio + " with target format " + format);
 	}
 
 	/**
@@ -81,11 +87,13 @@ public class FlacData extends EncodedAudio
 	{		
 		mData = flacSource;
 		mFormat = format;
+        sLogger.info("Constructed FlacData object for flac source " + flacSource + " with target format " + format);
 	}
 
 	@Override
 	public DecodedAudio getDecodedAudio() 
 	{
+	    sLogger.info("Decoding " + this);
 		FlacDecoder flacDecoder = new FlacDecoder(getSource());
 		return flacDecoder.getDecodedAudio();
 	}

@@ -6,11 +6,15 @@ import com.stefankopieczek.audinance.formats.AudioFormat;
 import com.stefankopieczek.audinance.formats.DecodedAudio;
 import com.stefankopieczek.audinance.formats.flac.structure.FlacStream;
 
+import java.util.logging.Logger;
+
 /**
  * Class that handles decoding of FLAC data into raw <tt>DecodedAudio</tt>.
  */
 public class FlacDecoder
 {
+    private static final Logger sLogger = Logger.getLogger(FlacDecoder.class.getName());
+
     /**
 	 * The source from which we draw the FLAC data.
 	 */
@@ -61,6 +65,7 @@ public class FlacDecoder
 	{
 		FlacStream flacStream = getFlacStream();
 		DecodedSource[] channels = new DecodedSource[flacStream.getNumChannels()];
+        sLogger.fine("Created FlacStream " + flacStream);
 
 		// Build a <tt>DecodedSource</tt> object for each channel that grabs and decodes
 		// the FLAC data for samples as and when they are requested.
