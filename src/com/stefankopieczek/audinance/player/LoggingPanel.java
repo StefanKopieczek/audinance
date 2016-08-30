@@ -1,6 +1,7 @@
 package com.stefankopieczek.audinance.player;
 
 import javax.swing.*;
+import javax.swing.text.DefaultCaret;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -12,6 +13,11 @@ public class LoggingPanel extends JTextArea
         super();
         setEditable(false);
         setLineWrap(true);
+
+        // Automatically scroll to the end when new content is added.
+        DefaultCaret caret = (DefaultCaret)(this.getCaret());
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        
         logger.addHandler(new LogHandler());
     }
 

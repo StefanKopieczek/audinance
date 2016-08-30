@@ -45,7 +45,10 @@ public class Player extends JFrame
 
         JPanel main = new JPanel();
         main.setLayout(new BorderLayout());
-        main.add(outputConsole, BorderLayout.CENTER);
+
+        JScrollPane scrollPane = new JScrollPane(outputConsole);
+        main.add(scrollPane, BorderLayout.CENTER);
+
         main.add(buttonPanel, BorderLayout.SOUTH);
         add(main);
 
