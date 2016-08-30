@@ -10,7 +10,6 @@ import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
 import com.stefankopieczek.audinance.formats.AudioFormat;
 import com.stefankopieczek.audinance.formats.DecodedAudio;
 import com.stefankopieczek.audinance.utils.BitUtils;
-import com.stefankopieczek.audinancetests.audiosources.*;
 
 /**
  * Class that handles decoding of WAV data into raw <tt>DecodedAudio</tt>.
