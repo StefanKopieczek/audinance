@@ -1,12 +1,15 @@
 package com.stefankopieczek.audinance.formats;
 import com.stefankopieczek.audinance.audiosources.*;
 import java.io.*;
+import java.util.logging.Logger;
 
 /** 
  * Generic representation of encoded audio data.
  */
 public abstract class EncodedAudio
 {
+    private static final Logger sLogger = Logger.getLogger(EncodedAudio.class.getName());
+
 	/**
 	 * The data as read from the audio source, complete with any formatting
 	 * information and compression.
@@ -38,7 +41,7 @@ public abstract class EncodedAudio
 	 * Creates an <tt>EncodedAudio</tt> object from the given stream
 	 * This does not involve any audio processing; it simply sets up an
 	 * <tt>EncodedSource</tt> to read from the stream. 
-	 * @param file The file to create the audio object from.
+	 * @param is The <tt>InputStream</tt> to create the audio object from.
 	 * @throws IOException If we fail to read from the stream.
 	 */
 	public EncodedAudio(InputStream is) 
@@ -153,6 +156,7 @@ public abstract class EncodedAudio
 	 */
 	public void writeToFile(File file) throws IOException	
 	{
+		sLogger.info("Persisting " + this + " to " + file);
 		FileOutputStream fos = new FileOutputStream(file);
 		InputStream is = mData.getInputStream();
 		byte[] buffer = new byte[65536];

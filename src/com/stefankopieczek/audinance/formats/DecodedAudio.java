@@ -4,6 +4,8 @@ import com.stefankopieczek.audinance.conversion.multiplexers.*;
 import com.stefankopieczek.audinance.conversion.resamplers.NaiveResampler;
 import com.stefankopieczek.audinance.conversion.resamplers.Resampler;
 
+import java.util.logging.Logger;
+
 
 /**
  * Raw audio data decoded into memory, not stored as any particular
@@ -11,7 +13,9 @@ import com.stefankopieczek.audinance.conversion.resamplers.Resampler;
  */
 public class DecodedAudio
 {
-	/**
+    private static final Logger sLogger = Logger.getLogger(DecodedAudio.class.getName());
+
+    /**
 	 * The format of the audio.
 	 */
 	private final AudioFormat mFormat;
@@ -102,6 +106,7 @@ public class DecodedAudio
 	 */
 	public DecodedAudio convertTo(AudioFormat targetFormat)
 	{
+		sLogger.info("Converting " + this + " to format " + targetFormat);
 		DecodedAudio result = this;
 		
 		// Resample the audio if required.
@@ -110,6 +115,7 @@ public class DecodedAudio
 		if (targetSampleRate != null && 
 		    !targetSampleRate.equals(mFormat.getSampleRate()))
 		{
+		    sLogger.fine("Resampling " + this + " from " + mFormat.getSampleRate() + " to " + targetSampleRate);
 			Resampler resampler = new NaiveResampler();
 			result = resampler.resample(result, targetSampleRate);
 		}
@@ -120,6 +126,8 @@ public class DecodedAudio
 		if (targetNumChannels != null &&
 		    !targetNumChannels.equals(mFormat.getNumChannels()))
 		{
+		    sLogger.fine("Remultiplexing " + this + " from " + mFormat.getNumChannels() + " channels to " +
+                         targetNumChannels);
 			Multiplexer multiplexer = new SimpleMultiplexer();
 			result = multiplexer.toNChannels(result, 
 			                                 targetNumChannels);
@@ -147,4 +155,10 @@ public class DecodedAudio
 		
 		return result;
 	}
+
+	@Override
+    public String toString()
+    {
+        return "<DecodedAudio - " + mFormat + ">";
+    }
 }

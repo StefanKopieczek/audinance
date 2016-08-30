@@ -2,6 +2,8 @@ package com.stefankopieczek.audinance.conversion.resamplers;
 import com.stefankopieczek.audinance.formats.*;
 import com.stefankopieczek.audinance.audiosources.*;
 
+import java.util.logging.Logger;
+
 /**
  * A <tt>Resampler</tt> that approximates points between known samples by
  * taking an (unweighted) average of its immediate neighbours.
@@ -15,12 +17,16 @@ import com.stefankopieczek.audinance.audiosources.*;
  */
 public class NaiveResampler implements Resampler
 {
+    private static final Logger sLogger = Logger.getLogger(NaiveResampler.class.getName());
+
 	public DecodedAudio resample(DecodedAudio original, 
 	                             Integer targetSampleRate)
 	{
 		DecodedSource[] originalChannels = original.getChannels();
 		AudioFormat originalFormat = original.getFormat();
 		Integer originalSampleRate = originalFormat.getSampleRate();
+        sLogger.info("Resampling " + original + " from " + originalSampleRate + "Hz to " +
+                     targetSampleRate + "Hz");
 
 		AudioFormat newFormat = 
 			new AudioFormat(targetSampleRate, 

@@ -2,25 +2,28 @@ package com.stefankopieczek.audinance.player;
 
 import com.stefankopieczek.audinance.formats.EncodedAudio;
 import com.stefankopieczek.audinance.formats.UnsupportedFormatException;
-import com.stefankopieczek.audinance.renderer.JavaRenderer;
 import com.stefankopieczek.audinance.renderer.MediaPlayer;
 
-import javax.imageio.plugins.jpeg.JPEGHuffmanTable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Player extends JFrame
 {
-    public static final int WIDTH = 480;
-    public static final int HEIGHT = 580;
+    public static final int WIDTH = 640;
+    public static final int HEIGHT = 480;
 
     private JTextArea outputConsole;
     private JButton loadButton;
     private JButton playButton;
+
+    private static final Logger logger = Logger.getLogger(Player.class.getName());
+    private static Logger packageLogger;
 
     private EncodedAudio loadedAudio = null;
 
@@ -45,32 +48,47 @@ public class Player extends JFrame
         main.add(outputConsole, BorderLayout.CENTER);
         main.add(buttonPanel, BorderLayout.SOUTH);
         add(main);
+
+        outputConsole.append("Welcome to Audinance Player!\n");
+    }
+
+    private static void initLogging()
+    {
+        packageLogger = Logger.getLogger("com.stefankopieczek.audinance");
+        packageLogger.setLevel(Level.ALL);
     }
 
     private void showLoadFileDialog()
     {
+        logger.info("Displaying file chooser dialog");
         JFileChooser dialog = new JFileChooser();
         int rc = dialog.showOpenDialog(this);
         if (rc == JFileChooser.APPROVE_OPTION)
         {
             File chosen = dialog.getSelectedFile();
+            logger.info("Loading file " + chosen);
 
             try
             {
                 loadedAudio = FileLoader.loadAudio(chosen);
+                logger.fine("Loaded file " + chosen + ": " + loadedAudio);
             }
             catch (IOException e)
             {
-                showError("IO error loading " + chosen + ": " + e);
+                logger.severe("IO error loading " + chosen + ": " + e);
             }
             catch (UnsupportedFormatException e)
             {
-                showError(chosen + " was not a recognised audio file.");
+                logger.severe(chosen + " was not a recognised audio file");
             }
             catch (Exception e)
             {
-                showError("Error loading " + chosen + ": " + e);
+                logger.severe("Error loading " + chosen + ": " + e);
             }
+        }
+        else
+        {
+            logger.info("File chooser dialog cancelled");
         }
     }
 
@@ -80,28 +98,23 @@ public class Player extends JFrame
         {
             try
             {
+                logger.info("Playing audio " + loadedAudio);
                 MediaPlayer.play(loadedAudio);
             }
             catch (Exception e)
             {
-                showError("Error playing audio: " + e);
+                logger.severe("Error playing audio: " + e);
             }
         }
         else
         {
-            showError("You must first select an audio file to play.");
+            logger.severe("You must first select an audio file to play.");
         }
-    }
-
-    private void showError(String s)
-    {
-        outputConsole.append("ERROR: " + s + "\n");
     }
 
     private static JTextArea buildOutputConsole()
     {
-        JTextArea console = new JTextArea();
-        console.setEditable(false);
+        JTextArea console = new LoggingPanel(packageLogger);
         return console;
     }
 
@@ -148,6 +161,7 @@ public class Player extends JFrame
 
     public static void main(String[] args)
     {
+        initLogging();
         JFrame player = new Player();
         player.setVisible(true);
     }

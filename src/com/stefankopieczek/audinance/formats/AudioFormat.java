@@ -28,8 +28,8 @@ public class AudioFormat
 		String sampleString = "sample rate: " + mSampleRate + "Hz";
 		String channelString = mChannels + " channels";
 		
-		return "(AudioFormat - " + sampleString + ", " +
-               channelString + ")";
+		return "<AudioFormat - " + sampleString + ", " +
+               channelString + ">";
 	}
 	
 	@Override

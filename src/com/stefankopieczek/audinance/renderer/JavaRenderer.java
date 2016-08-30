@@ -1,6 +1,8 @@
 package com.stefankopieczek.audinance.renderer;
 
 import java.nio.ByteOrder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
@@ -15,6 +17,8 @@ import com.stefankopieczek.audinance.utils.AudinanceUtils;
 
 public class JavaRenderer extends Renderer 
 {
+    private static final Logger sLogger = Logger.getLogger(JavaRenderer.class.getName());
+
 	public JavaRenderer(DecodedAudio decodedAudio)
 	{
 		super(decodedAudio);
@@ -22,13 +26,15 @@ public class JavaRenderer extends Renderer
 	
 	public void play()
 	{
+	    sLogger.info("Playing decoded audio " + mAudio);
+
 		javax.sound.sampled.AudioFormat format = mAudio.getFormat().getJmfAudioFormat();
 		SourceDataLine line = null;
 		
 		DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
 		if (!AudioSystem.isLineSupported(info))
 		{
-			return; // TODO
+			sLogger.warning("Audio " + mAudio + " is in a format that Java cannot natively play: " + info);
 		}
 		try
 		{
@@ -37,7 +43,7 @@ public class JavaRenderer extends Renderer
 		}
 		catch (LineUnavailableException ex)
 		{
-			return; // TODO			
+			sLogger.log(Level.SEVERE, "Line unavailable while playing audio", ex);
 		}
 		
 		new LineWriter(line).start();
@@ -55,6 +61,7 @@ public class JavaRenderer extends Renderer
 		@Override
 		public void run()
 		{
+		    sLogger.fine("Starting LineWriter " + this);
 			mLine.start();
 			
 			try
@@ -63,10 +70,11 @@ public class JavaRenderer extends Renderer
 			}
 			catch (InvalidAudioFormatException e)
 			{
-				// Do something sensible here later. TODO.
+				sLogger.log(Level.SEVERE, mAudio + " is in an invalid format", e);
 			}
 			finally
 			{
+			    sLogger.fine("Closing LineWriter");
 				mLine.drain();
 				mLine.stop();
 				mLine.close();

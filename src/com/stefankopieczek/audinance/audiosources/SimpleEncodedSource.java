@@ -33,5 +33,11 @@ public class SimpleEncodedSource extends EncodedSource
 		{			
 			throw new NoMoreDataException();
 		}
-	}	
+	}
+
+	@Override
+	public String toString()
+    {
+        return "<SimpleEncodedSource - " + mData.length + " bytes>";
+    }
 }

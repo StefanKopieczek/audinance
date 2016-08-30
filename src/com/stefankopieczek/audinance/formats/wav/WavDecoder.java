@@ -2,6 +2,8 @@ package com.stefankopieczek.audinance.formats.wav;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteOrder;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import com.stefankopieczek.audinance.audiosources.*;
 import com.stefankopieczek.audinance.formats.AudioFormat;
@@ -13,6 +15,8 @@ import com.stefankopieczek.audinance.utils.AudinanceUtils;
  */
 public class WavDecoder
 {
+    private static final Logger sLogger = Logger.getLogger(WavDecoder.class.getName());
+
     /**
 	 * The source from which we draw the WAV data.
 	 */
@@ -50,7 +54,7 @@ public class WavDecoder
 	 * Note that decoding occurs 'just-in-time' rather than up-front, so if the WAV
 	 * data is corrupt, this may not be detected until the relevant audio is requested.
 	 *
-	 * @throws ImvalidWavDataException if the wav data is invalid or corrupt.
+	 * @throws InvalidWavDataException if the wav data is invalid or corrupt.
 	 * @throws UnsupportedWavEncodingException if the wav data is encoded with a codec that
 	 *         we do not support.
 	 */
@@ -59,12 +63,15 @@ public class WavDecoder
 	{
 		// The entire wav file is comprised of a single RIFF chunk.
 		RiffChunk riffChunk = new RiffChunk(0);
-		
+        sLogger.fine("Loaded riff chunk at index 0: " + riffChunk);
+
 		// The RIFF chunk header specifies where the RIFF payload starts.
 		// We assume the payload starts with a fmt subchunk.
 		// TODO: Add support for other chunks and more complex structure.
 		final FmtSubchunk fmtChunk = new FmtSubchunk(RiffChunk.DATA_IDX_OFFSET, 
 				                                     riffChunk);
+        sLogger.fine("Loaded FMT subchunk at index " + RiffChunk.DATA_IDX_OFFSET + ": " + fmtChunk);
+
 													 
 		// We assume the next subchunk in the RIFF payload is the wav data chunk.
 		final DataSubchunk dataChunk = new DataSubchunk(fmtChunk.getEndIndex(), 

@@ -1,15 +1,19 @@
 package com.stefankopieczek.audinance.formats.wav;
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
 import com.stefankopieczek.audinance.formats.*;
+
 import java.io.*;
+import java.util.logging.Logger;
 
 /**
  * Represents a WAV audio clip, undecoded, backed by data drawn from some
  * abstract source.
  */
 public class WavData extends EncodedAudio
-{	
- 	/**
+{
+	private static final Logger sLogger = Logger.getLogger(WavData.class.getName());
+
+    /**
 	 * The format of the WAV data. This includes recording information,
 	 * as the sample rate, but also datatype-specific parameters such as
 	 * the encoding type (PCM, ALAW, ...)
@@ -29,13 +33,14 @@ public class WavData extends EncodedAudio
 		       IOException,
 			   InvalidAudioFormatException
 	{
-		super(file);		
+		super(file);
+        sLogger.info("Constructed WavData object for file " + file);
 	}
 	
 	/**
 	 * Constructs a WAV clip backed by the given input stream.
 	 *
-	 * @param file The wav file to build this clip from.
+	 * @param is The input stream to build this clip from.
 	 * @throws IOException if we fail to read from the stream.
 	 * @throws InvalidAudioFormatException TODO SMK
 	 */
@@ -43,6 +48,7 @@ public class WavData extends EncodedAudio
 		throws IOException, InvalidAudioFormatException
 	{
 		super(is);
+        sLogger.info("Constructed WavData object for InputStream " + is);
 	}
 	
 	/**
@@ -54,14 +60,15 @@ public class WavData extends EncodedAudio
 	 * @param encodedAudio The audio on which to base this WAV clip.
 	 * @param format The recording format in which to store the resultant
 	 *               wav data.
-	 * @throws InvalidAudioFormat If the specified audio format is underdetermined.
+	 * @throws InvalidAudioFormatException If the specified audio format is underdetermined.
 	 * @throws UnsupportedFormatException SMK todo
 	 */
 	public WavData(EncodedAudio encodedAudio, AudioFormat format) 
 		throws InvalidAudioFormatException, 
 		       UnsupportedFormatException
 	{
-		super(encodedAudio, format);		
+		super(encodedAudio, format);
+        sLogger.info("Constructed WavData object from audio " + encodedAudio + " with target format " + format);
 	}
 	
 	/**
@@ -76,12 +83,15 @@ public class WavData extends EncodedAudio
 	{		
 		mData = wavSource;
 		mFormat = format;
+        sLogger.info("Constructed WavData object from existing WAV source " + wavSource + " with target format " +
+                     format);
 	}
 
 	@Override
 	public DecodedAudio getDecodedAudio() 
         throws InvalidWavDataException, UnsupportedWavEncodingException 
 	{
+	    sLogger.info("Decoding " + this);
 		WavDecoder wavDecoder = new WavDecoder(getSource());
 		return wavDecoder.getDecodedAudio();
 	}
@@ -154,6 +164,8 @@ public class WavData extends EncodedAudio
 		
 		format = new WavFormat(sampleRate, numChannels, encoding, 
 				                                                bitsPerSample);
+
+        sLogger.info("Final audio format will be " + format);
 		
 		if (!format.isEntirelyDetermined())
 		{

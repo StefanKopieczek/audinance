@@ -1,5 +1,6 @@
 package com.stefankopieczek.audinance.conversion.multiplexers;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 import com.stefankopieczek.audinance.audiosources.DecodedSource;
 import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
@@ -17,17 +18,22 @@ import com.stefankopieczek.audinance.formats.*;
  */
 public class SimpleMultiplexer implements Multiplexer
 {
-	/**
+    private static final Logger sLogger = Logger.getLogger(SimpleMultiplexer.class.getName());
+
+    /**
 	 * Remix the specified audio, returning a copy with precisely the specified
 	 * number of channels. If it has too few, we add channels equal to the mix
 	 * of all existing channels. If it has too many, we flatten the last few
 	 * channels into a single track.  
 	 */
-	public DecodedAudio toNChannels(DecodedAudio result, 
+	public DecodedAudio toNChannels(DecodedAudio originalAudio,
 	                                Integer targetNumChannels)
 	{
-		DecodedSource[] oldChannels = result.getChannels();
-		DecodedSource[] newChannels = 
+		DecodedSource[] oldChannels = originalAudio.getChannels();
+        sLogger.info("Remultiplexing " + originalAudio + " from " + oldChannels.length + " channels to " +
+                     targetNumChannels);
+
+        DecodedSource[] newChannels =
 	  	              new DecodedSource[targetNumChannels.intValue()];
 		
 		if (targetNumChannels > oldChannels.length)
@@ -66,7 +72,7 @@ public class SimpleMultiplexer implements Multiplexer
 						                             oldChannels.length));
 		}
 		
-		DecodedAudio newAudio = new DecodedAudio(result.getFormat(), 
+		DecodedAudio newAudio = new DecodedAudio(originalAudio.getFormat(),
                                                  newChannels);
 		return newAudio;
 	}
@@ -113,5 +119,4 @@ public class SimpleMultiplexer implements Multiplexer
 			}
 		}
 	}
-	
 }
