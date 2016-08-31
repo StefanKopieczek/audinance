@@ -15,11 +15,11 @@ import com.stefankopieczek.audinance.formats.DecodedAudio;
 import com.stefankopieczek.audinance.formats.InvalidAudioFormatException;
 import com.stefankopieczek.audinance.utils.AudinanceUtils;
 
-public class JavaRenderer extends Renderer 
+public class BasicRenderer extends Renderer
 {
-    private static final Logger sLogger = Logger.getLogger(JavaRenderer.class.getName());
+    private static final Logger sLogger = Logger.getLogger(BasicRenderer.class.getName());
 
-	public JavaRenderer(DecodedAudio decodedAudio)
+	public BasicRenderer(DecodedAudio decodedAudio)
 	{
 		super(decodedAudio);
 	}

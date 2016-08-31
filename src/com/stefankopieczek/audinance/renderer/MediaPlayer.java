@@ -14,7 +14,7 @@ public class MediaPlayer
 	public static void play(DecodedAudio audio)		
 	{
 	    sLogger.info("Playing encoded audio: " + audio);
-		Renderer renderer = new JavaRenderer(audio);
+		Renderer renderer = new RemixingRenderer(audio);
 		renderer.play();
 	}
 	

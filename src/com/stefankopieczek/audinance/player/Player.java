@@ -58,7 +58,7 @@ public class Player extends JFrame
     private static void initLogging()
     {
         packageLogger = Logger.getLogger("com.stefankopieczek.audinance");
-        packageLogger.setLevel(Level.ALL);
+        packageLogger.setLevel(Level.FINEST);
     }
 
     private void showLoadFileDialog()
