@@ -7,10 +7,6 @@ import java.nio.ByteOrder;
 
 public class LpcSubframe extends PredictiveSubframe
 {
-	private EncodedSource mSrc;
-	
-	private Frame mParent;
-	
 	private int mOrder;		
 	
 	private int[] mWarmUpSamples;
@@ -22,9 +18,8 @@ public class LpcSubframe extends PredictiveSubframe
 	private int[] mCoefficients;
 		
 	public LpcSubframe(EncodedSource src, Frame parent, int order)
-	{		
-		mSrc = src;
-		mParent = parent;
+	{
+		super(src, parent);
 		mOrder = order;
 	}
 
@@ -39,7 +34,7 @@ public class LpcSubframe extends PredictiveSubframe
 	{
 		if (mPrecision == null)
 		{
-			int precisionIndex = mParent.getBitsPerSample() * mOrder;
+			int precisionIndex = getHeaderSize() + mParent.getBitsPerSample() * mOrder;
 			mPrecision = mSrc.intFromBits(precisionIndex, 4, ByteOrder.BIG_ENDIAN);
 		}
 		
@@ -51,7 +46,7 @@ public class LpcSubframe extends PredictiveSubframe
 		// TODO: Definitely test this.
 		if (mShift == null)
 		{
-			int shiftIndex = mParent.getBitsPerSample() * mOrder + 4;
+			int shiftIndex = getHeaderSize() + mParent.getBitsPerSample() * mOrder + 4;
 			mShift = mSrc.intFromBits(shiftIndex, 5, ByteOrder.BIG_ENDIAN);
 			
 			mShift = BitUtils.uintTo2sComplement(mShift, 4);			
@@ -69,7 +64,7 @@ public class LpcSubframe extends PredictiveSubframe
 			for (int ii = 0; ii < mOrder; ii++)
 			{								
 				int bitsPerSample = mParent.getBitsPerSample();
-				int startIdx = ii * bitsPerSample;			
+				int startIdx = getHeaderSize() + ii * bitsPerSample;
 				mWarmUpSamples[ii] = mSrc.intFromBits(startIdx, 
 						                              bitsPerSample, 
 						                              ByteOrder.BIG_ENDIAN);
@@ -93,13 +88,14 @@ public class LpcSubframe extends PredictiveSubframe
 			{
 				// TODO: Check the order these come out and make sure it's consistent
 				// with the rest of the data.
-				int startIdx = bitOffset + precision * ii;
+				int startIdx = getHeaderSize() + bitOffset + precision * ii;
 				mCoefficients[ii] = mSrc.intFromBits(startIdx,
 						                             precision,
 						                             ByteOrder.BIG_ENDIAN);
 				mCoefficients[ii] = 
 						BitUtils.uintTo2sComplement(mCoefficients[ii], 
-								                    precision - 1);
+								                    precision - 1)
+                        << shift;
 			}
 		}		
 				
@@ -107,18 +103,9 @@ public class LpcSubframe extends PredictiveSubframe
 	}
 
 	@Override
-	public double getPredictedSample(int idx) 
-	{
-		mWarmUpSamples = getWarmUpSamples();
-		mCoefficients = getCoefficients();
-		return 0; //TODO
-	}
-
-	@Override
 	protected Residual getResidual() 
 	{
-		int residualStartIdx = 
-				mOrder * (mParent.getBitsPerSample() + getPrecision()) + 9;
+		int residualStartIdx = getHeaderSize() + mOrder * (mParent.getBitsPerSample() + getPrecision()) + 9;
 		
 		return Residual.buildFromSource(mSrc.bitSlice(residualStartIdx), mParent, mOrder);
 	}

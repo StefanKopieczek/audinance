@@ -25,10 +25,10 @@ public class SimpleEncodedSource extends EncodedSource
 	
 	@Override
 	public byte getByte(int index) throws NoMoreDataException
-	{		
+	{
 		if (index < mData.length)
 		{	
-			return mData[index];
+			return mData[(int)index];
 		}
 		else
 		{			

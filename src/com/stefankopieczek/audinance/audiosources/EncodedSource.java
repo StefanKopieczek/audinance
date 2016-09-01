@@ -158,7 +158,7 @@ public abstract class EncodedSource
 		return new EncodedSource()
 		{
 			@Override
-			public byte getByte(int index) throws NoMoreDataException 
+			public byte getByte(int index) throws NoMoreDataException
 			{
 				if (index * 8 >= length - 7)
 				{
@@ -200,7 +200,7 @@ public abstract class EncodedSource
 		return new EncodedSource()
 		{
 			@Override
-			public byte getByte(int index) throws NoMoreDataException 
+			public byte getByte(int index) throws NoMoreDataException
 			{
 				byte result = 0;
 				
@@ -219,9 +219,9 @@ public abstract class EncodedSource
 					int leftByteIndex = parentBitIndex / 8;
 					byte leftByte = parent.getByte(leftByteIndex);
 					byte rightByte = parent.getByte(leftByteIndex + 1);
-					int leftBitsNeeded = parentBitIndex % 8;
+					long leftBitsNeeded = parentBitIndex % 8;
 					
-					int leftBitsMask = (int)(Math.pow(2, leftBitsNeeded)) - 1;
+					long leftBitsMask = (long)(Math.pow(2, leftBitsNeeded)) - 1;
 					result = (byte)((leftByte & leftBitsMask) << (8 - leftBitsNeeded));
 					result += (rightByte >> (8 - leftBitsNeeded));
 				}		
@@ -257,6 +257,42 @@ public abstract class EncodedSource
 				return parent.bitSlice(start + start2, length);
 			}
 		};
+	}
+
+	public long getUtf8Codepoint(int bitIndex)
+	{
+	    long result = 0;
+
+        int bytesRemaining = 0;
+		if (getBit(bitIndex) == 0)
+        {
+            result = intFromBits(bitIndex + 1, 7, ByteOrder.BIG_ENDIAN);
+        }
+        else if (getBit(bitIndex + 2) == 0)
+        {
+            result = intFromBits(bitIndex + 3, 5, ByteOrder.BIG_ENDIAN);
+            bytesRemaining = 1;
+        }
+        else if (getBit(bitIndex + 3) == 0)
+        {
+            result = intFromBits(bitIndex + 4, 4, ByteOrder.BIG_ENDIAN);
+            bytesRemaining = 2;
+        }
+        else
+        {
+            result = intFromBits(bitIndex + 5, 3, ByteOrder.BIG_ENDIAN);
+            bytesRemaining = 3;
+        }
+
+        while (bytesRemaining > 0)
+        {
+            bitIndex += 8;
+            result *= 128;
+            result += intFromBits(bitIndex + 2, 6, ByteOrder.BIG_ENDIAN);
+            bytesRemaining -= 1;
+        }
+
+        return result;
 	}
 	
 	public abstract int getLength();

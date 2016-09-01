@@ -6,16 +6,11 @@ import java.nio.ByteOrder;
 
 public class ConstantSubframe extends Subframe
 {
-	private EncodedSource mSrc;
-	
-	private Frame mParent;
-	
 	private Integer mValue;
 	
 	public ConstantSubframe(EncodedSource src, Frame parent)
-	{		
-		mSrc = src;
-		mParent = parent;
+	{
+		super(src, parent);
 	}
 	
 	@Override
@@ -29,7 +24,7 @@ public class ConstantSubframe extends Subframe
 	{
 		if (mValue == null)
 		{
-			mValue = mSrc.intFromBits(0, getSize(), ByteOrder.BIG_ENDIAN);
+			mValue = mSrc.intFromBits(getHeaderSize(), getSize(), ByteOrder.BIG_ENDIAN);
 		}
 		
 		return mValue;

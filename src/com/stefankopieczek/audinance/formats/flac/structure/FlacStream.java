@@ -1,7 +1,11 @@
 package com.stefankopieczek.audinance.formats.flac.structure;
 
+import com.stefankopieczek.audinance.audiosources.DecodedSource;
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
-import com.stefankopieczek.audinance.formats.flac.FlacDecoder;
+import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
+import com.stefankopieczek.audinance.formats.DecodedAudio;
+import com.stefankopieczek.audinance.formats.InvalidAudioFormatException;
+import com.stefankopieczek.audinance.formats.flac.FlacFormat;
 
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -12,41 +16,39 @@ public class FlacStream
 {
     private static final Logger sLogger = Logger.getLogger(FlacStream.class.getName());
     private static final int METADATA_START_IDX = 32;
-	
-	private int mFramesStartIdx;
+    public static final int SYNC_CODE_LENGTH = 14;
+
+    private int mFramesStartIdx;
 	
 	private List<MetadataBlock> mMetadata;
 
     private EncodedSource mSource;
 
-    // This is a horrible hack and you should feel bad.
-    // We do this to prevent having to deal with variable bitrates
-    // upstream. Ech.
-    public Frame mFirstFrame;
-    private boolean mIsFirstFrame = true;
-	
 	private StreamInfoBlock mStreamInfo;
 	
 	private Boolean mHasSeektable = null;
 	
 	private SeektableBlock mSeektableBlock;
-    private int mPtr;
+    private final int mFirstFrameIdx;
+
+    private Frame mCachedFrame = null;
+    private int mCachedFrameIdx = 0;
 
     public FlacStream(EncodedSource source) {
         sLogger.fine("Constructing FlacStream for source " + source);
 
         // Get the metadata
         this.mSource = source;
-        mPtr = METADATA_START_IDX;
+        int ptr = METADATA_START_IDX;
         boolean moreBlocks = true;
         mMetadata = new ArrayList<MetadataBlock>();
 
         while (moreBlocks) {
-            MetadataBlock next = MetadataBlock.buildFromSource(mSource, mPtr);
+            MetadataBlock next = MetadataBlock.buildFromSource(mSource, ptr);
             sLogger.fine("Parsed metadata block " + next + "; isLastBlock? " + next.mIsLastBlock);
 
             mMetadata.add(next);
-            mPtr += next.mLength;
+            ptr += next.mLength;
             moreBlocks = !next.mIsLastBlock;
         }
 
@@ -54,33 +56,71 @@ public class FlacStream
         // Todo: handle failure better here.
         mStreamInfo = (StreamInfoBlock) mMetadata.get(0);
 
-        // Disgusting hack: read the first frame for audio data.
-        int syncCode = mSource.intFromBits(mPtr, 14, ByteOrder.BIG_ENDIAN);
-        mPtr += 14;
-        mFirstFrame = new Frame(mSource.bitSlice(14), mStreamInfo);
-        mPtr += mFirstFrame.getLength();
+        mFirstFrameIdx = ptr;
     }
 
-    public Frame nextFrame()
+    public FlacFormat getFormat()
+    {
+        return new FlacFormat(mStreamInfo.getSampleRate(),
+                              mStreamInfo.getNumChannels(),
+                              mStreamInfo.getMinimumBlockSize(),
+                              mStreamInfo.getMaximumBlockSize());
+    }
+
+    public DecodedAudio getDecodedAudio()
+    {
+        DecodedSource[] channels = new DecodedSource[getNumChannels()];
+        for (int ii = 0; ii < channels.length; ii++)
+        {
+            final int channelIdx = ii;
+            channels[channelIdx] = new DecodedSource()
+            {
+                @Override
+                public double getSample(int sampleIdx) throws NoMoreDataException, InvalidAudioFormatException
+                {
+                    Frame frame = getFrameWithSample(sampleIdx);
+                    return frame.getDecodedChannels()[channelIdx].getSample(sampleIdx - frame.getSampleIndex());
+                }
+
+                @Override
+                public int getNumSamples()
+                {
+                    return mStreamInfo.getNumTotalSamples();
+                }
+            };
+        }
+
+        return new DecodedAudio(channels, getFormat());
+    }
+
+    private Frame getFrameWithSample(long sampleIdx)
+    {
+        if (mCachedFrame == null || mCachedFrame.getSampleIndex() > sampleIdx)
+        {
+            mCachedFrameIdx = mFirstFrameIdx;
+            mCachedFrame = getFrameAt(mCachedFrameIdx);
+        }
+
+        while (mCachedFrame.getSampleIndex() + mCachedFrame.getBlockSize() < sampleIdx)
+        {
+            mCachedFrameIdx += SYNC_CODE_LENGTH + mCachedFrame.getLength();
+            mCachedFrame = getFrameAt(mCachedFrameIdx);
+        }
+
+        return mCachedFrame;
+    }
+
+    public Frame getFrameAt(int ptr)
     {
         Frame frame;
-        if (mIsFirstFrame)
-        {
-            mIsFirstFrame = false;
-            frame =  mFirstFrame;
-        }
-        else
-        {
-            // Check to see if there are more frames left, by trying to read
-            // the start-of-frame sync code.
-            int syncCode = mSource.intFromBits(mPtr, 14, ByteOrder.BIG_ENDIAN);
-            mPtr += 14;
+        // Check to see if there are more frames left, by trying to read
+        // the start-of-frame sync code.
+        int syncCode = mSource.intFromBits(ptr, SYNC_CODE_LENGTH, ByteOrder.BIG_ENDIAN);
+        ptr += SYNC_CODE_LENGTH;
 
-            frame = new Frame(mSource.bitSlice(14), mStreamInfo);
-            mPtr += frame.getLength();
-        }
+        frame = new Frame(mSource.bitSlice(SYNC_CODE_LENGTH), mStreamInfo);
 
-        sLogger.finest("Parsed frame " + frame);
+        sLogger.finer("Parsed frame " + frame);
         return frame;
 	}
 	

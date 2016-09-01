@@ -1,5 +1,7 @@
 package com.stefankopieczek.audinance.formats.flac.structure;
 
+import com.stefankopieczek.audinance.audiosources.EncodedSource;
+
 import java.util.*;
 
 public abstract class PredictiveSubframe extends Subframe 
@@ -7,9 +9,9 @@ public abstract class PredictiveSubframe extends Subframe
 	private SampleCache mSampleCache;
 	
 	@Override
-	public double getSample(int idx) 
+	public double getSample(int idx)
 	{
-		return getPredictedSample(idx) + getResidual().getCorrection(idx);
+	    return getPredictedSample(idx) + getResidual().getCorrection(idx);
 	}
 	
 	protected abstract int[] getWarmUpSamples();
@@ -19,7 +21,12 @@ public abstract class PredictiveSubframe extends Subframe
 	protected abstract int[] getCoefficients();		
 
 	protected abstract Residual getResidual();
-	
+
+	public PredictiveSubframe(EncodedSource src, Frame parent)
+    {
+        super(src, parent);
+    }
+
 	private void initSampleCache()
 	{
 		int[] warmUpSamples = getWarmUpSamples();
@@ -47,7 +54,7 @@ public abstract class PredictiveSubframe extends Subframe
 		return total;
 	}
 	
-	public double getPredictedSample(int idx) 
+	public double getPredictedSample(int idx)
 	{		
 		if (mSampleCache.hasSample(idx))
 		{
@@ -67,7 +74,7 @@ public abstract class PredictiveSubframe extends Subframe
 		{
 			// Get the predicted sample by calculating from the start of the
 			// subframe.
-			ArrayList<Integer> currentSamples = new ArrayList<Integer>();			
+			ArrayList<Integer> currentSamples = new ArrayList<Integer>();
 			for (int sample : getWarmUpSamples())
 			{
 				currentSamples.add(sample);				
@@ -149,9 +156,10 @@ public abstract class PredictiveSubframe extends Subframe
 			}
 		}
 		
-		public boolean hasSample(int idx)
+		public boolean hasSample(long idx)
 		{
-			return mFixedValues.containsKey(idx) || mCache.containsKey(idx);
+			assert(idx < Integer.MAX_VALUE);
+			return mFixedValues.containsKey((int)idx) || mCache.containsKey((int)idx);
 		}
 		
 		public int getSample(int idx)

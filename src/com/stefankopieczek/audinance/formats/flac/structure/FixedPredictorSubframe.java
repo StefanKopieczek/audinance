@@ -1,15 +1,12 @@
 package com.stefankopieczek.audinance.formats.flac.structure;
 
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
+import com.stefankopieczek.audinance.formats.flac.InvalidFlacDataException;
 
 import java.nio.ByteOrder;
 
 public class FixedPredictorSubframe extends PredictiveSubframe
-{	
-	private final EncodedSource mSrc;
-	
-	private final Frame mParent;
-	
+{
 	private final int mOrder;
 	
 	private int[] mWarmUpSamples;
@@ -18,8 +15,7 @@ public class FixedPredictorSubframe extends PredictiveSubframe
 	
 	public FixedPredictorSubframe(EncodedSource src, Frame parent, int order)
 	{		
-		mSrc = src;
-		mParent = parent;
+		super(src, parent);
 		mOrder = order;
 	}
 	
@@ -43,7 +39,7 @@ public class FixedPredictorSubframe extends PredictiveSubframe
 			for (int ii = 0; ii < mOrder; ii++)
 			{								
 				int bitsPerSample = mParent.getBitsPerSample();
-				int startIdx = ii * bitsPerSample;			
+				int startIdx = getHeaderSize() + ii * bitsPerSample;
 				mWarmUpSamples[ii] = mSrc.intFromBits(startIdx, 
 						                              bitsPerSample, 
 						                              ByteOrder.BIG_ENDIAN);
@@ -84,9 +80,10 @@ public class FixedPredictorSubframe extends PredictiveSubframe
 				case 4:
 					// Fourth-order predictor fits a cubic.
 					// TODO: Derive 4th-order predictor.
-					break;
+					throw new RuntimeException("Not yet implemented");
+					// break;
 				default:
-					// TODO: Error
+                    throw new InvalidFlacDataException("Unknown fixed predictor order " + mOrder);
 			}						
 		}
 		
@@ -96,7 +93,7 @@ public class FixedPredictorSubframe extends PredictiveSubframe
 	@Override
 	protected Residual getResidual() 
 	{
-		int residualStartIdx = mOrder * mParent.getBitsPerSample();
+		int residualStartIdx = getHeaderSize() + mOrder * mParent.getBitsPerSample();
 		
 		return Residual.buildFromSource(mSrc.bitSlice(residualStartIdx), mParent, mOrder);
 	}		

@@ -1,6 +1,13 @@
 package com.stefankopieczek.audinance.formats.flac.structure;
 
+import com.stefankopieczek.audinance.audiosources.DecodedSource;
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
+import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
+import com.stefankopieczek.audinance.formats.InvalidAudioFormatException;
+import com.sun.xml.internal.bind.v2.runtime.output.Encoded;
+
+import java.nio.ByteOrder;
+import java.util.logging.Logger;
 
 /**
  * [Description of what a Subframe is]
@@ -17,15 +24,50 @@ import com.stefankopieczek.audinance.audiosources.EncodedSource;
  *
  */
 public abstract class Subframe
-{		
-	private Integer mWastedBitsPerSample;
+{
+    private static final Logger sLogger = Logger.getLogger(Subframe.class.getName());
+
+    protected static final int SUBFRAME_TYPE_IDX = 1;
+    protected static final int WASTED_BITS_IDX = 7;
+    protected static final int SUBFRAME_TYPE_LENGTH = 6;
+
+    protected final EncodedSource mSrc;
+    protected final Frame mParent;
+
+    private Integer mWastedBitsPerSample;
 	
 	private Integer mWastedBitsFieldLength;	
 	
+    public Subframe(EncodedSource src, Frame parent)
+    {
+        // Constructor builds the header fields, except for the typecode which is implied by the specific subclass of
+        // Subframe being constructed (e.g. ConstantSubframe has a typecode of 0).
+        // The body will be parsed out of the source by the subclass constructor.
+        mSrc = src;
+        mParent = parent;
+
+        // The number of wasted bits is encoded as either a 0 (for none wasted);
+        // or as a '1' followed by n-1 zeroes and a single 1 (for n wasted).
+        mWastedBitsPerSample = 0;
+        if (src.getBit(WASTED_BITS_IDX) == 1)
+        {
+            int currentIdx = 7;
+            int currentVal = 0;
+            while (currentVal == 0)
+            {
+                currentVal = src.getBit(currentIdx);
+                mWastedBitsPerSample += 1 - currentVal;
+            }
+        }
+
+        mWastedBitsFieldLength = mWastedBitsPerSample + 1;
+    }
+
 	public static Subframe buildFromSource(EncodedSource src, Frame parent)
 	{
 		Subframe subframe = null;
 		int typeCode = getTypeCode(src);
+
 		if (typeCode == 0)
 		{
 			subframe = new ConstantSubframe(src, parent);
@@ -66,58 +108,45 @@ public abstract class Subframe
 			int predictorOrder = (typeCode & 0b011111) + 1;
 			subframe = new LpcSubframe(src, parent, predictorOrder);
 		}
-		 
-		// The number of wasted bits is encoded as either a 0 (for none wasted);
-		// or as a '1' followed by n-1 zeroes and a single 1 (for n wasted).
-		int wastedBits = 0;
-		if (src.getBit(6) == 1)
-		{
-			int currentIdx = 7;
-			int currentVal = 0;
-			while (currentVal == 0)
-			{
-				currentVal = src.getBit(currentIdx);
-				wastedBits += 1 - currentVal;
-			}
-		}
-		
-		subframe.setWastedBitsPerSample(wastedBits);
 		
 		return subframe;
 	}
 	
-	public static int getTypeCode(EncodedSource src)
+	protected static int getTypeCode(EncodedSource src)
 	{
-		return 0; // TODO
+	    return src.intFromBits(SUBFRAME_TYPE_IDX, SUBFRAME_TYPE_LENGTH, ByteOrder.BIG_ENDIAN);
 	}
-	
+
+	protected int getHeaderSize()
+    {
+        // The header has constant size up until the last field (wasted_bits_per_sample) which is of variable length.
+        return WASTED_BITS_IDX + mWastedBitsFieldLength;
+    }
+
 	public int getSize()
 	{
-		return 7 + getWastedBitFieldLength() + getBodySize();
+		return getHeaderSize() + getBodySize();
 	}
-	
-	private int getWastedBitFieldLength()
-	{
-		if (mWastedBitsFieldLength == null)			
-		{
-			getWastedBitsPerSample();
-		}
-		
-		return mWastedBitsFieldLength;
-	}
-	
-	public int getWastedBitsPerSample()
-	{
-		return mWastedBitsPerSample;
-	}	
-	
-	public void setWastedBitsPerSample(int wastedBits)
-	{
-		mWastedBitsPerSample = wastedBits;
-		mWastedBitsFieldLength = wastedBits + 1;
-	}
+
+	public DecodedSource getSamples()
+    {
+        return new DecodedSource()
+        {
+            @Override
+            public double getSample(int idx) throws NoMoreDataException, InvalidAudioFormatException
+            {
+                return Subframe.this.getSample(idx);
+            }
+
+            @Override
+            public int getNumSamples()
+            {
+                return mParent.getBlockSize();
+            }
+        };
+    }
 	
 	public abstract int getBodySize();
-	
-	public abstract double getSample(int idx);
+
+    protected abstract double getSample(int idx);
 }

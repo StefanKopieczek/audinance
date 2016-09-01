@@ -12,8 +12,7 @@ public class VerbatimSubframe extends Subframe
 		
 	public VerbatimSubframe(EncodedSource src, Frame parent)
 	{
-		mSrc = src;
-		mParent = parent;
+		super(src, parent);
 	}
 
 	@Override
@@ -33,6 +32,6 @@ public class VerbatimSubframe extends Subframe
 		                                        "; max is " + (blockSize - 1));
 		}
 		
-		return mSrc.intFromBits(idx * blockSize, blockSize, ByteOrder.BIG_ENDIAN);
+		return mSrc.intFromBits(getHeaderSize() + idx * blockSize, blockSize, ByteOrder.BIG_ENDIAN);
 	}
 }

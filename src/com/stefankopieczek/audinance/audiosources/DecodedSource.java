@@ -27,7 +27,7 @@ public abstract class DecodedSource
 	 * decoder on top of an encoded stream, and the decoder fails because the
 	 * audio is corrupt.
 	 */
-	public abstract double getSample(int idx) 
+	public abstract double getSample(int idx)
 			throws NoMoreDataException, InvalidAudioFormatException;
 	
 	@Override

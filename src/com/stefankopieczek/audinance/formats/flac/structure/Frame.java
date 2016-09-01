@@ -1,6 +1,8 @@
 package com.stefankopieczek.audinance.formats.flac.structure;
 
+import com.stefankopieczek.audinance.audiosources.DecodedSource;
 import com.stefankopieczek.audinance.audiosources.EncodedSource;
+import com.stefankopieczek.audinance.formats.DecodedAudio;
 import com.stefankopieczek.audinance.formats.flac.InvalidFlacDataException;
 
 import java.nio.ByteOrder;
@@ -9,7 +11,8 @@ import java.util.List;
 
 public class Frame
 {
-	private EncodedSource mSrc;
+    public static final int INDEX_FIELD_LOCATION = 18;
+    private EncodedSource mSrc;
 	
 	private StreamInfoBlock mStreamInfo;
 	
@@ -62,6 +65,17 @@ public class Frame
 			ptr += next.getSize();
 		}
 	}
+
+	public DecodedSource[] getDecodedChannels()
+    {
+        DecodedSource[] decodedChannels = new DecodedSource[mSubframes.size()];
+        for (int idx = 0; idx < mSubframes.size(); idx++)
+        {
+            decodedChannels[idx] = mSubframes.get(idx).getSamples();
+        }
+
+        return decodedChannels;
+    }
 	
 	public boolean isVariableBlocksize()
 	{
@@ -76,7 +90,7 @@ public class Frame
 	
 	public int getLength()
     {
-        int length =  18 + mIndexFieldLength + mBlockSizeExtraBits + mSampleRateExtraBits + 24;
+        int length =  INDEX_FIELD_LOCATION + mIndexFieldLength + mBlockSizeExtraBits + mSampleRateExtraBits + 24;
         for(Subframe subframe : mSubframes)
             length += subframe.getSize();
         return length;
@@ -122,7 +136,7 @@ public class Frame
 	
 	private int getBlockSizeFromEnd(int bitsUsed)
 	{		
-		int startIdx = 18 + getIndexFieldLength();
+		int startIdx = INDEX_FIELD_LOCATION + getIndexFieldLength();
 		
 		return mSrc.intFromBits(startIdx, bitsUsed, ByteOrder.BIG_ENDIAN);		
 	}
@@ -179,7 +193,7 @@ public class Frame
 	
 	private int getSampleRateFromEnd(int bitsUsed, int scale)
 	{
-		int startIdx = 18 + getIndexFieldLength() + getBlockSizeExtraBits();
+		int startIdx = INDEX_FIELD_LOCATION + getIndexFieldLength() + getBlockSizeExtraBits();
 		
 		return mSrc.intFromBits(startIdx, bitsUsed, ByteOrder.BIG_ENDIAN) * scale;
 	}
@@ -233,7 +247,7 @@ public class Frame
 			}
 			else
 			{
-				// error TODO
+				throw new InvalidFlacDataException("Unsupported channel code " + channelCode);
 			}
 		}
 		
@@ -250,28 +264,27 @@ public class Frame
 				case 0: mBitsPerSample = mStreamInfo.getBitsPerSample(); break;
 				case 1: mBitsPerSample = 8; break;
 				case 2: mBitsPerSample = 12; break;
-				case 3: // error TODO
 				case 4: mBitsPerSample = 16; break;
 				case 5: mBitsPerSample = 20; break;
 				case 6: mBitsPerSample = 24; break;
-				default: // error TODO
+				default: throw new InvalidFlacDataException("Unsupported bit depth code " + sizeBits);
 			}			
 		}
 				
 		return mBitsPerSample.intValue();	
 	}
 	
-	private int getSampleIdx()
+	public int getSampleIndex()
 	{
 		if (mSampleIdx == null)
 		{
 			calculateIndexValues();		
 		}
-		
+
 		return mSampleIdx;
 	}
 	
-	private int getFrameIdx()
+	public long getFrameIndex()
 	{
 		if (mFrameIdx == null)
 		{
@@ -285,16 +298,35 @@ public class Frame
 	{
 		int onesCount = 0;
 
-        for (int ptr = 18; mSrc.getBit(ptr) == 1; ptr++)
+        for (int ptr = INDEX_FIELD_LOCATION; mSrc.getBit(ptr) == 1; ptr++)
         {
             onesCount++;
         }
 
         mIndexFieldLength =  8 * (onesCount + 1);
-        mSampleIdx = 0; // TODO
-        mFrameIdx = 0;  // TODO
+
+        long indexField = mSrc.getUtf8Codepoint(INDEX_FIELD_LOCATION);
+        long cap = indexField;
+
+		if (isVariableBlocksize())
+        {
+            mSampleIdx = (int)indexField;
+            mFrameIdx = null;
+        }
+        else
+        {
+            mFrameIdx = (int)indexField;
+            mSampleIdx = (int)mFrameIdx * getBlockSize();
+            cap *= getBlockSize();
+        }
+
+        if (cap > Integer.MAX_VALUE)
+        {
+            throw new UnsupportedFlacDataException("Files with over " + Integer.MAX_VALUE +
+                    " samples/frames are unsupported");
+        }
 	}
-	
+
 	private int getIndexFieldLength()
 	{
 		if (mIndexFieldLength == null)
@@ -328,7 +360,7 @@ public class Frame
 		// bits follow, and then an 8-bit checksum.
 		return 26 + getIndexFieldLength() + getBlockSizeExtraBits() + 
 				                                      getSampleRateExtraBits();
-	}	
+	}
 	
 	public int getHeaderChecksum()
 	{
