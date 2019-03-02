@@ -1,6 +1,8 @@
-package com.stefankopieczek.audinance.formats.flac;
+package com.kopieczek.audinance.formats.flac;
 
-import com.stefankopieczek.audinance.audiosources.EncodedSource;
+import com.kopieczek.audinance.formats.*;
+import com.kopieczek.audinance.audiosources.EncodedSource;
+import com.stefankopieczek.audinance.formats.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -66,7 +68,7 @@ public class FlacData extends EncodedAudio
 	 * @throws InvalidAudioFormatException If the specified audio format is underdetermined.
 	 * @throws UnsupportedFormatException SMK todo
 	 */
-	public FlacData(EncodedAudio encodedAudio, AudioFormat format) 
+	public FlacData(EncodedAudio encodedAudio, AudioFormat format)
 	throws InvalidAudioFormatException, 
 	UnsupportedFormatException
 	{
@@ -90,7 +92,7 @@ public class FlacData extends EncodedAudio
 	}
 
 	@Override
-	public DecodedAudio getDecodedAudio() 
+	public DecodedAudio getDecodedAudio()
 	{
 	    sLogger.info("Decoding " + this);
 		FlacDecoder flacDecoder = new FlacDecoder(getSource());
