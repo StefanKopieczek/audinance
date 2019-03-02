@@ -1,9 +1,12 @@
 package com.kopieczek.audinance.formats.wav;
-import com.kopieczek.audinance.formats.*;
-import com.kopieczek.audinance.audiosources.EncodedSource;
-import com.stefankopieczek.audinance.formats.*;
 
-import java.io.*;
+import com.kopieczek.audinance.audiosources.EncodedSource;
+import com.kopieczek.audinance.formats.*;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Logger;
 
 /**

@@ -1,9 +1,9 @@
 package com.kopieczek.audinance.renderer;
 
+import com.kopieczek.audinance.formats.DecodedAudio;
 import com.kopieczek.audinance.formats.EncodedAudio;
 import com.kopieczek.audinance.formats.InvalidAudioFormatException;
 import com.kopieczek.audinance.formats.UnsupportedFormatException;
-import com.kopieczek.audinance.formats.DecodedAudio;
 
 import java.util.logging.Logger;
 

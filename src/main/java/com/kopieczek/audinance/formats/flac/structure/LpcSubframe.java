@@ -1,7 +1,7 @@
 package com.kopieczek.audinance.formats.flac.structure;
 
-import com.kopieczek.audinance.utils.BitUtils;
 import com.kopieczek.audinance.audiosources.EncodedSource;
+import com.kopieczek.audinance.utils.BitUtils;
 
 import java.nio.ByteOrder;
 

@@ -5,8 +5,7 @@ import com.kopieczek.audinance.formats.AudioFormat;
 import com.kopieczek.audinance.formats.DecodedAudio;
 import com.kopieczek.audinance.testutils.MockDecodedSource;
 import com.kopieczek.audinance.testutils.TestUtilities;
-import com.stefankopieczek.audinancetests.testutils.*;
-import org.junit.*;
+import org.junit.Test;
 
 public abstract class TestAbstractMultiplexer
 {

@@ -1,11 +1,10 @@
 package com.kopieczek.audinance.conversion.resamplers;
 
-import com.kopieczek.audinance.testutils.MockDecodedSource;
-import org.junit.Test;
-
 import com.kopieczek.audinance.audiosources.DecodedSource;
 import com.kopieczek.audinance.formats.AudioFormat;
 import com.kopieczek.audinance.formats.DecodedAudio;
+import com.kopieczek.audinance.testutils.MockDecodedSource;
+import org.junit.Test;
 
 public class TestNaiveResampler extends AbstractResamplerTest
 {

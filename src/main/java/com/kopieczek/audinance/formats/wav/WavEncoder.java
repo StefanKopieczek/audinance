@@ -1,12 +1,12 @@
 package com.kopieczek.audinance.formats.wav;
 
-import com.kopieczek.audinance.formats.InvalidAudioFormatException;
-import com.kopieczek.audinance.formats.UnsupportedFormatException;
-import com.kopieczek.audinance.utils.BitUtils;
 import com.kopieczek.audinance.audiosources.DecodedSource;
 import com.kopieczek.audinance.audiosources.EncodedSource;
 import com.kopieczek.audinance.audiosources.NoMoreDataException;
 import com.kopieczek.audinance.formats.DecodedAudio;
+import com.kopieczek.audinance.formats.InvalidAudioFormatException;
+import com.kopieczek.audinance.formats.UnsupportedFormatException;
+import com.kopieczek.audinance.utils.BitUtils;
 
 import java.nio.ByteOrder;
 

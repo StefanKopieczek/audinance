@@ -5,9 +5,10 @@ import com.kopieczek.audinance.audiosources.NoMoreDataException;
 import com.kopieczek.audinance.formats.AudioFormat;
 import com.kopieczek.audinance.formats.DecodedAudio;
 import com.kopieczek.audinance.formats.InvalidAudioFormatException;
+import org.junit.Assert;
 
-import java.util.*;
-import org.junit.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestUtilities
 {

@@ -1,15 +1,15 @@
 package com.kopieczek.audinance.formats.wav;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteOrder;
-import java.util.logging.Logger;
-
-import com.kopieczek.audinance.formats.AudioFormat;
-import com.kopieczek.audinance.utils.BitUtils;
 import com.kopieczek.audinance.audiosources.DecodedSource;
 import com.kopieczek.audinance.audiosources.EncodedSource;
 import com.kopieczek.audinance.audiosources.NoMoreDataException;
+import com.kopieczek.audinance.formats.AudioFormat;
 import com.kopieczek.audinance.formats.DecodedAudio;
+import com.kopieczek.audinance.utils.BitUtils;
+
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteOrder;
+import java.util.logging.Logger;
 
 /**
  * Class that handles decoding of WAV data into raw <tt>DecodedAudio</tt>.

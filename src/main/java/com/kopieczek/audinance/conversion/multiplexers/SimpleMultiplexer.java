@@ -1,5 +1,4 @@
 package com.kopieczek.audinance.conversion.multiplexers;
-import java.util.logging.Logger;
 
 import com.kopieczek.audinance.audiosources.DecodedSource;
 import com.kopieczek.audinance.audiosources.NoMoreDataException;
@@ -7,6 +6,7 @@ import com.kopieczek.audinance.formats.DecodedAudio;
 import com.kopieczek.audinance.formats.InvalidAudioFormatException;
 
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * Basic implementation of multiplexer which:

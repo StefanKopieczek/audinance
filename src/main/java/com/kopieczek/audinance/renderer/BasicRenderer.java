@@ -1,19 +1,18 @@
 package com.kopieczek.audinance.renderer;
 
-import java.nio.ByteOrder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.kopieczek.audinance.audiosources.DecodedSource;
+import com.kopieczek.audinance.audiosources.NoMoreDataException;
+import com.kopieczek.audinance.formats.DecodedAudio;
+import com.kopieczek.audinance.formats.InvalidAudioFormatException;
+import com.kopieczek.audinance.utils.BitUtils;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
-
-import com.kopieczek.audinance.formats.InvalidAudioFormatException;
-import com.kopieczek.audinance.utils.BitUtils;
-import com.kopieczek.audinance.audiosources.DecodedSource;
-import com.kopieczek.audinance.audiosources.NoMoreDataException;
-import com.kopieczek.audinance.formats.DecodedAudio;
+import java.nio.ByteOrder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class BasicRenderer extends Renderer
 {

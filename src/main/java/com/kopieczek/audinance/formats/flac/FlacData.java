@@ -1,8 +1,7 @@
 package com.kopieczek.audinance.formats.flac;
 
-import com.kopieczek.audinance.formats.*;
 import com.kopieczek.audinance.audiosources.EncodedSource;
-import com.stefankopieczek.audinance.formats.*;
+import com.kopieczek.audinance.formats.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;

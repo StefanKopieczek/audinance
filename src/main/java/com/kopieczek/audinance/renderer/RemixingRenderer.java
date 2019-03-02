@@ -1,10 +1,10 @@
 package com.kopieczek.audinance.renderer;
 
-import com.kopieczek.audinance.formats.AudioFormat;
 import com.kopieczek.audinance.conversion.multiplexers.Multiplexer;
 import com.kopieczek.audinance.conversion.multiplexers.SimpleMultiplexer;
 import com.kopieczek.audinance.conversion.resamplers.NaiveResampler;
 import com.kopieczek.audinance.conversion.resamplers.Resampler;
+import com.kopieczek.audinance.formats.AudioFormat;
 import com.kopieczek.audinance.formats.DecodedAudio;
 
 import java.util.logging.Logger;

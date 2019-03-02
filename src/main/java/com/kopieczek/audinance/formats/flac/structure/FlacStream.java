@@ -2,10 +2,10 @@ package com.kopieczek.audinance.formats.flac.structure;
 
 import com.kopieczek.audinance.audiosources.DecodedSource;
 import com.kopieczek.audinance.audiosources.EncodedSource;
+import com.kopieczek.audinance.audiosources.NoMoreDataException;
 import com.kopieczek.audinance.formats.DecodedAudio;
 import com.kopieczek.audinance.formats.InvalidAudioFormatException;
 import com.kopieczek.audinance.formats.flac.FlacFormat;
-import com.kopieczek.audinance.audiosources.NoMoreDataException;
 
 import java.nio.ByteOrder;
 import java.util.ArrayList;
