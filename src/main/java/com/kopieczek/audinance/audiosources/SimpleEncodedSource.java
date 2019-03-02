@@ -6,45 +6,33 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Naive implementation of EncodedAudioSource which simply reads all
- * audio data into memory.
+ * Naive implementation of EncodedAudioSource which simply reads all audio data into memory.
  */
 public class SimpleEncodedSource extends EncodedSource
 {
-	/**
-	 * The array containing the data read from the underlying source.
-	 */
 	private byte[] mData;
 	
-	public SimpleEncodedSource(InputStream is)
-		throws IOException
-	{
-		// Immediately pull all data from the stream into memory.
+	public SimpleEncodedSource(InputStream is) throws IOException {
 		mData = BitUtils.getByteArrayFromStream(is);
 	}
 	
 	@Override
 	public byte getByte(int index) throws NoMoreDataException
 	{
-		if (index < mData.length)
-		{	
-			return mData[(int)index];
+	    if (index >= mData.length) {
+	        throw new NoMoreDataException();
 		}
-		else
-		{			
-			throw new NoMoreDataException();
-		}
+
+        return mData[index];
 	}
 
 	@Override
-	public int getLength()
-	{
+	public int getLength() {
 		return mData.length;
 	}
 
 	@Override
-	public String toString()
-    {
+	public String toString() {
         return "<SimpleEncodedSource - " + mData.length + " bytes>";
     }
 }
