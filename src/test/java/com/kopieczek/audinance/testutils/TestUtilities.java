@@ -83,7 +83,7 @@ public class TestUtilities
 		
 		for (int jj = 0; jj < rawData.size(); jj++)
 		{
-			result[ii] = rawData.get(ii).doubleValue();
+			result[jj] = rawData.get(jj).doubleValue();
 		}
 		
 		return result;
