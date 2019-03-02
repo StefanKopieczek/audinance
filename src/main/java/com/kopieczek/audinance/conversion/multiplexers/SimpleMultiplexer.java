@@ -70,7 +70,7 @@ public class SimpleMultiplexer implements Multiplexer
 			// Flatten all remaining channels into a single track, and add it.
 			newChannels[targetNumChannels-1] =
 				new CombinedAudio(Arrays.copyOfRange(oldChannels,
-						                             targetNumChannels,
+						                             targetNumChannels - 1,
 						                             oldChannels.length));
 		}
 		

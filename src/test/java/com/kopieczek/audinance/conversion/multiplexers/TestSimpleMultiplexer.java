@@ -10,11 +10,6 @@ public class TestSimpleMultiplexer extends AbstractMultiplexerTest {
         return new SimpleMultiplexer();
     }
 
-    @Ignore // Currently broken
-    public void testSingleChannelIdentity() {
-        super.testSingleChannelIdentity();
-    }
-
     @Ignore // Test not yet implemented
     @Override
     public void testMonoToStereo() {
