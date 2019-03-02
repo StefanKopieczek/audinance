@@ -62,6 +62,46 @@ public class TestSimpleEncodedSource {
         assertEquals(2, src.getLength());
     }
 
+    @Test(expected = NoMoreDataException.class)
+    public void test_retrieving_first_byte_of_empty_source_throws_no_more_data_exception() {
+        buildSource().getByte(0);
+    }
+
+    @Test(expected = NoMoreDataException.class)
+    public void test_retrieving_second_byte_of_empty_source_throws_no_more_data_exception() {
+        buildSource().getByte(1);
+    }
+
+    @Test(expected = NoMoreDataException.class)
+    public void test_retrieving_third_byte_of_empty_source_throws_no_more_data_exception() {
+        buildSource().getByte(2);
+    }
+
+    @Test(expected = NoMoreDataException.class)
+    public void test_retrieving_second_byte_of_singleton_source_throws_no_more_data_exception() {
+        buildSource(0x00).getByte(1);
+    }
+
+    @Test(expected = NoMoreDataException.class)
+    public void test_retrieving_third_byte_of_singleton_source_throws_no_more_data_exception() {
+        buildSource(0x00).getByte(3);
+    }
+
+    @Test(expected = NoMoreDataException.class)
+    public void test_retrieving_byte_9_of_singleton_source_throws_no_more_data_exception() {
+        buildSource(0x00).getByte(9);
+    }
+
+    @Test(expected = NoMoreDataException.class)
+    public void test_retrieving_one_digit_too_far_in_long_source_throws_no_more_data_exception() {
+        buildSource(-0x7f, 0x4f, 0x64, 0x23).getByte(4);
+    }
+
+    @Test(expected = NoMoreDataException.class)
+    public void test_retrieving_much_too_far_in_long_source_throws_no_more_data_exception() {
+        buildSource(-0x7f, 0x4f, 0x64, 0x23).getByte(400);
+    }
+
     private static SimpleEncodedSource buildSource(int... contents) {
         byte[] bytes = new byte[contents.length];
         for (int idx = 0; idx < contents.length; idx++) {
