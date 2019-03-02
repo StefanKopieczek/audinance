@@ -1,8 +1,9 @@
 package com.stefankopieczek.audinance.audiosources;
-import com.stefankopieczek.audinance.*;
-import com.stefankopieczek.audinance.utils.AudinanceUtils;
 
-import java.io.*;
+import com.stefankopieczek.audinance.utils.BitUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Naive implementation of EncodedAudioSource which simply reads all
@@ -19,20 +20,26 @@ public class SimpleEncodedSource extends EncodedSource
 		throws IOException
 	{
 		// Immediately pull all data from the stream into memory.
-		mData = AudinanceUtils.getByteArrayFromStream(is);
+		mData = BitUtils.getByteArrayFromStream(is);
 	}
 	
 	@Override
 	public byte getByte(int index) throws NoMoreDataException
-	{		
+	{
 		if (index < mData.length)
 		{	
-			return mData[index];
+			return mData[(int)index];
 		}
 		else
 		{			
 			throw new NoMoreDataException();
 		}
+	}
+
+	@Override
+	public int getLength()
+	{
+		return mData.length;
 	}
 
 	@Override

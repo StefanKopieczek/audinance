@@ -1,6 +1,5 @@
 package com.stefankopieczek.audinancetests.conversion.resamplers;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.stefankopieczek.audinance.audiosources.DecodedSource;
@@ -10,7 +9,7 @@ import com.stefankopieczek.audinance.formats.AudioFormat;
 import com.stefankopieczek.audinance.formats.DecodedAudio;
 import com.stefankopieczek.audinancetests.testutils.MockDecodedSource;
 
-public class TestNaiveResampler extends TestAbstractResampler
+public class TestNaiveResampler extends AbstractResamplerTest
 {
 	private Resampler mResampler = null;	
 	

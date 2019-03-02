@@ -1,10 +1,12 @@
 package com.stefankopieczek.audinance.conversion.multiplexers;
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 import com.stefankopieczek.audinance.audiosources.DecodedSource;
 import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
-import com.stefankopieczek.audinance.formats.*;
+import com.stefankopieczek.audinance.formats.DecodedAudio;
+import com.stefankopieczek.audinance.formats.InvalidAudioFormatException;
+
+import java.util.Arrays;
 
 /**
  * Basic implementation of multiplexer which:
@@ -117,6 +119,24 @@ public class SimpleMultiplexer implements Multiplexer
 			{
 				throw new NoMoreDataException();
 			}
+		}
+		
+		@Override
+		public int getNumSamples()
+		{
+			int result = 0;
+
+			for (DecodedSource source : mSources)
+			{
+				int sourceSamples = source.getNumSamples();
+				
+				if (sourceSamples > result)
+				{
+					result = sourceSamples;
+				}
+			}
+			
+			return result;
 		}
 	}
 }

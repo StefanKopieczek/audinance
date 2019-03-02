@@ -1,5 +1,7 @@
 package com.stefankopieczek.audinance.formats;
-import com.stefankopieczek.audinance.audiosources.*;
+import com.stefankopieczek.audinance.audiosources.EncodedSource;
+import com.stefankopieczek.audinance.audiosources.SimpleEncodedSource;
+
 import java.io.*;
 import java.util.logging.Logger;
 

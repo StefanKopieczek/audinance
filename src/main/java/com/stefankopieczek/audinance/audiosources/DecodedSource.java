@@ -1,9 +1,9 @@
 package com.stefankopieczek.audinance.audiosources;
 
+import com.stefankopieczek.audinance.formats.InvalidAudioFormatException;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.stefankopieczek.audinance.formats.InvalidAudioFormatException;
 
 /**
  * A generic implementation of a decoded audio source.
@@ -27,7 +27,7 @@ public abstract class DecodedSource
 	 * decoder on top of an encoded stream, and the decoder fails because the
 	 * audio is corrupt.
 	 */
-	public abstract double getSample(int idx) 
+	public abstract double getSample(int idx)
 			throws NoMoreDataException, InvalidAudioFormatException;
 	
 	@Override
@@ -124,4 +124,6 @@ public abstract class DecodedSource
 		
 		return result;
 	}
+	
+	public abstract int getNumSamples();
 }

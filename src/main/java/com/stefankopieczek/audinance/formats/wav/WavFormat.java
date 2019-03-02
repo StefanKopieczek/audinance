@@ -42,7 +42,7 @@ public class WavFormat extends AudioFormat
 		String encoding = getWavEncoding().toString();
 		String bitDepth = "bit depth: " + getBitsPerSample();
 		
-		return "(AudioFormat - " + 
+		return "(WavFormat - " + 
 		       sampleString + ", " +
                channelString + ", " +
 		       encoding + ", " +

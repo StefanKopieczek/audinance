@@ -1,6 +1,10 @@
 package com.stefankopieczek.audinance.conversion.resamplers;
-import com.stefankopieczek.audinance.formats.*;
-import com.stefankopieczek.audinance.audiosources.*;
+
+import com.stefankopieczek.audinance.audiosources.DecodedSource;
+import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
+import com.stefankopieczek.audinance.formats.AudioFormat;
+import com.stefankopieczek.audinance.formats.DecodedAudio;
+import com.stefankopieczek.audinance.formats.InvalidAudioFormatException;
 
 import java.util.logging.Logger;
 
@@ -104,6 +108,12 @@ public class NaiveResampler implements Resampler
 			double successor = mOriginal.getSample((int)Math.ceil(floatIdx));
 			
 			return (precursor+successor)/2;
+		}
+		
+		@Override
+		public int getNumSamples()
+		{
+			return (int)(mOriginal.getNumSamples() / mScaleFactor);
 		}
 	}
 }

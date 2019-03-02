@@ -166,7 +166,7 @@ public class WavData extends EncodedAudio
 				                                                bitsPerSample);
 
         sLogger.info("Final audio format will be " + format);
-		
+
 		if (!format.isEntirelyDetermined())
 		{
 			throw new InvalidAudioFormatException("Format is underspecified, " +		                                          

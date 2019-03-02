@@ -1,6 +1,5 @@
 package com.stefankopieczek.audinance.formats.wav;
 
-import com.stefankopieczek.audinance.formats.AudioFormat;
 import com.stefankopieczek.audinance.formats.UnsupportedFormatException;
 
 /**

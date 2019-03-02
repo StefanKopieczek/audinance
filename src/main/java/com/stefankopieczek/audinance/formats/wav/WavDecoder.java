@@ -2,13 +2,14 @@ package com.stefankopieczek.audinance.formats.wav;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteOrder;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import com.stefankopieczek.audinance.audiosources.*;
+import com.stefankopieczek.audinance.audiosources.DecodedSource;
+import com.stefankopieczek.audinance.audiosources.EncodedSource;
+import com.stefankopieczek.audinance.audiosources.NoMoreDataException;
 import com.stefankopieczek.audinance.formats.AudioFormat;
 import com.stefankopieczek.audinance.formats.DecodedAudio;
-import com.stefankopieczek.audinance.utils.AudinanceUtils;
+import com.stefankopieczek.audinance.utils.BitUtils;
 
 /**
  * Class that handles decoding of WAV data into raw <tt>DecodedAudio</tt>.
@@ -28,11 +29,11 @@ public class WavDecoder
 	}
 	
 	/**
-	 * Gets an array of bytes of the given length from the data sourcr, starting
+	 * Gets an array of bytes of the given length from the data source, starting
 	 * at the given index.
 	 * TODO: Why isn't this a method of EncodedSource?
 	 *
-	 * @param start The byte index tonstart reading from in the encoded source.
+	 * @param start The byte index to start reading from in the encoded source.
 	 * @param length The number of bytes to read.
 	 * @return 'length' bytes from mWavSource, starting at index 'start'.
 	 */
@@ -72,11 +73,12 @@ public class WavDecoder
 				                                     riffChunk);
         sLogger.fine("Loaded FMT subchunk at index " + RiffChunk.DATA_IDX_OFFSET + ": " + fmtChunk);
 
-													 
+
 		// We assume the next subchunk in the RIFF payload is the wav data chunk.
 		final DataSubchunk dataChunk = new DataSubchunk(fmtChunk.getEndIndex(), 
 				                                        riffChunk,
 				                                        fmtChunk.getBitsPerSample());
+		sLogger.fine("Loaded data subchunk at index " + fmtChunk.getEndIndex() + ": " + dataChunk);
 		
 		DecodedSource[] channels = new DecodedSource[fmtChunk.getNumChannels()];		
 		
@@ -87,21 +89,25 @@ public class WavDecoder
 			final int finalChannel = channel;
 			channels[channel] = new DecodedSource()
 			{
-				public double getSample(int idx) 
+				public double getSample(int idx)
 					throws InvalidWavDataException, NoMoreDataException
 				{
 					// The index of the individual bit in the wav data that begins the frame
 					// containing the desired sample.
-					int frameStartIdx = fmtChunk.getBitsPerSample() * 
+					int frameStartIdx = fmtChunk.getBitsPerSample() *
 							            idx * 
 							            fmtChunk.getNumChannels();
 										
 					// The number of bits at the start of the frame before the desired sample.
-					int offsetToSample = finalChannel * 
-							                          fmtChunk.getBitsPerSample();
+					int offsetToSample = finalChannel * fmtChunk.getBitsPerSample();
 													  
 					// Get the sample by specifying the index as a byte.
 					return dataChunk.getSample((frameStartIdx + offsetToSample) / 8);
+				}
+				
+				public int getNumSamples()
+				{
+					return (int)(dataChunk.getLength() * 8.0 / (dataChunk.mBitsPerSample * fmtChunk.getNumChannels()));
 				}
 			};
 		}
@@ -158,7 +164,7 @@ public class WavDecoder
 			
 			if (mLength == null)
 			{
-				int lengthValue = AudinanceUtils.intFromBytes(
+				int lengthValue = BitUtils.intFromBytes(
 						                   getRange(chunkSizeIdx, 4), getEndianism());
 				 mLength = getChunkSizeIdxOffset() + 4 + lengthValue;			                     
 			}
@@ -169,13 +175,13 @@ public class WavDecoder
 		protected short getShort(int idx) throws InvalidWavDataException
 		{
 			byte[] bytes = getRange(getStartIndex() + idx, 2);
-			return AudinanceUtils.shortFromBytes(bytes, getEndianism());
+			return BitUtils.shortFromBytes(bytes, getEndianism());
 		}
 		
 		protected int getInt(int idx) throws InvalidWavDataException
 		{
 			byte[] bytes = getRange(getStartIndex() + idx, 4);
-			return AudinanceUtils.intFromBytes(bytes, getEndianism());
+			return BitUtils.intFromBytes(bytes, getEndianism());
 		}
 	}
 	
@@ -199,7 +205,7 @@ public class WavDecoder
 				String chunkId = null;
 				try
 				{
-					chunkId = AudinanceUtils.stringFromBytes(getRange(ID_IDX_OFFSET, 4));
+					chunkId = BitUtils.stringFromBytes(getRange(ID_IDX_OFFSET, 4));
 				}
 				catch (UnsupportedEncodingException e)
 				{
@@ -364,11 +370,11 @@ public class WavDecoder
 			return CHUNK_SIZE_IDX_OFFSET;
 		}
 		
-		public double getSample(int byteIdx) 
+		public double getSample(int byteIdx)
 				throws InvalidWavDataException, NoMoreDataException
 		{
 			double result;						
-			int endOfSample = (int)(byteIdx + Math.ceil(mBitsPerSample / 8.0)); 
+			long endOfSample = (long)(byteIdx + Math.ceil(mBitsPerSample / 8.0));
 			if (endOfSample >= getLength())
 			{
 				throw new NoMoreDataException();
@@ -384,14 +390,14 @@ public class WavDecoder
 			else if (mBitsPerSample == 16)
 			{
 				byte[] bytes = getRange(getStartIndex() + byteIdx, 2);
-				result = AudinanceUtils.shortFromBytes(bytes, getEndianism());
+				result = BitUtils.shortFromBytes(bytes, getEndianism());
 			}
 			else if (mBitsPerSample == 32)
 			{
 				byte[] bytes = getRange(getStartIndex() + byteIdx, 4);
 				// Currently assuming 32-bit int; float to come later.
 				// Divide by 65536 = 2^16 to normalise to same energy as 16 bit.
-				result = AudinanceUtils.intFromBytes(bytes, getEndianism()) / 65536.0;				
+				result = BitUtils.intFromBytes(bytes, getEndianism()) / 65536.0;				
 			}
 			else
 			{

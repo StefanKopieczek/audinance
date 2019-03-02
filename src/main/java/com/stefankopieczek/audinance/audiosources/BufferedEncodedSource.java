@@ -1,5 +1,6 @@
 package com.stefankopieczek.audinance.audiosources;
-import java.io.*;
+
+import java.io.InputStream;
 
 // SMK: The plan is to provide a half-way house between SimpleEncodedSource,
 // which simply buffers everything into an array; and just streaming the
@@ -9,12 +10,17 @@ public class BufferedEncodedSource extends EncodedSource
 {
 	public BufferedEncodedSource(InputStream is)
 	{
-		// todo
+		// TODO
 	}
 	
 	public byte getByte(int index) throws NoMoreDataException
 	{
-		// todo
+		// TODO
 		throw new NoMoreDataException();
+	}
+	
+	public int getLength()
+	{
+		return 0; // TODO
 	}
 }
