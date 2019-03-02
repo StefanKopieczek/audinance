@@ -24,8 +24,7 @@ public class BitUtils
 	 * @param is The InputStream to read into a byte array.
 	 * @return The contents of the stream, as a a byte array.
 	 */
-	public static byte[] getByteArrayFromStream(InputStream is)
-		throws IOException
+	public static byte[] getByteArrayFromStream(InputStream is) throws IOException
 	{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		byte[] buffer = new byte[BYTE_BUFFER_SIZE];
