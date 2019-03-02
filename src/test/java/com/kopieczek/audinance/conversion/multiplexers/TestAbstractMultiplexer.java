@@ -1,11 +1,10 @@
-package com.kopieczek.audinancetests.conversion.multiplexers;
+package com.kopieczek.audinance.conversion.multiplexers;
 
 import com.kopieczek.audinance.audiosources.DecodedSource;
-import com.kopieczek.audinance.conversion.multiplexers.Multiplexer;
 import com.kopieczek.audinance.formats.AudioFormat;
 import com.kopieczek.audinance.formats.DecodedAudio;
-import com.kopieczek.audinancetests.testutils.MockDecodedSource;
-import com.kopieczek.audinancetests.testutils.TestUtilities;
+import com.kopieczek.audinance.testutils.MockDecodedSource;
+import com.kopieczek.audinance.testutils.TestUtilities;
 import com.stefankopieczek.audinancetests.testutils.*;
 import org.junit.*;
 

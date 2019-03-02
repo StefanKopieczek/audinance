@@ -1,17 +1,16 @@
-package com.kopieczek.audinancetests.conversion.resamplers;
+package com.kopieczek.audinance.conversion.resamplers;
 
-import com.kopieczek.audinancetests.testutils.MockDecodedSource;
+import com.kopieczek.audinance.testutils.MockDecodedSource;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.kopieczek.audinance.audiosources.DecodedSource;
 import com.kopieczek.audinance.audiosources.NoMoreDataException;
-import com.kopieczek.audinance.conversion.resamplers.Resampler;
 import com.kopieczek.audinance.formats.AudioFormat;
 import com.kopieczek.audinance.formats.DecodedAudio;
 import com.kopieczek.audinance.formats.InvalidAudioFormatException;
 
-public abstract class TestAbstractResampler 
+public abstract class AbstractResamplerTest 
 {
 	/**
 	 * Build a resampler to use for testing.

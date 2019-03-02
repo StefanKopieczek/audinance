@@ -1,12 +1,11 @@
-package com.kopieczek.audinancetests.audiosources;
+package com.kopieczek.audinance.audiosources;
 
 import java.nio.ByteOrder;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.kopieczek.audinance.audiosources.EncodedSource;
-import com.kopieczek.audinancetests.testutils.MockEncodedSource;
+import com.kopieczek.audinance.testutils.MockEncodedSource;
 
 public class TestEncodedSource 
 {

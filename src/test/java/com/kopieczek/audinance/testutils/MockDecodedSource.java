@@ -1,4 +1,4 @@
-package com.kopieczek.audinancetests.testutils;
+package com.kopieczek.audinance.testutils;
 
 import com.kopieczek.audinance.audiosources.DecodedSource;
 import com.kopieczek.audinance.audiosources.NoMoreDataException;

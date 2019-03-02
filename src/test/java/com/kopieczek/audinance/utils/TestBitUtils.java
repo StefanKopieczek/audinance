@@ -1,9 +1,7 @@
-package com.kopieczek.audinancetests.utils;
+package com.kopieczek.audinance.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.kopieczek.audinance.utils.BitUtils;
 
 public class TestBitUtils 
 {
