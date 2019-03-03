@@ -92,16 +92,16 @@ public class SimpleMultiplexer implements Multiplexer
 		{
 			double sampleValue = 0;
 			boolean hasData = false;
-			
-			// Mixing audio is as simple as adding the values of each channel
-			// in the frame together.
-			// TODO: Scale audio if it clips.
+
+			// Use an iterative mean algorithm to take the average of all channel values at this index, without risking
+			// overflowing
+			int t = 1;
 			for (DecodedSource source : mSources)
 			{
 				try
 				{
-					// TODO: Test for numeric overflow.
-					sampleValue += source.getSample(idx);
+					sampleValue += (source.getSample(idx) - sampleValue) / t;
+					t++;
 					hasData = true;
 				}
 				catch (NoMoreDataException e)

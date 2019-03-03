@@ -52,6 +52,41 @@ public class TestSimpleMultiplexer {
                 .run();
     }
 
+    @Test
+    public void test_stereo_to_mono_averages_data() {
+        double[] channel1 = new double[] {10, 20, 30, 40, 50, -10, -20, -30, -40, -50};
+        double[] channel2 = new double[] {1, -2, 3, -4, 5, -6, 7, -8, 9, -10};
+
+        double[] expected = new double[channel1.length];
+        for (int idx = 0; idx < channel1.length; idx++) {
+            expected[idx] = (channel1[idx] + channel2[idx]) / 2;
+        }
+
+        new TestCase("Plexing from 2->1 channels should average both streams")
+                .withInputChannel(channel1)
+                .withInputChannel(channel2)
+                .expectingChannel(expected)
+                .run();
+    }
+
+    @Test
+    public void test_stereo_to_mono_does_not_overflow() {
+        new TestCase("Plexing from 2->1 channels should not overflow")
+                .withInputChannel(Double.MAX_VALUE, Double.MIN_VALUE)
+                .withInputChannel(Double.MAX_VALUE, Double.MIN_VALUE)
+                .expectingChannel(Double.MAX_VALUE, Double.MIN_VALUE)
+                .run();
+    }
+
+    @Test
+    public void test_if_input_becomes_mono_during_plexing_then_we_pass_through_the_mono_data() {
+        new TestCase("If input becomes mono during when plexing to 1 channel, we should just pass through the mono data")
+                .withInputChannel(0, 2, 4, 4, 5, 6)
+                .withInputChannel(0, 0, 0)
+                .expectingChannel(0, 1, 2, 4, 5, 6)
+                .run();
+    }
+
     private class TestCase {
         final private String message;
         private ArrayList<double[]> inputChannelData = new ArrayList<>();
