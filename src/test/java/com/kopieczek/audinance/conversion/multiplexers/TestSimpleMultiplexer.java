@@ -1,16 +1,8 @@
 package com.kopieczek.audinance.conversion.multiplexers;
 
-import com.kopieczek.audinance.audiosources.DecodedSource;
-import com.kopieczek.audinance.formats.AudioFormat;
+import com.kopieczek.audinance.conversion.AbstractConverterTest;
 import com.kopieczek.audinance.formats.DecodedAudio;
-import com.kopieczek.audinance.testutils.MockDecodedSource;
-import com.kopieczek.audinance.testutils.TestUtilities;
-import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.ArrayList;
-
-import static org.junit.Assert.fail;
 
 public class TestSimpleMultiplexer {
     @Test
@@ -128,45 +120,32 @@ public class TestSimpleMultiplexer {
                 .run();
     }
 
-    private class TestCase {
-        final private String message;
-        private ArrayList<double[]> inputChannelData = new ArrayList<>();
-        private ArrayList<double[]> expectedOutputData = new ArrayList<>();
-
+    private class TestCase extends AbstractConverterTest<TestCase> {
         TestCase(String message) {
-            this.message = message;
+            super(message);
         }
 
-        TestCase withInputChannel(double... samples) {
-            inputChannelData.add(samples);
+        @Override
+        protected TestCase getThis() {
             return this;
         }
 
-        TestCase expectingChannel(double... samples) {
-            expectedOutputData.add(samples);
-            return this;
+        @Override
+        protected Integer getInputSampleRate() {
+            // Sample rate doesn't matter for multiplexing
+            return null;
         }
 
-        void run() {
-            AudioFormat dummyFormat = new AudioFormat(null, inputChannelData.size());
+        @Override
+        protected Integer getOutputSampleRate() {
+            // Sample rate doesn't matter for multiplexing
+            return null;
+        }
 
-            DecodedSource[] inputChannels = new DecodedSource[inputChannelData.size()];
-            for (int idx = 0; idx < inputChannelData.size(); idx++) {
-                inputChannels[idx] = new MockDecodedSource(inputChannelData.get(idx));
-            }
-
-            DecodedSource[] expectedOutputChannels = new DecodedSource[expectedOutputData.size()];
-            for (int idx = 0; idx < expectedOutputData.size(); idx++) {
-                expectedOutputChannels[idx] = new MockDecodedSource(expectedOutputData.get(idx));
-            }
-
-            DecodedAudio inputAudio = new DecodedAudio(dummyFormat, inputChannels);
-            DecodedAudio expectedOutputAudio = new DecodedAudio(dummyFormat, expectedOutputChannels);
-
+        @Override
+        protected DecodedAudio doConversion(DecodedAudio input) {
             Multiplexer multiplexer = new SimpleMultiplexer();
-            DecodedAudio actualOutputAudio = multiplexer.toNChannels(inputAudio, expectedOutputChannels.length);
-
-            TestUtilities.assertDecodedAudioEqual(message, expectedOutputAudio, actualOutputAudio);
+            return multiplexer.toNChannels(input, expectedOutputChannels.size());
         }
     }
 }
