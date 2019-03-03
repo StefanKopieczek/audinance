@@ -2,10 +2,14 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'java'
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 repositories {
     jcenter()
 }
 
 dependencies {
     testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core:3.11.1'
 }
