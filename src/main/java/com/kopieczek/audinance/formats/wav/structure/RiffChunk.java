@@ -25,12 +25,7 @@ public class RiffChunk extends Chunk {
     }
 
     private ByteOrder getEndianismInternal() throws InvalidWavDataException {
-        String chunkId;
-        try {
-            chunkId = BitUtils.stringFromBytes(getRange(CHUNK_ID_OFFSET_IN_BYTES, 4));
-        } catch (UnsupportedEncodingException e) {
-            throw new InvalidWavDataException("Invalid RIFF header ID format", e);
-        }
+        String chunkId = getString(CHUNK_ID_OFFSET_IN_BYTES, CHUNK_SIZE_OFFSET_IN_BYTES);
 
         switch (chunkId) {
             case "RIFF":

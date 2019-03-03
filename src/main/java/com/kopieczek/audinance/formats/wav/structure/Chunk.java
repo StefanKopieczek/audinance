@@ -5,7 +5,9 @@ import com.kopieczek.audinance.formats.wav.InvalidWavDataException;
 import com.kopieczek.audinance.formats.wav.WavDecoder;
 import com.kopieczek.audinance.utils.BitUtils;
 
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.Charset;
 
 public abstract class Chunk
 {
@@ -61,6 +63,12 @@ public abstract class Chunk
     {
         byte[] bytes = getRange(getStartIndex() + idx, 4);
         return BitUtils.intFromBytes(bytes, getEndianism());
+    }
+
+    protected String getString(int idx, int length) throws InvalidWavDataException
+    {
+        byte[] bytes = getRange(getStartIndex() + idx, length);
+        return Charset.forName("ASCII").decode(ByteBuffer.wrap(bytes)).toString();
     }
 
     protected byte[] getRange(int start, int length) {

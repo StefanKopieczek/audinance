@@ -68,7 +68,6 @@ public class TestRiffChunk {
                 .isThrownBy(() -> new RiffChunk(data, 0).getEndianism());
     }
 
-    @Ignore // Currently broken
     @Test
     public void test_riff_header_parsed_with_one_null_byte_pad() {
         EncodedSource data = buildRiffData(9,
@@ -81,7 +80,6 @@ public class TestRiffChunk {
         assertEquals(ByteOrder.LITTLE_ENDIAN, riff.getEndianism());
     }
 
-    @Ignore // Currently broken
     @Test
     public void test_rifx_header_parsed_with_one_null_byte_pad() {
         EncodedSource data = buildRiffData(9,
@@ -94,7 +92,6 @@ public class TestRiffChunk {
         assertEquals(ByteOrder.BIG_ENDIAN, riff.getEndianism());
     }
 
-    @Ignore // Currently broken
     @Test
     public void test_riff_header_parsed_with_nine_null_byte_pad() {
         EncodedSource data = buildRiffData(17,
@@ -107,7 +104,6 @@ public class TestRiffChunk {
         assertEquals(ByteOrder.LITTLE_ENDIAN, riff.getEndianism());
     }
 
-    @Ignore // Currently broken
     @Test
     public void test_rifx_header_parsed_with_nine_null_byte_pad() {
         EncodedSource data = buildRiffData(17,
@@ -120,7 +116,6 @@ public class TestRiffChunk {
         assertEquals(ByteOrder.BIG_ENDIAN, riff.getEndianism());
     }
 
-    @Ignore // Currently broken
     @Test
     public void test_riff_header_parsed_with_single_non_null_byte_pad() {
         EncodedSource data = buildRiffData(9,
@@ -133,7 +128,6 @@ public class TestRiffChunk {
         assertEquals(ByteOrder.LITTLE_ENDIAN, riff.getEndianism());
     }
 
-    @Ignore // Currently broken
     @Test
     public void test_rifx_header_parsed_with_single_non_null_byte_pad() {
         EncodedSource data = buildRiffData(9,
@@ -146,7 +140,6 @@ public class TestRiffChunk {
         assertEquals(ByteOrder.BIG_ENDIAN, riff.getEndianism());
     }
 
-    @Ignore // Currently broken
     @Test
     public void test_riff_header_parsed_with_longer_non_null_byte_pad() {
         EncodedSource data = buildRiffData(12,
@@ -159,7 +152,6 @@ public class TestRiffChunk {
         assertEquals(ByteOrder.LITTLE_ENDIAN, riff.getEndianism());
     }
 
-    @Ignore // Currently broken
     @Test
     public void test_rifx_header_parsed_with_longer_non_null_byte_pad() {
         EncodedSource data = buildRiffData(12,
@@ -222,7 +214,6 @@ public class TestRiffChunk {
         assertEquals(18, new RiffChunk(riffData, 0).getLength());
     }
 
-    @Ignore // Currently broken
     @Test
     public void test_get_riff_length_when_data_section_is_empty_with_initial_offset() {
         EncodedSource riffData = buildRiffData(118,
@@ -234,7 +225,6 @@ public class TestRiffChunk {
         assertEquals(8, new RiffChunk(riffData, 10).getLength());
     }
 
-    @Ignore // Currently broken
     @Test
     public void test_get_riff_length_when_data_section_is_ten_bytes_long_with_initial_offset() {
         EncodedSource riffData = buildRiffData(118,
@@ -266,7 +256,6 @@ public class TestRiffChunk {
         assertEquals(18, new RiffChunk(riffData, 0).getLength());
     }
 
-    @Ignore // Currently broken
     @Test
     public void test_get_rifx_length_when_data_section_is_empty_with_initial_offset() {
         EncodedSource riffData = buildRiffData(118,
@@ -278,7 +267,6 @@ public class TestRiffChunk {
         assertEquals(8, new RiffChunk(riffData, 10).getLength());
     }
 
-    @Ignore // Currently broken
     @Test
     public void test_get_rifx_length_when_data_section_is_ten_bytes_long_with_initial_offset() {
         EncodedSource riffData = buildRiffData(118,
@@ -310,7 +298,6 @@ public class TestRiffChunk {
         assertEquals(18, new RiffChunk(riffData, 0).getEndIndex());
     }
 
-    @Ignore // Currently broken
     @Test
     public void test_get_riff_end_index_when_data_section_is_empty_with_initial_offset() {
         EncodedSource riffData = buildRiffData(118,
@@ -322,7 +309,6 @@ public class TestRiffChunk {
         assertEquals(18, new RiffChunk(riffData, 10).getEndIndex());
     }
 
-    @Ignore // Currently broken
     @Test
     public void test_get_riff_end_index_when_data_section_is_ten_bytes_long_with_initial_offset() {
         EncodedSource riffData = buildRiffData(118,
@@ -331,7 +317,7 @@ public class TestRiffChunk {
                         .put(encode("RIFF"))
                         .putInt(10)
                         .put(new byte[100]));
-        assertEquals(28, new RiffChunk(riffData, 10).getLength());
+        assertEquals(28, new RiffChunk(riffData, 10).getEndIndex());
     }
 
     @Test
@@ -354,7 +340,6 @@ public class TestRiffChunk {
         assertEquals(18, new RiffChunk(riffData, 0).getEndIndex());
     }
 
-    @Ignore // Currently broken
     @Test
     public void test_get_rifx_end_index_when_data_section_is_empty_with_initial_offset() {
         EncodedSource riffData = buildRiffData(118,
@@ -363,10 +348,9 @@ public class TestRiffChunk {
                         .put(encode("RIFX"))
                         .putInt(0)
                         .put(new byte[100]));
-        assertEquals(18, new RiffChunk(riffData, 8).getEndIndex());
+        assertEquals(18, new RiffChunk(riffData, 10).getEndIndex());
     }
 
-    @Ignore // Currently broken
     @Test
     public void test_get_rifx_end_index_when_data_section_is_ten_bytes_long_with_initial_offset() {
         EncodedSource riffData = buildRiffData(118,
