@@ -6,10 +6,11 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
+    compile 'com.google.guava:guava:23.5-jre'
     testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:3.11.1'
 }
