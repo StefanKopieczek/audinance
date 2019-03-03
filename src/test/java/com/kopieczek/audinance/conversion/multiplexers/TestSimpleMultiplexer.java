@@ -87,6 +87,47 @@ public class TestSimpleMultiplexer {
                 .run();
     }
 
+    @Test
+    public void test_plexing_two_to_three_channels_creates_new_channel_from_average_of_existing_two() {
+        double[] channel1 = new double[] {17, -4, 10, 17.2, 100, 4};
+        double[] channel2 = new double[] {-20, 13, 1, 2, -4, 4.4};
+
+        double[] average = new double[channel1.length];
+        for (int idx = 0; idx < channel1.length; idx++) {
+            average[idx] = (channel1[idx] + channel2[idx]) / 2;
+        }
+
+        new TestCase("Plexing from 2->3 channels should preserve first two, and average them for the third channel")
+                .withInputChannel(channel1)
+                .withInputChannel(channel2)
+                .expectingChannel(channel1)
+                .expectingChannel(channel2)
+                .expectingChannel(average)
+                .run();
+    }
+
+    @Test
+    public void test_plexing_two_to_six_channels_creates_four_new_channels_from_average_of_existing_two() {
+        double[] channel1 = new double[] {17, -4, 10, 17.2, 100, 4};
+        double[] channel2 = new double[] {-20, 13, 1, 2, -4, 4.4};
+
+        double[] average = new double[channel1.length];
+        for (int idx = 0; idx < channel1.length; idx++) {
+            average[idx] = (channel1[idx] + channel2[idx]) / 2;
+        }
+
+        new TestCase("Plexing from 2->3 channels should preserve first two, and average them for the third channel")
+                .withInputChannel(channel1)
+                .withInputChannel(channel2)
+                .expectingChannel(channel1)
+                .expectingChannel(channel2)
+                .expectingChannel(average)
+                .expectingChannel(average)
+                .expectingChannel(average)
+                .expectingChannel(average)
+                .run();
+    }
+
     private class TestCase {
         final private String message;
         private ArrayList<double[]> inputChannelData = new ArrayList<>();
