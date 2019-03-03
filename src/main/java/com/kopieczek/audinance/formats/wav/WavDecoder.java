@@ -5,10 +5,10 @@ import com.kopieczek.audinance.audiosources.EncodedSource;
 import com.kopieczek.audinance.audiosources.NoMoreDataException;
 import com.kopieczek.audinance.formats.AudioFormat;
 import com.kopieczek.audinance.formats.DecodedAudio;
-import com.kopieczek.audinance.utils.BitUtils;
+import com.kopieczek.audinance.formats.wav.structure.DataSubchunk;
+import com.kopieczek.audinance.formats.wav.structure.FmtSubchunk;
+import com.kopieczek.audinance.formats.wav.structure.RiffChunk;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteOrder;
 import java.util.logging.Logger;
 
 /**
@@ -37,8 +37,8 @@ public class WavDecoder
 	 * @param length The number of bytes to read.
 	 * @return 'length' bytes from mWavSource, starting at index 'start'.
 	 */
-	protected static byte[] getRange(EncodedSource src, int start, int length)
-	{				
+    public static byte[] getRange(EncodedSource src, int start, int length)
+	{
 		byte[] result = new byte[length];
 		
 		for (int idx = 0; idx < length; idx++)
@@ -104,7 +104,7 @@ public class WavDecoder
 				
 				public int getNumSamples()
 				{
-					return (int)(dataChunk.getLength() * 8.0 / (dataChunk.mBitsPerSample * fmtChunk.getNumChannels()));
+					return (int)(dataChunk.getLength() * 8.0 / (dataChunk.getBitsPerSample() * fmtChunk.getNumChannels()));
 				}
 			};
 		}
@@ -125,286 +125,5 @@ public class WavDecoder
 				             fmtChunk.getEncodingType(),
 				             fmtChunk.getBitsPerSample());
 	}
-	
-	private static abstract class Chunk
-	{
-		protected EncodedSource source;
-		private Integer mStartIdx;
-		private Integer mEndIdx;
-		private Integer mLength;
-		
-		protected abstract int getChunkSizeIdxOffset();
-		
-		public Chunk(EncodedSource source, int startIdx) throws InvalidWavDataException
-		{
-			this.source = source;
-			mStartIdx = startIdx;
-		}
-		
-		public abstract ByteOrder getEndianism() throws InvalidWavDataException; 
-		
-		protected int getStartIndex()
-		{
-			return mStartIdx.intValue();
-		}
-		
-		protected int getEndIndex() throws InvalidWavDataException
-		{
-			if (mEndIdx == null)
-				mEndIdx = mStartIdx + getLength();
-				
-			return mEndIdx.intValue();
-		}
-		
-		protected int getLength() throws InvalidWavDataException
-		{
-			int chunkSizeIdx = mStartIdx + getChunkSizeIdxOffset();
-			
-			if (mLength == null)
-			{
-				int lengthValue = BitUtils.intFromBytes(
-						                   getRange(chunkSizeIdx, 4), getEndianism());
-				 mLength = getChunkSizeIdxOffset() + 4 + lengthValue;			                     
-			}
-			
-			return mLength.intValue();
-		}
-		
-		protected short getShort(int idx) throws InvalidWavDataException
-		{
-			byte[] bytes = getRange(getStartIndex() + idx, 2);
-			return BitUtils.shortFromBytes(bytes, getEndianism());
-		}
-		
-		protected int getInt(int idx) throws InvalidWavDataException
-		{
-			byte[] bytes = getRange(getStartIndex() + idx, 4);
-			return BitUtils.intFromBytes(bytes, getEndianism());
-		}
 
-		protected byte[] getRange(int start, int length) {
-			return WavDecoder.getRange(source, start, length);
-		}
-	}
-	
-	private static class RiffChunk extends Chunk
-	{
-		private static final int ID_IDX_OFFSET = 0;
-		private static final int CHUNK_SIZE_IDX_OFFSET = 4;
-		private static final int DATA_IDX_OFFSET = 12;
-		
-		private ByteOrder mEndianism;
-		
-		public RiffChunk(EncodedSource source, int startIdx) throws InvalidWavDataException
-		{
-			super(source, startIdx);
-		}		
-		
-		public ByteOrder getEndianism() throws InvalidWavDataException
-		{
-			if (mEndianism == null)
-			{
-				String chunkId = null;
-				try
-				{
-					chunkId = BitUtils.stringFromBytes(getRange(ID_IDX_OFFSET, 4));
-				}
-				catch (UnsupportedEncodingException e)
-				{
-					throw new InvalidWavDataException("Invalid RIFF header ID format.", 
-						                          	  e);
-				}
-				
-				if (chunkId.equals("RIFF"))
-				{
-					mEndianism = ByteOrder.LITTLE_ENDIAN;
-				}
-				else if (chunkId.equals("RIFX"))
-				{
-					mEndianism = ByteOrder.BIG_ENDIAN;
-				}
-				else
-				{
-					throw new InvalidWavDataException("Invalid RIFF header ID " + 
-			                                          chunkId);				
-				}
-			}
-			
-			return mEndianism;
-		}
-		
-		protected int getChunkSizeIdxOffset()
-		{
-			return CHUNK_SIZE_IDX_OFFSET;
-		}		
-	}
-	
-	private static class FmtSubchunk extends Chunk
-	{
-		private static final int CHUNK_SIZE_IDX_OFFSET = 4;
-		private static final int FORMAT_CODE_IDX_OFFSET = 8;
-		private static final int NUM_CHANNELS_IDX_OFFSET = 10;
-		private static final int SAMPLE_RATE_IDX_OFFSET = 12;
-		private static final int BYTE_RATE_IDX_OFFSET = 16;
-		private static final int BLOCK_ALIGN_IDX_OFFSET = 20;
-		private static final int BITS_PER_SAMPLE_IDX_OFFSET = 22;
-		private static final int EXTRA_PARAMS_SIZE_IDX_OFFSET = 24;
-		private static final int EXTRA_PARAMS_IDX_OFFSET = 26;
-		
-		private RiffChunk mParent;
-		private Short mFormatCode;
-		private Short mNumChannels;
-		private Integer mSampleRate;
-		private Integer mByteRate;
-		private Short mBlockAlign;
-		private Short mBitsPerSample;
-		private Integer mExtraParamsSize;
-
-		public FmtSubchunk(EncodedSource source, int startIdx, RiffChunk parent)
-			throws InvalidWavDataException
-		{
-			super(source, startIdx);
-			mParent = parent;
-		}
-		
-		public ByteOrder getEndianism() throws InvalidWavDataException
-		{
-			return mParent.getEndianism();
-		}
-
-		protected int getChunkSizeIdxOffset()
-		{
-			return CHUNK_SIZE_IDX_OFFSET;
-		}				
-		
-		public short getFormatCode() throws InvalidWavDataException
-		{
-			if (mFormatCode == null)
-			{
-				mFormatCode = getShort(FORMAT_CODE_IDX_OFFSET);
-			}
-			
-			return mFormatCode.shortValue();
-		}
-		
-		public WavEncodingType getEncodingType()
-			throws UnsupportedWavEncodingException, InvalidWavDataException
-		{
-			return WavEncodingType.getEncodingTypeFromCode(getFormatCode());
-		}
-		
-		public short getNumChannels() throws InvalidWavDataException
-		{
-			if (mNumChannels == null)
-			{
-				mNumChannels = getShort(NUM_CHANNELS_IDX_OFFSET);
-			}
-			
-			return mNumChannels.shortValue();
-		}
-				
-		public int getSampleRate() throws InvalidWavDataException
-		{
-			if (mSampleRate == null)
-			{
-				mSampleRate = getInt(SAMPLE_RATE_IDX_OFFSET);
-			}
-			
-			return mSampleRate.intValue();
-		}
-		
-		public int getByteRate() throws InvalidWavDataException
-		{
-			if (mByteRate == null)
-			{
-				mByteRate = getInt(BYTE_RATE_IDX_OFFSET);
-			}
-			
-			return mByteRate.intValue();
-		}
-		
-		public short getBlockAlign() throws InvalidWavDataException
-		{
-			if (mBlockAlign == null)
-			{
-				mBlockAlign = getShort(BLOCK_ALIGN_IDX_OFFSET);
-			}
-			
-			return mBlockAlign.shortValue();
-		}
-		
-		public short getBitsPerSample() throws InvalidWavDataException
-		{
-			if (mBitsPerSample == null)
-			{
-				mBitsPerSample = getShort(BITS_PER_SAMPLE_IDX_OFFSET);
-			}
-			
-			return mBitsPerSample.shortValue();
-		}
-	}
-	
-	private static class DataSubchunk extends Chunk
-	{
-		private static final int CHUNK_SIZE_IDX_OFFSET = 4;
-		private static final int DATA_IDX_OFFSET = 8;		
-		
-		private RiffChunk mParent;
-		private int mBitsPerSample;
-
-		public DataSubchunk(EncodedSource source, int startIdx, RiffChunk parent, int bitsPerSample) throws InvalidWavDataException
-		{
-			super(source, startIdx);
-			mParent = parent;
-			mBitsPerSample = bitsPerSample;
-		}
-
-		public ByteOrder getEndianism() throws InvalidWavDataException
-		{
-			return mParent.getEndianism();
-		}
-		
-		protected int getChunkSizeIdxOffset()
-		{
-			return CHUNK_SIZE_IDX_OFFSET;
-		}
-		
-		public double getSample(int byteIdx)
-				throws InvalidWavDataException, NoMoreDataException
-		{
-			double result;						
-			long endOfSample = (long)(byteIdx + Math.ceil(mBitsPerSample / 8.0));
-			if (endOfSample >= getLength())
-			{
-				throw new NoMoreDataException();
-			}
-			
-			if (mBitsPerSample == 8)
-			{			
-				int tempResult = source.getByte(getStartIndex() + byteIdx);
-				tempResult &= 0xFF; // Don't treat the byte as signed.
-				result = tempResult * 2; // Normalise energy of sample to match 16bitPCM.
-				
-			}
-			else if (mBitsPerSample == 16)
-			{
-				byte[] bytes = getRange(getStartIndex() + byteIdx, 2);
-				result = BitUtils.shortFromBytes(bytes, getEndianism());
-			}
-			else if (mBitsPerSample == 32)
-			{
-				byte[] bytes = getRange(getStartIndex() + byteIdx, 4);
-				// Currently assuming 32-bit int; float to come later.
-				// Divide by 65536 = 2^16 to normalise to same energy as 16 bit.
-				result = BitUtils.intFromBytes(bytes, getEndianism()) / 65536.0;				
-			}
-			else
-			{
-				throw new InvalidWavDataException("Unsupported bit depth: " + 
-			                                                      mBitsPerSample);
-			}
-			
-			return result;
-		}
-	}
 }
