@@ -37,13 +37,13 @@ public class WavDecoder
 	 * @param length The number of bytes to read.
 	 * @return 'length' bytes from mWavSource, starting at index 'start'.
 	 */
-	protected byte[] getRange(int start, int length)
+	protected static byte[] getRange(EncodedSource src, int start, int length)
 	{				
 		byte[] result = new byte[length];
 		
 		for (int idx = 0; idx < length; idx++)
 		{
-			result[idx] = mWavSource.getByte(start + idx);
+			result[idx] = src.getByte(start + idx);
 		}
 		
 		return result;
@@ -63,21 +63,18 @@ public class WavDecoder
 		throws InvalidWavDataException, UnsupportedWavEncodingException
 	{
 		// The entire wav file is comprised of a single RIFF chunk.
-		RiffChunk riffChunk = new RiffChunk(0);
+		RiffChunk riffChunk = new RiffChunk(mWavSource, 0);
         sLogger.fine("Loaded riff chunk at index 0: " + riffChunk);
 
 		// The RIFF chunk header specifies where the RIFF payload starts.
 		// We assume the payload starts with a fmt subchunk.
 		// TODO: Add support for other chunks and more complex structure.
-		final FmtSubchunk fmtChunk = new FmtSubchunk(RiffChunk.DATA_IDX_OFFSET, 
-				                                     riffChunk);
+		final FmtSubchunk fmtChunk = new FmtSubchunk(mWavSource, RiffChunk.DATA_IDX_OFFSET, riffChunk);
         sLogger.fine("Loaded FMT subchunk at index " + RiffChunk.DATA_IDX_OFFSET + ": " + fmtChunk);
 
 
 		// We assume the next subchunk in the RIFF payload is the wav data chunk.
-		final DataSubchunk dataChunk = new DataSubchunk(fmtChunk.getEndIndex(), 
-				                                        riffChunk,
-				                                        fmtChunk.getBitsPerSample());
+		final DataSubchunk dataChunk = new DataSubchunk(mWavSource, fmtChunk.getEndIndex(), riffChunk, fmtChunk.getBitsPerSample());
 		sLogger.fine("Loaded data subchunk at index " + fmtChunk.getEndIndex() + ": " + dataChunk);
 		
 		DecodedSource[] channels = new DecodedSource[fmtChunk.getNumChannels()];		
@@ -121,25 +118,26 @@ public class WavDecoder
 	public WavFormat getFormat()
 		throws InvalidWavDataException, UnsupportedWavEncodingException
 	{
-		RiffChunk riffChunk = new RiffChunk(0);
-		final FmtSubchunk fmtChunk = new FmtSubchunk(RiffChunk.DATA_IDX_OFFSET, 
-				                                     riffChunk);
+		RiffChunk riffChunk = new RiffChunk(mWavSource, 0);
+		final FmtSubchunk fmtChunk = new FmtSubchunk(mWavSource, RiffChunk.DATA_IDX_OFFSET, riffChunk);
 		return new WavFormat(fmtChunk.getSampleRate(),
 				             (int)fmtChunk.getNumChannels(),
 				             fmtChunk.getEncodingType(),
 				             fmtChunk.getBitsPerSample());
 	}
 	
-	private abstract class Chunk
+	private static abstract class Chunk
 	{
+		protected EncodedSource source;
 		private Integer mStartIdx;
 		private Integer mEndIdx;
 		private Integer mLength;
 		
 		protected abstract int getChunkSizeIdxOffset();
 		
-		public Chunk(int startIdx) throws InvalidWavDataException
+		public Chunk(EncodedSource source, int startIdx) throws InvalidWavDataException
 		{
+			this.source = source;
 			mStartIdx = startIdx;
 		}
 		
@@ -183,9 +181,13 @@ public class WavDecoder
 			byte[] bytes = getRange(getStartIndex() + idx, 4);
 			return BitUtils.intFromBytes(bytes, getEndianism());
 		}
+
+		protected byte[] getRange(int start, int length) {
+			return WavDecoder.getRange(source, start, length);
+		}
 	}
 	
-	private class RiffChunk extends Chunk
+	private static class RiffChunk extends Chunk
 	{
 		private static final int ID_IDX_OFFSET = 0;
 		private static final int CHUNK_SIZE_IDX_OFFSET = 4;
@@ -193,9 +195,9 @@ public class WavDecoder
 		
 		private ByteOrder mEndianism;
 		
-		public RiffChunk(int startIdx) throws InvalidWavDataException
+		public RiffChunk(EncodedSource source, int startIdx) throws InvalidWavDataException
 		{
-			super(startIdx);
+			super(source, startIdx);
 		}		
 		
 		public ByteOrder getEndianism() throws InvalidWavDataException
@@ -237,7 +239,7 @@ public class WavDecoder
 		}		
 	}
 	
-	private class FmtSubchunk extends Chunk
+	private static class FmtSubchunk extends Chunk
 	{
 		private static final int CHUNK_SIZE_IDX_OFFSET = 4;
 		private static final int FORMAT_CODE_IDX_OFFSET = 8;
@@ -258,10 +260,10 @@ public class WavDecoder
 		private Short mBitsPerSample;
 		private Integer mExtraParamsSize;
 
-		public FmtSubchunk(int startIdx, RiffChunk parent)
+		public FmtSubchunk(EncodedSource source, int startIdx, RiffChunk parent)
 			throws InvalidWavDataException
 		{
-			super(startIdx);
+			super(source, startIdx);
 			mParent = parent;
 		}
 		
@@ -342,7 +344,7 @@ public class WavDecoder
 		}
 	}
 	
-	private class DataSubchunk extends Chunk
+	private static class DataSubchunk extends Chunk
 	{
 		private static final int CHUNK_SIZE_IDX_OFFSET = 4;
 		private static final int DATA_IDX_OFFSET = 8;		
@@ -350,12 +352,9 @@ public class WavDecoder
 		private RiffChunk mParent;
 		private int mBitsPerSample;
 
-		public DataSubchunk(int startIdx, 
-				            RiffChunk parent,
-				            int bitsPerSample)
-			throws InvalidWavDataException
+		public DataSubchunk(EncodedSource source, int startIdx, RiffChunk parent, int bitsPerSample) throws InvalidWavDataException
 		{
-			super(startIdx);
+			super(source, startIdx);
 			mParent = parent;
 			mBitsPerSample = bitsPerSample;
 		}
@@ -382,7 +381,7 @@ public class WavDecoder
 			
 			if (mBitsPerSample == 8)
 			{			
-				int tempResult = mWavSource.getByte(getStartIndex() + byteIdx);				
+				int tempResult = source.getByte(getStartIndex() + byteIdx);
 				tempResult &= 0xFF; // Don't treat the byte as signed.
 				result = tempResult * 2; // Normalise energy of sample to match 16bitPCM.
 				
