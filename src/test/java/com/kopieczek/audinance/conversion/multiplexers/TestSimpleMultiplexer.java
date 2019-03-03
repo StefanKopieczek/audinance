@@ -116,7 +116,7 @@ public class TestSimpleMultiplexer {
             average[idx] = (channel1[idx] + channel2[idx]) / 2;
         }
 
-        new TestCase("Plexing from 2->3 channels should preserve first two, and average them for the third channel")
+        new TestCase("Plexing from 2->6 channels should preserve first two, and average them for the remaining channels")
                 .withInputChannel(channel1)
                 .withInputChannel(channel2)
                 .expectingChannel(channel1)
