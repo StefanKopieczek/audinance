@@ -69,8 +69,8 @@ public class WavDecoder
 		// The RIFF chunk header specifies where the RIFF payload starts.
 		// We assume the payload starts with a fmt subchunk.
 		// TODO: Add support for other chunks and more complex structure.
-		final FmtSubchunk fmtChunk = new FmtSubchunk(mWavSource, RiffChunk.DATA_IDX_OFFSET, riffChunk);
-        sLogger.fine("Loaded FMT subchunk at index " + RiffChunk.DATA_IDX_OFFSET + ": " + fmtChunk);
+		final FmtSubchunk fmtChunk = new FmtSubchunk(mWavSource, RiffChunk.CHUNK_DATA_OFFSET_IN_BYTES, riffChunk);
+        sLogger.fine("Loaded FMT subchunk at index " + RiffChunk.CHUNK_DATA_OFFSET_IN_BYTES + ": " + fmtChunk);
 
 
 		// We assume the next subchunk in the RIFF payload is the wav data chunk.
@@ -119,7 +119,7 @@ public class WavDecoder
 		throws InvalidWavDataException, UnsupportedWavEncodingException
 	{
 		RiffChunk riffChunk = new RiffChunk(mWavSource, 0);
-		final FmtSubchunk fmtChunk = new FmtSubchunk(mWavSource, RiffChunk.DATA_IDX_OFFSET, riffChunk);
+		final FmtSubchunk fmtChunk = new FmtSubchunk(mWavSource, RiffChunk.CHUNK_DATA_OFFSET_IN_BYTES, riffChunk);
 		return new WavFormat(fmtChunk.getSampleRate(),
 				             (int)fmtChunk.getNumChannels(),
 				             fmtChunk.getEncodingType(),

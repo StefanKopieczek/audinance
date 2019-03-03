@@ -174,18 +174,18 @@ public class TestRiffChunk {
 
     @Test
     public void test_id_index_offset_is_zero() {
-        assertEquals(0, RiffChunk.ID_IDX_OFFSET);
+        assertEquals(0, RiffChunk.CHUNK_ID_OFFSET_IN_BYTES);
     }
 
     @Test
     public void test_chunk_size_offset_is_four_bytes() {
-        assertEquals(4, RiffChunk.CHUNK_SIZE_IDX_OFFSET);
+        assertEquals(4, RiffChunk.CHUNK_SIZE_OFFSET_IN_BYTES);
         assertEquals(4, getDummyRiff().getChunkSizeIdxOffset());
     }
 
     @Test
     public void test_data_offset_is_twelve_bytes() {
-        assertEquals(12, RiffChunk.DATA_IDX_OFFSET);
+        assertEquals(12, RiffChunk.CHUNK_DATA_OFFSET_IN_BYTES);
     }
 
     @Test
