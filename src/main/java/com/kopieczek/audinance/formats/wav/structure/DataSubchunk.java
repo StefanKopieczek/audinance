@@ -27,11 +27,6 @@ public class DataSubchunk extends Chunk
         return mParent.getEndianism();
     }
 
-    public int getBitsPerSample()
-    {
-        return mBitsPerSample;
-    }
-
     protected int getChunkSizeOffset()
     {
         return CHUNK_SIZE_IDX_OFFSET;

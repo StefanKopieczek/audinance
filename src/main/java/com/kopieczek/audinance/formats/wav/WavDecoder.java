@@ -104,7 +104,7 @@ public class WavDecoder
 				
 				public int getNumSamples()
 				{
-					return (int)(dataChunk.getLength() * 8.0 / (dataChunk.getBitsPerSample() * fmtChunk.getNumChannels()));
+					return (int)(dataChunk.getLength() * 8.0 / (fmtChunk.getBitsPerSample() * fmtChunk.getNumChannels()));
 				}
 			};
 		}
