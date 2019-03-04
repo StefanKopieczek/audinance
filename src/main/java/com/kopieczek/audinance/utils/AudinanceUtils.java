@@ -95,5 +95,5 @@ public class AudinanceUtils
 	public static byte[] bytesFromFloat(float value, ByteOrder endianism)
 	{
 		return ByteBuffer.allocate(4).order(endianism).putFloat(value).array();
-	}	
+	}
 }

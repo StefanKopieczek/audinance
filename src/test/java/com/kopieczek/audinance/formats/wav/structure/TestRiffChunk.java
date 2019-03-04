@@ -2,14 +2,9 @@ package com.kopieczek.audinance.formats.wav.structure;
 
 import com.kopieczek.audinance.audiosources.EncodedSource;
 import com.kopieczek.audinance.formats.wav.InvalidWavDataException;
-import com.kopieczek.audinance.testutils.MockEncodedSource;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.Charset;
-import java.util.function.Consumer;
 
 import static com.kopieczek.audinance.testutils.TestUtilities.buildEncodedSource;
 import static com.kopieczek.audinance.testutils.TestUtilities.encode;

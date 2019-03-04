@@ -3,9 +3,7 @@ package com.kopieczek.audinance.formats.wav.structure;
 import com.google.common.base.Suppliers;
 import com.kopieczek.audinance.audiosources.EncodedSource;
 import com.kopieczek.audinance.formats.wav.InvalidWavDataException;
-import com.kopieczek.audinance.utils.BitUtils;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteOrder;
 import java.util.function.Supplier;
 
