@@ -1,5 +1,6 @@
 package com.kopieczek.audinance.formats.wav.structure;
 
+import com.kopieczek.audinance.formats.wav.WavEncodingType;
 import com.kopieczek.audinance.testutils.MockEncodedSource;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -21,6 +22,30 @@ public class TestFmtSubchunk {
                     .withDefaultValues()
                     .build();
         }).doesNotThrowAnyException();
+    }
+
+    @Test
+    public void test_get_endianism_inherited_from_riff_when_little_endian() {
+        FmtSubchunk fmt = FmtSubchunkBuilder
+                .withDefaultValues()
+                .withByteOrder(ByteOrder.LITTLE_ENDIAN)
+                .build();
+        assertEquals(ByteOrder.LITTLE_ENDIAN, fmt.getEndianism());
+    }
+
+    @Test
+    public void test_get_endianism_inherited_from_riff_when_big_endian() {
+        FmtSubchunk fmt = FmtSubchunkBuilder
+                .withDefaultValues()
+                .withByteOrder(ByteOrder.BIG_ENDIAN)
+                .build();
+        assertEquals(ByteOrder.BIG_ENDIAN, fmt.getEndianism());
+    }
+
+    @Test
+    public void test_chunk_size_offset_is_four() {
+        FmtSubchunk fmt = FmtSubchunkBuilder.withDefaultValues().build();
+        assertEquals(4, fmt.getChunkSizeIdxOffset());
     }
 
     @Test
@@ -89,6 +114,42 @@ public class TestFmtSubchunk {
                 .withFormatTag(0x0101)
                 .build();
         assertEquals(0x101, fmt.getFormatCode());
+    }
+
+    @Test
+    public void test_format_code_1_is_pcm() {
+        FmtSubchunk fmt = FmtSubchunkBuilder
+                .withDefaultValues()
+                .withFormatTag(0x0001)
+                .build();
+        assertEquals(WavEncodingType.PCM, fmt.getEncodingType());
+    }
+
+    @Test
+    public void test_format_code_101_is_mulaw() {
+        FmtSubchunk fmt = FmtSubchunkBuilder
+                .withDefaultValues()
+                .withFormatTag(0x0101)
+                .build();
+        assertEquals(WavEncodingType.MULAW, fmt.getEncodingType());
+    }
+
+    @Test
+    public void test_format_code_102_is_alaw() {
+        FmtSubchunk fmt = FmtSubchunkBuilder
+                .withDefaultValues()
+                .withFormatTag(0x0102)
+                .build();
+        assertEquals(WavEncodingType.ALAW, fmt.getEncodingType());
+    }
+
+    @Test
+    public void test_format_code_103_is_adpcm() {
+        FmtSubchunk fmt = FmtSubchunkBuilder
+                .withDefaultValues()
+                .withFormatTag(0x0103)
+                .build();
+        assertEquals(WavEncodingType.ADPCM, fmt.getEncodingType());
     }
 
     @Test
@@ -335,7 +396,7 @@ public class TestFmtSubchunk {
 
     @Ignore  // https://github.com/StefanKopieczek/audinance/issues/1
     @Test
-    public void test_get_bit_depth_when_equal_to_0xffff () {
+    public void test_get_bit_depth_when_equal_to_0xffff() {
         FmtSubchunk fmt = FmtSubchunkBuilder
                 .withDefaultValues()
                 .withFormatTag(0x01)
