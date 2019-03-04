@@ -1,14 +1,18 @@
 package com.kopieczek.audinance.testutils;
 
 import com.kopieczek.audinance.audiosources.DecodedSource;
+import com.kopieczek.audinance.audiosources.EncodedSource;
 import com.kopieczek.audinance.audiosources.NoMoreDataException;
 import com.kopieczek.audinance.formats.AudioFormat;
 import com.kopieczek.audinance.formats.DecodedAudio;
 import com.kopieczek.audinance.formats.InvalidAudioFormatException;
 import org.junit.Assert;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class TestUtilities
 {
@@ -104,5 +108,15 @@ public class TestUtilities
 		// Catch changes in underlying equals() method not
 		// updated here.
 		Assert.assertEquals(message, expected, actual);
+	}
+
+	public static EncodedSource buildEncodedSource(int size, Consumer<ByteBuffer> bufferInitializer) {
+		ByteBuffer bb = ByteBuffer.allocate(size);
+		bufferInitializer.accept(bb);
+		return new MockEncodedSource(bb.array());
+	}
+
+	public static byte[] encode(String s) {
+		return Charset.forName("ASCII").encode(s).array();
 	}
 }

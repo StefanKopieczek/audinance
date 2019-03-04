@@ -11,13 +11,15 @@ import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.util.function.Consumer;
 
+import static com.kopieczek.audinance.testutils.TestUtilities.buildEncodedSource;
+import static com.kopieczek.audinance.testutils.TestUtilities.encode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.Assert.assertEquals;
 
 public class TestRiffChunk {
     @Test
     public void test_riff_chunk_is_little_endian() {
-        EncodedSource data = buildRiffData(8,
+        EncodedSource data = buildEncodedSource(8,
                 bytes -> bytes.order(ByteOrder.LITTLE_ENDIAN)
                               .put(encode("RIFF"))
                               .putInt(0));
@@ -27,7 +29,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_rifx_chunk_is_big_endian() {
-        EncodedSource data = buildRiffData(8,
+        EncodedSource data = buildEncodedSource(8,
                 bytes -> bytes.order(ByteOrder.BIG_ENDIAN)
                               .put(encode("RIFX"))
                               .putInt(0));
@@ -37,7 +39,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_lowercase_riff_is_rejected() {
-        EncodedSource data = buildRiffData(8,
+        EncodedSource data = buildEncodedSource(8,
                 bytes -> bytes.order(ByteOrder.LITTLE_ENDIAN)
                         .put(encode("riff"))
                         .putInt(0));
@@ -48,7 +50,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_lowercase_rifx_is_rejected() {
-        EncodedSource data = buildRiffData(8,
+        EncodedSource data = buildEncodedSource(8,
                 bytes -> bytes.order(ByteOrder.LITTLE_ENDIAN)
                         .put(encode("rifx"))
                         .putInt(0));
@@ -59,7 +61,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_unknown_riff_header_is_rejected() {
-        EncodedSource data = buildRiffData(8,
+        EncodedSource data = buildEncodedSource(8,
                 bytes -> bytes.order(ByteOrder.LITTLE_ENDIAN)
                         .put(encode("HALP"))
                         .putInt(0));
@@ -70,7 +72,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_riff_header_parsed_with_one_null_byte_pad() {
-        EncodedSource data = buildRiffData(9,
+        EncodedSource data = buildEncodedSource(9,
                 bytes -> bytes.order(ByteOrder.LITTLE_ENDIAN)
                         .put((byte)0x00)
                         .put(encode("RIFF"))
@@ -82,7 +84,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_rifx_header_parsed_with_one_null_byte_pad() {
-        EncodedSource data = buildRiffData(9,
+        EncodedSource data = buildEncodedSource(9,
                 bytes -> bytes.order(ByteOrder.BIG_ENDIAN)
                         .put((byte)0x00)
                         .put(encode("RIFX"))
@@ -94,7 +96,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_riff_header_parsed_with_nine_null_byte_pad() {
-        EncodedSource data = buildRiffData(17,
+        EncodedSource data = buildEncodedSource(17,
                 bytes -> bytes.order(ByteOrder.LITTLE_ENDIAN)
                         .put(new byte[9])
                         .put(encode("RIFF"))
@@ -106,7 +108,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_rifx_header_parsed_with_nine_null_byte_pad() {
-        EncodedSource data = buildRiffData(17,
+        EncodedSource data = buildEncodedSource(17,
                 bytes -> bytes.order(ByteOrder.BIG_ENDIAN)
                         .put(new byte[9])
                         .put(encode("RIFX"))
@@ -118,7 +120,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_riff_header_parsed_with_single_non_null_byte_pad() {
-        EncodedSource data = buildRiffData(9,
+        EncodedSource data = buildEncodedSource(9,
                 bytes -> bytes.order(ByteOrder.LITTLE_ENDIAN)
                         .put((byte)0x17)
                         .put(encode("RIFF"))
@@ -130,7 +132,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_rifx_header_parsed_with_single_non_null_byte_pad() {
-        EncodedSource data = buildRiffData(9,
+        EncodedSource data = buildEncodedSource(9,
                 bytes -> bytes.order(ByteOrder.BIG_ENDIAN)
                         .put((byte)0x17)
                         .put(encode("RIFX"))
@@ -142,7 +144,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_riff_header_parsed_with_longer_non_null_byte_pad() {
-        EncodedSource data = buildRiffData(12,
+        EncodedSource data = buildEncodedSource(12,
                 bytes -> bytes.order(ByteOrder.LITTLE_ENDIAN)
                         .put(new byte[] {0x74, -0x13, 0x48, -0x66})
                         .put(encode("RIFF"))
@@ -154,7 +156,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_rifx_header_parsed_with_longer_non_null_byte_pad() {
-        EncodedSource data = buildRiffData(12,
+        EncodedSource data = buildEncodedSource(12,
                 bytes -> bytes.order(ByteOrder.BIG_ENDIAN)
                         .put(new byte[] {0x74, -0x13, 0x48, -0x66})
                         .put(encode("RIFX"))
@@ -196,7 +198,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_get_riff_length_when_data_section_is_empty() {
-        EncodedSource riffData = buildRiffData(108,
+        EncodedSource riffData = buildEncodedSource(108,
                 bytes -> bytes.order(ByteOrder.LITTLE_ENDIAN)
                               .put(encode("RIFF"))
                               .putInt(0)
@@ -206,7 +208,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_get_riff_length_when_data_section_is_ten_bytes_long() {
-        EncodedSource riffData = buildRiffData(108,
+        EncodedSource riffData = buildEncodedSource(108,
                 bytes -> bytes.order(ByteOrder.LITTLE_ENDIAN)
                         .put(encode("RIFF"))
                         .putInt(10)
@@ -216,7 +218,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_get_riff_length_when_data_section_is_empty_with_initial_offset() {
-        EncodedSource riffData = buildRiffData(118,
+        EncodedSource riffData = buildEncodedSource(118,
                 bytes -> bytes.order(ByteOrder.LITTLE_ENDIAN)
                         .put(new byte[10])
                         .put(encode("RIFF"))
@@ -227,7 +229,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_get_riff_length_when_data_section_is_ten_bytes_long_with_initial_offset() {
-        EncodedSource riffData = buildRiffData(118,
+        EncodedSource riffData = buildEncodedSource(118,
                 bytes -> bytes.order(ByteOrder.LITTLE_ENDIAN)
                         .put(new byte[10])
                         .put(encode("RIFF"))
@@ -238,7 +240,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_get_rifx_length_when_data_section_is_empty() {
-        EncodedSource riffData = buildRiffData(108,
+        EncodedSource riffData = buildEncodedSource(108,
                 bytes -> bytes.order(ByteOrder.BIG_ENDIAN)
                         .put(encode("RIFX"))
                         .putInt(0)
@@ -248,7 +250,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_get_rifx_length_when_data_section_is_ten_bytes_long() {
-        EncodedSource riffData = buildRiffData(108,
+        EncodedSource riffData = buildEncodedSource(108,
                 bytes -> bytes.order(ByteOrder.BIG_ENDIAN)
                         .put(encode("RIFX"))
                         .putInt(10)
@@ -258,7 +260,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_get_rifx_length_when_data_section_is_empty_with_initial_offset() {
-        EncodedSource riffData = buildRiffData(118,
+        EncodedSource riffData = buildEncodedSource(118,
                 bytes -> bytes.order(ByteOrder.BIG_ENDIAN)
                         .put(new byte[10])
                         .put(encode("RIFX"))
@@ -269,7 +271,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_get_rifx_length_when_data_section_is_ten_bytes_long_with_initial_offset() {
-        EncodedSource riffData = buildRiffData(118,
+        EncodedSource riffData = buildEncodedSource(118,
                 bytes -> bytes.order(ByteOrder.BIG_ENDIAN)
                         .put(new byte[10])
                         .put(encode("RIFX"))
@@ -280,7 +282,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_get_riff_end_index_when_data_section_is_empty() {
-        EncodedSource riffData = buildRiffData(108,
+        EncodedSource riffData = buildEncodedSource(108,
                 bytes -> bytes.order(ByteOrder.LITTLE_ENDIAN)
                         .put(encode("RIFF"))
                         .putInt(0)
@@ -290,7 +292,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_get_riff_end_index_when_data_section_is_ten_bytes_long() {
-        EncodedSource riffData = buildRiffData(108,
+        EncodedSource riffData = buildEncodedSource(108,
                 bytes -> bytes.order(ByteOrder.LITTLE_ENDIAN)
                         .put(encode("RIFF"))
                         .putInt(10)
@@ -300,7 +302,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_get_riff_end_index_when_data_section_is_empty_with_initial_offset() {
-        EncodedSource riffData = buildRiffData(118,
+        EncodedSource riffData = buildEncodedSource(118,
                 bytes -> bytes.order(ByteOrder.LITTLE_ENDIAN)
                         .put(new byte[10])
                         .put(encode("RIFF"))
@@ -311,7 +313,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_get_riff_end_index_when_data_section_is_ten_bytes_long_with_initial_offset() {
-        EncodedSource riffData = buildRiffData(118,
+        EncodedSource riffData = buildEncodedSource(118,
                 bytes -> bytes.order(ByteOrder.LITTLE_ENDIAN)
                         .put(new byte[10])
                         .put(encode("RIFF"))
@@ -322,7 +324,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_get_rifx_end_index_when_data_section_is_empty() {
-        EncodedSource riffData = buildRiffData(108,
+        EncodedSource riffData = buildEncodedSource(108,
                 bytes -> bytes.order(ByteOrder.BIG_ENDIAN)
                         .put(encode("RIFX"))
                         .putInt(0)
@@ -332,7 +334,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_get_rifx_end_index_when_data_section_is_ten_bytes_long() {
-        EncodedSource riffData = buildRiffData(108,
+        EncodedSource riffData = buildEncodedSource(108,
                 bytes -> bytes.order(ByteOrder.BIG_ENDIAN)
                         .put(encode("RIFX"))
                         .putInt(10)
@@ -342,7 +344,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_get_rifx_end_index_when_data_section_is_empty_with_initial_offset() {
-        EncodedSource riffData = buildRiffData(118,
+        EncodedSource riffData = buildEncodedSource(118,
                 bytes -> bytes.order(ByteOrder.BIG_ENDIAN)
                         .put(new byte[10])
                         .put(encode("RIFX"))
@@ -353,7 +355,7 @@ public class TestRiffChunk {
 
     @Test
     public void test_get_rifx_end_index_when_data_section_is_ten_bytes_long_with_initial_offset() {
-        EncodedSource riffData = buildRiffData(118,
+        EncodedSource riffData = buildEncodedSource(118,
                 bytes -> bytes.order(ByteOrder.BIG_ENDIAN)
                         .put(new byte[10])
                         .put(encode("RIFX"))
@@ -362,18 +364,9 @@ public class TestRiffChunk {
         assertEquals(28, new RiffChunk(riffData, 10).getEndIndex());
     }
 
-    private static byte[] encode(String s) {
-        return Charset.forName("ASCII").encode(s).array();
-    }
-
-    private static EncodedSource buildRiffData(int size, Consumer<ByteBuffer> bufferInitializer) {
-        ByteBuffer bb = ByteBuffer.allocate(size);
-        bufferInitializer.accept(bb);
-        return new MockEncodedSource(bb.array());
-    }
 
     private static EncodedSource getDummyRiffData() {
-        return buildRiffData(8,
+        return buildEncodedSource(8,
                 bytes -> bytes.order(ByteOrder.LITTLE_ENDIAN)
                         .put(encode("RIFF"))
                         .putInt(0));
