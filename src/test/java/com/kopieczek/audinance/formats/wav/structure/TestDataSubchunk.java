@@ -9,6 +9,7 @@ import java.nio.ByteOrder;
 
 import static com.kopieczek.audinance.testutils.TestUtilities.encode;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +22,35 @@ public class TestDataSubchunk {
                     .withSamples()
                     .build()
         ).doesNotThrowAnyException();
+    }
+
+    @Test
+    public void test_data_subchunk_is_little_endian_when_parent_riff_is() {
+        DataSubchunk dataChunk = new DataSubchunkBuilder()
+                .withByteOrder(ByteOrder.LITTLE_ENDIAN)
+                .withBitsPerSample(8)
+                .withSamples()
+                .build();
+        assertEquals(ByteOrder.LITTLE_ENDIAN, dataChunk.getEndianism());
+    }
+
+    @Test
+    public void test_data_subchunk_is_big_endian_when_parent_riff_is() {
+        DataSubchunk dataChunk = new DataSubchunkBuilder()
+                .withByteOrder(ByteOrder.BIG_ENDIAN)
+                .withBitsPerSample(8)
+                .withSamples()
+                .build();
+        assertEquals(ByteOrder.BIG_ENDIAN, dataChunk.getEndianism());
+    }
+
+    @Test
+    public void test_data_subchunk_chunk_size_offset_is_four() {
+        DataSubchunk dataChunk = new DataSubchunkBuilder()
+                .withBitsPerSample(8)
+                .withSamples()
+                .build();
+        assertEquals(4, dataChunk.getChunkSizeOffset());
     }
 
     private static class DataSubchunkBuilder {
