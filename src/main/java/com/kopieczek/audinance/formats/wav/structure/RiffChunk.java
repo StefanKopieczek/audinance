@@ -35,7 +35,7 @@ public class RiffChunk extends Chunk {
         }
     }
 
-    protected int getChunkSizeIdxOffset() {
+    protected int getChunkSizeOffset() {
         return CHUNK_SIZE_OFFSET_IN_BYTES;
     }
 }

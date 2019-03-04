@@ -32,7 +32,7 @@ public class DataSubchunk extends Chunk
         return mBitsPerSample;
     }
 
-    protected int getChunkSizeIdxOffset()
+    protected int getChunkSizeOffset()
     {
         return CHUNK_SIZE_IDX_OFFSET;
     }

@@ -45,7 +45,7 @@ public class TestFmtSubchunk {
     @Test
     public void test_chunk_size_offset_is_four() {
         FmtSubchunk fmt = FmtSubchunkBuilder.withDefaultValues().build();
-        assertEquals(4, fmt.getChunkSizeIdxOffset());
+        assertEquals(4, fmt.getChunkSizeOffset());
     }
 
     @Test

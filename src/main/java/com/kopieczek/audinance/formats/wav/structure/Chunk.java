@@ -16,7 +16,7 @@ public abstract class Chunk
     private Integer mEndIdx;
     private Integer mLength;
 
-    protected abstract int getChunkSizeIdxOffset();
+    protected abstract int getChunkSizeOffset();
 
     public Chunk(EncodedSource source, int startIdx) throws InvalidWavDataException
     {
@@ -41,13 +41,13 @@ public abstract class Chunk
 
     public int getLength() throws InvalidWavDataException
     {
-        int chunkSizeIdx = mStartIdx + getChunkSizeIdxOffset();
+        int chunkSizeIdx = mStartIdx + getChunkSizeOffset();
 
         if (mLength == null)
         {
             int lengthValue = BitUtils.intFromBytes(
                                        getRange(chunkSizeIdx, 4), getEndianism());
-             mLength = getChunkSizeIdxOffset() + 4 + lengthValue;
+             mLength = getChunkSizeOffset() + 4 + lengthValue;
         }
 
         return mLength.intValue();

@@ -169,7 +169,7 @@ public class TestRiffChunk {
     @Test
     public void test_chunk_size_offset_is_four_bytes() {
         assertEquals(4, RiffChunk.CHUNK_SIZE_OFFSET_IN_BYTES);
-        assertEquals(4, getDummyRiff().getChunkSizeIdxOffset());
+        assertEquals(4, getDummyRiff().getChunkSizeOffset());
     }
 
     @Test
