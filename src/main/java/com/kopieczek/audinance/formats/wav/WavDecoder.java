@@ -29,27 +29,6 @@ public class WavDecoder
 	}
 	
 	/**
-	 * Gets an array of bytes of the given length from the data source, starting
-	 * at the given index.
-	 * TODO: Why isn't this a method of EncodedSource?
-	 *
-	 * @param start The byte index to start reading from in the encoded source.
-	 * @param length The number of bytes to read.
-	 * @return 'length' bytes from mWavSource, starting at index 'start'.
-	 */
-    public static byte[] getRange(EncodedSource src, int start, int length)
-	{
-		byte[] result = new byte[length];
-		
-		for (int idx = 0; idx < length; idx++)
-		{
-			result[idx] = src.getByte(start + idx);
-		}
-		
-		return result;
-	}
-	
-	/**
 	 * Decodes the WAV data from mWavSource and returns a DecodedAudio object with
 	 * the same sample rate and number of channels.
 	 * Note that decoding occurs 'just-in-time' rather than up-front, so if the WAV

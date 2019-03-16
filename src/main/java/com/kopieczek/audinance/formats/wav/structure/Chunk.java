@@ -72,6 +72,6 @@ public abstract class Chunk
     }
 
     protected byte[] getRange(int start, int length) {
-        return WavDecoder.getRange(source, start, length);
+        return source.getRange(start, length);
     }
 }

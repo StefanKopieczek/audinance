@@ -294,6 +294,18 @@ public abstract class EncodedSource
 
         return result;
 	}
+
+	public byte[] getRange(int start, int length)
+	{
+		byte[] result = new byte[length];
+
+		for (int idx = 0; idx < length; idx++)
+		{
+			result[idx] = getByte(start + idx);
+		}
+
+		return result;
+	}
 	
 	public abstract int getLength();
 }
